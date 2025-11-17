@@ -9,78 +9,47 @@ pio.templates.default = "plotly_dark"
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 
-# ============================================================
-# LOCALIZAR RUTAS SEGÚN pool / queue / min
-# ============================================================
 
 def get_paths(pool_id, queue, min_friends):
-    global_file = BASE_DIR / f"data/results/pool_{pool_id}/q{queue}/min{min_friends}/metrics_03_games_frecuency.json"
-    return global_file
+    return BASE_DIR / f"data/results/pool_{pool_id}/q{queue}/min{min_friends}/metrics_03_games_frecuency.json"
 
-# ============================================================
-# Helpers
-# ============================================================
 
 def load_json(path: Path):
     if not path.exists():
+        print(f"[WARN] No existe el archivo: {path}")
         return {}
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
 
-def build_df_personas(data):
-    # Procesar los datos de 'players' o 'users' dependiendo del formato del JSON
-    if 'players' in data:
-        return pd.DataFrame(
-            [
-                {
-                    "persona": u["persona"],
-                    "winrate": round(u["winrate"] * 100, 2),
-                    "games": u["total_games"],
-                }
-                for u in data["players"]
-            ]
-        )
-    else:
-        print(f"[WARN] 'players' key not found in data")
+
+def build_df_global(data):
+    if "global_frequency" not in data:
+        print("[WARN] 'global_frequency' missing in JSON")
         return pd.DataFrame()
+    return pd.DataFrame(data["global_frequency"])
 
-def build_df_cuentas(data):
-    # Procesar las cuentas de cada jugador
-    rows = []
-    if 'players' in data:
-        for player_info in data["players"]:
-            persona = player_info["persona"]
-            for puuid, acc in player_info["puuids"].items():
-                rows.append(
-                    {
-                        "persona": persona,
-                        "riotId": acc["riotId"],
-                        "puuid": puuid,
-                        "winrate": round(acc["winrate"] * 100, 2),
-                        "games": acc["games"],
-                    }
-                )
-    else:
-        print(f"[WARN] 'players' key not found in data")
-    return pd.DataFrame(rows)
 
-def expand_dates(df: pd.DataFrame, min_date: str, max_date: str):
-    full_range = pd.date_range(start=min_date, end=max_date, freq='D')
-    base = pd.DataFrame({"date": full_range})
+def build_df_players(data):
+    players = {}
+    players_list = data.get("players_frequency", [])
+    if not isinstance(players_list, list):
+        print("[WARN] 'players_frequency' no es una lista")
+        return players
 
-    if df.empty:
-        base["games"] = 0
-        return base
+    for entry in players_list:
+        persona = entry.get("persona", "Unknown")
+        games_list = entry.get("games", [])
+        df_games = pd.DataFrame(games_list)
+        if df_games.empty:
+            continue
 
-    df["date"] = pd.to_datetime(df["date"])
-    merged = base.merge(df, on="date", how="left")
-    merged["games"] = merged["games"].fillna(0)
-    merged["date"] = merged["date"].dt.strftime("%Y-%m-%d")
-    return merged
+        if persona in players:
+            players[persona] = pd.concat([players[persona], df_games], ignore_index=True)
+        else:
+            players[persona] = df_games
 
-# ============================================================
-# Figures
-# ============================================================
+    return players
+
 
 def make_global_fig(df):
     fig = px.bar(
@@ -104,6 +73,7 @@ def make_global_fig(df):
     )
     return fig
 
+
 def make_player_fig(df, persona):
     fig = px.bar(
         df,
@@ -126,26 +96,25 @@ def make_player_fig(df, persona):
     )
     return fig
 
-# ============================================================
-# FUNCION PRINCIPAL PARA DASH
-# ============================================================
 
 def render(pool_id: str, queue: int, min_friends: int):
-    # Usa los parámetros pool_id, queue y min_friends para obtener el archivo de datos
+    print("[INFO] Loading chart_03_metrics_games_frecuency.py")
+
     data_path = get_paths(pool_id, queue, min_friends)
-
-    if not data_path.exists():
-        print(f"[WARN] champions file not found: {data_path}")
-        return []
-
     data = load_json(data_path)
-    df_persona = build_df_personas(data)
-    df_cuentas = build_df_cuentas(data)
+
+    df_global = build_df_global(data)
+    df_players = build_df_players(data)
 
     figs = []
 
-    if not df_persona.empty:
-        figs.append(make_global_fig(df_persona))
-        figs.append(make_player_fig(df_persona, "Jugador"))
+    if not df_global.empty:
+        figs.append(make_global_fig(df_global))
+
+    for persona, df in df_players.items():
+        if not df.empty:
+            figs.append(make_player_fig(df, persona))
+
+    print("[DEBUG] RESULTADO FREQUENCY:", len(figs), "figuras generadas")
 
     return figs
