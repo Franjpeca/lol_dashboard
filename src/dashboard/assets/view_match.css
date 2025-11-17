@@ -13,9 +13,27 @@
     font-size: 28px;
 }
 
+/* SUBHEADER BONITO */
 .match-sub {
-    margin-top: 6px;
-    font-size: 15px;
+    margin-top: 10px;
+    display: flex;
+    gap: 25px;
+    font-size: 25px;
+    opacity: 0.9;
+}
+
+.sub-item {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.sub-label {
+    font-weight: 600;
+    opacity: 0.95;
+}
+
+.sub-value {
     opacity: 0.85;
 }
 
@@ -34,25 +52,55 @@
     margin-bottom: 24px;
 }
 
-/* PLAYER ROW */
+/* TABLA DE JUGADORES */
+.team-table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* espacio entre jugadores */
+}
+
+/* HEADER DE COLUMNAS */
+.header-row {
+    display: grid;
+    grid-template-columns:
+        120px
+        140px
+        80px
+        140px
+        80px
+        80px
+        200px;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+.header-cell {
+    text-align: center;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* FILA DE JUGADOR */
 .player-row {
     display: grid;
     grid-template-columns:
         120px   /* campeón + spells + runas */
         140px   /* nombre + rol */
-        80px    /* kda */
+        80px    /* KDA */
         140px   /* daño */
         80px    /* oro */
         80px    /* cs */
-        200px;  /* OBJETOS  <--- ESTA */
+        200px;  /* items */
     gap: 8px;
     align-items: center;
+
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
-.player-row:last-child {
-    border-bottom: none;
-}
-
+/* BLOQUE IZQUIERDO (campeón + spells + runas) */
 .left-icons {
     display: flex;
     flex-direction: row;
@@ -66,6 +114,7 @@
     gap: 4px;
 }
 
+/* NOMBRE Y ROL */
 .player-name {
     font-weight: 600;
     white-space: nowrap;
@@ -79,6 +128,7 @@
     opacity: 0.8;
 }
 
+/* ESTADÍSTICAS */
 .stat {
     text-align: center;
 }
@@ -89,26 +139,32 @@
     border-radius: 3px;
     margin-top: 6px;
     border: 1px solid #cfcfcf;
-    width: 120px; /* barra global igual para todos */
+    width: 120px;
 }
-
 
 .small-text {
     font-size: 11px;
     opacity: 0.7;
 }
 
-.items {
+/* ITEMS */
+.items-container {
     display: flex;
-    gap: 15px;
-    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
 }
 
-.items img:not(.item-icon) {
-    width: 28px;
-    height: 28px;
+.item-icon {
+    width: 55px;
+    height: 55px;
+    margin-right: 4px;
+    object-fit: contain;
     border-radius: 4px;
 }
+
+/* ICONOS */
 .champ-icon {
     width: 65px;
     height: 65px;
@@ -124,20 +180,4 @@
 .rune-icon {
     width: 20px;
     height: 20px;
-}
-
-.item-icon {
-    width: 55px;          /* antes 28–32px normalmente */
-    height: 55px;
-    margin-right: 4px;    /* separación horizontal */
-    object-fit: contain;
-}
-
-/* Contenedor que los mantiene alineados y evitando saltos */
-.items-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;             /* pequeña separación entre items */
-    white-space: nowrap;  /* evita que bajen de línea */
 }

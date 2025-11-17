@@ -24,12 +24,31 @@ def render_match(data):
                 className="match-header",
                 children=[
                     html.H2(f"Partida {data['matchId']}"),
+
                     html.Div(
                         className="match-sub",
                         children=[
-                            html.Span(f"Cola: {data['queueId']}  "),
-                            html.Span(f"Duración: {minutes}:{seconds:02d}  "),
-                            html.Span(f"Fecha: {data['start_time']}"),
+                            html.Div(
+                                className="sub-item",
+                                children=[
+                                    html.Span("Cola:", className="sub-label"),
+                                    html.Span(str(data["queueId"]), className="sub-value"),
+                                ],
+                            ),
+                            html.Div(
+                                className="sub-item",
+                                children=[
+                                    html.Span("Duración:", className="sub-label"),
+                                    html.Span(f"{minutes}:{seconds:02d}", className="sub-value"),
+                                ],
+                            ),
+                            html.Div(
+                                className="sub-item",
+                                children=[
+                                    html.Span("Fecha:", className="sub-label"),
+                                    html.Span(data["start_time"], className="sub-value"),
+                                ],
+                            ),
                         ],
                     ),
                 ],
