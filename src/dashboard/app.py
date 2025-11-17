@@ -3,7 +3,7 @@ from pathlib import Path
 
 import plotly.io as pio
 import plotly.graph_objs as go
-from dash import Dash, html, dcc, Input, Output
+from dash import Dash, html, dcc, Input, Output, ALL
 from dash.development.base_component import Component
 
 pio.templates.default = "plotly_dark"
@@ -23,38 +23,76 @@ from charts.chart_09_metrics_number_skills import render as render_skills
 from charts.chart_10_metrics_stats_by_rol import render as render_stats_by_rol
 from charts.chart_11_metrics_stats_record import render as render_record_stats
 
+from viewGame.render_match import render_match
+from viewGame.loader import load_match_summary
+
+
 def normalize_output(output, base_id_prefix: str):
+    results = []
+    base_id_prefix = str(base_id_prefix)
+
     if output is None:
-        return []
+        return results
+
+    if isinstance(output, dict) and "fig" in output:
+        fig = output["fig"]
+        results.append(
+            dcc.Graph(
+                figure=fig,
+                id={"type": "record-graph", "subid": base_id_prefix}
+            )
+        )
+        return results
+
+    if isinstance(output, go.Figure):
+        results.append(
+            dcc.Graph(
+                figure=output,
+                id={"type": "generic-graph", "subid": base_id_prefix}
+            )
+        )
+        return results
 
     if isinstance(output, Component):
         return [output]
 
-    if isinstance(output, go.Figure):
-        return [dcc.Graph(figure=output, id=f"{base_id_prefix}-0")]
-
     if isinstance(output, (list, tuple)):
-        comps = []
         for idx, item in enumerate(output):
-            if isinstance(item, Component):
-                comps.append(item)
-            elif isinstance(item, go.Figure):
-                comps.append(dcc.Graph(figure=item, id=f"{base_id_prefix}-{idx}"))
-        return comps
+            if isinstance(item, dict) and "fig" in item:
+                fig = item["fig"]
+                results.append(
+                    dcc.Graph(
+                        figure=fig,
+                        id={"type": "record-graph", "subid": f"{base_id_prefix}-{idx}"}
+                    )
+                )
+                continue
 
-    try:
-        fig = go.Figure(output)
-        return [dcc.Graph(figure=fig, id=f"{base_id_prefix}-0")]
-    except Exception:
-        return []
+            if isinstance(item, go.Figure):
+                results.append(
+                    dcc.Graph(
+                        figure=item,
+                        id={"type": "generic-graph", "subid": f"{base_id_prefix}-{idx}"}
+                    )
+                )
+                continue
+
+        return results
+
+    return results
+
 
 def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
     app = Dash(__name__)
-    app.title = "🧀 Villaquesitos.gg "
+    app.title = "Villaquesitos.gg"
 
     app.layout = html.Div([
+
+        dcc.Store(id="copy-store"),
+        html.Div(id="copy-msg", style={"color": "yellow", "marginLeft": "12px"}),
+
         html.Div([
-            html.H1("🧀 Villaquesitos.gg ", style={"marginBottom": "5px"}),
+            html.H1("Villaquesitos.gg", style={"marginBottom": "5px"}),
 
             html.Div([
                 html.Span("Min friends:"),
@@ -66,6 +104,7 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                     style={"width": "120px"},
                 ),
             ], style={"marginTop": "10px", "display": "flex", "alignItems": "center", "gap": "10px"}),
+
         ], style={"padding": "16px 24px", "backgroundColor": "#222", "color": "white", "borderBottom": "1px solid #444"}),
 
         dcc.Tabs(id="tabs", value="tab-win", children=[
@@ -73,10 +112,13 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             dcc.Tab(label="Estadisticas por persona", value="tab-player"),
             dcc.Tab(label="Estadisticas por rol", value="tab-rol"),
             dcc.Tab(label="Records de jugadores", value="tab-record"),
+            dcc.Tab(label="Ver partida", value="tab-view-match"),
         ], style={"backgroundColor": "#111"}),
 
         html.Div(id="tab-content", style={"padding": "24px"}),
-    ], style={"backgroundColor": "#111", "minHeight": "100vh"})
+
+    ], style={"backgroundColor": "black", "minHeight": "100vh"})
+
 
     @app.callback(
         Output("tab-content", "children"),
@@ -100,40 +142,148 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             components += normalize_output(render_skills(pool_id, queue, min_friends), "skills")
 
         elif selected_tab == "tab-rol":
-            rol_selector = html.Div([
-                html.Span("Selecciona rol:", style={"fontWeight": "bold", "marginRight": "10px"}),
-                dcc.Dropdown(
-                    id="role-dropdown",
-                    options=[{"label": r, "value": r} for r in ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]],
-                    value="TOP",
-                    clearable=False,
-                    style={"width": "200px"},
-                ),
-            ], style={"display": "flex", "alignItems": "center", "marginBottom": "24px", "padding": "16px", "backgroundColor": "#222", "borderRadius": "8px"})
+            components.append(
+                html.Div([
+                    html.Span("Selecciona rol:", style={"fontWeight": "bold", "marginRight": "10px"}),
+                    dcc.Dropdown(
+                        id="role-dropdown",
+                        options=[{"label": r, "value": r} for r in ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]],
+                        value="TOP",
+                        clearable=False,
+                        style={"width": "200px"},
+                    ),
+                ], style={"display": "flex", "alignItems": "center", "marginBottom": "24px",
+                          "padding": "16px", "backgroundColor": "#222", "borderRadius": "8px"})
+            )
 
-            min_games_slider = html.Div([
-                html.Span("Minimo de partidas:", style={"fontWeight": "bold", "marginRight": "10px"}),
-                dcc.Slider(
-                    id="min-games-slider",
-                    min=0,
-                    max=50,
-                    step=1,
-                    value=0,
-                    marks={i: str(i) for i in range(0, 51, 5)},
-                    tooltip={"placement": "bottom", "always_visible": False},
-                ),
-            ], style={"marginBottom": "24px", "padding": "16px", "backgroundColor": "#222", "borderRadius": "8px"})
+            components.append(
+                html.Div([
+                    html.Span("Minimo de partidas:", style={"fontWeight": "bold", "marginRight": "10px"}),
+                    dcc.Slider(
+                        id="min-games-slider",
+                        min=0, max=50, step=1, value=0,
+                        marks={i: str(i) for i in range(0, 51, 5)},
+                    ),
+                ], style={"marginBottom": "24px", "padding": "16px",
+                          "backgroundColor": "#222", "borderRadius": "8px"})
+            )
 
-            graphs_container = html.Div(id="rol-graphs-container")
-
-            components.append(rol_selector)
-            components.append(min_games_slider)
-            components.append(graphs_container)
+            components.append(html.Div(id="rol-graphs-container"))
 
         elif selected_tab == "tab-record":
-            components += normalize_output(render_record_stats(pool_id, queue, min_friends), "records")
+            components += normalize_output(render_record_stats(pool_id, queue, min_friends), "record")
+
+        elif selected_tab == "tab-view-match":
+
+            components.append(
+                html.Div([
+
+                    html.H3("Ver partida completa", style={"color": "white"}),
+
+                    html.Div([
+
+                        dcc.Dropdown(
+                            id="match-server-dropdown",
+                            options=[
+                                {"label": "EUW", "value": "EUW1"},
+                                {"label": "EUNE", "value": "EUN1"},
+                                {"label": "NA", "value": "NA1"},
+                                {"label": "KR", "value": "KR"},
+                                {"label": "BR", "value": "BR1"},
+                                {"label": "LAN", "value": "LA1"},
+                                {"label": "LAS", "value": "LA2"},
+                                {"label": "JP", "value": "JP1"},
+                                {"label": "TR", "value": "TR1"},
+                                {"label": "RU", "value": "RU"},
+                                {"label": "OCE", "value": "OC1"},
+                            ],
+                            value="EUW1",
+                            clearable=False,
+                            style={"width": "130px"}
+                        ),
+
+                        dcc.Input(
+                            id="match-id-input",
+                            type="text",
+                            placeholder="ID (solo números)",
+                            style={"width": "180px", "marginLeft": "12px", "marginRight": "12px"}
+                        ),
+
+                        html.Button(
+                            "Ver partida",
+                            id="btn-view-match",
+                            n_clicks=0,
+                            style={
+                                "padding": "6px 14px",
+                                "backgroundColor": "#444",
+                                "color": "white",
+                                "border": "1px solid #666",
+                                "borderRadius": "6px",
+                            }
+                        ),
+
+                    ], style={
+                        "display": "flex",
+                        "alignItems": "center",
+                        "gap": "10px",
+                        "marginTop": "10px"
+                    }),
+
+                    html.Div(id="match-render-container", style={"marginTop": "30px"}),
+
+                ], style={
+                    "padding": "20px",
+                    "backgroundColor": "#222",
+                    "borderRadius": "8px"
+                })
+            )
 
         return html.Div(components, style={"display": "flex", "flexDirection": "column", "gap": "32px"})
+
+
+    @app.callback(
+        Output("match-render-container", "children"),
+        Input("btn-view-match", "n_clicks"),
+        Input("match-server-dropdown", "value"),
+        Input("match-id-input", "value"),
+        prevent_initial_call=True,
+    )
+    def render_selected_match(_, server, short_id):
+        if not short_id:
+            return html.Div("Introduce una ID valida.", style={"color": "red", "padding": "10px"})
+
+        full_id = f"{server}_{short_id}"
+
+        data = load_match_summary(full_id)
+        return render_match(data)
+
+
+    @app.callback(
+        Output("copy-store", "data"),
+        Output("copy-msg", "children"),
+        Input({"type": "record-graph", "subid": ALL}, "clickData"),
+        prevent_initial_call=True,
+    )
+    def copy_record_id(clicks):
+        for click in clicks:
+            if click and "points" in click:
+                match_id = click["points"][0]["customdata"]
+                return match_id, f"Copiado ID: {match_id}"
+        return None, ""
+
+
+    app.clientside_callback(
+        """
+        function(data) {
+            if (!data) return "";
+            navigator.clipboard.writeText(data);
+            return "";
+        }
+        """,
+        Output("copy-msg", "n_clicks"),
+        Input("copy-store", "data")
+    )
+
 
     @app.callback(
         Output("rol-graphs-container", "children"),
@@ -155,8 +305,9 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
     return app
 
+
 def main():
-    parser = argparse.ArgumentParser(description="🧀 Villaquesitos.gg ")
+    parser = argparse.ArgumentParser(description="Villaquesitos.gg")
     parser.add_argument("--min", type=int, default=5)
     args = parser.parse_args()
 
@@ -166,6 +317,7 @@ def main():
 
     app = create_app(pool_id, queue, min_friends)
     app.run(host=HOST, port=PORT, debug=False)
+
 
 if __name__ == "__main__":
     main()
