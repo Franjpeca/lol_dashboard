@@ -159,6 +159,8 @@ def spell_icon_url(spell_id, patch=None):
 #  ICONO DE ITEM
 # ======================================================================
 def item_icon_url(item_id, patch=None):
+    print("\n---- ITEM ICONS ----")
+    print("  RECEIVED:", item_id)
     if not item_id:
         return None
     patch = patch or get_latest_patch()

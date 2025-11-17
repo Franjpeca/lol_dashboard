@@ -38,17 +38,15 @@
 .player-row {
     display: grid;
     grid-template-columns:
-        150px   /* champ + spells + runas */
-        200px   /* nombre + rol */
-        90px    /* KDA */
-        200px   /* daño */
-        90px    /* oro */
-        90px    /* cs */
-        180px;  /* items */
+        120px   /* campeón + spells + runas */
+        140px   /* nombre + rol */
+        80px    /* kda */
+        140px   /* daño */
+        80px    /* oro */
+        80px    /* cs */
+        200px;  /* OBJETOS  <--- ESTA */
+    gap: 8px;
     align-items: center;
-    padding: 14px 0;
-    border-bottom: 1px solid #333;
-    gap: 12px;
 }
 
 .player-row:last-child {
@@ -102,18 +100,18 @@
 
 .items {
     display: flex;
-    gap: 6px;
+    gap: 15px;
     flex-wrap: nowrap;
 }
 
-.items img {
+.items img:not(.item-icon) {
     width: 28px;
     height: 28px;
     border-radius: 4px;
 }
 .champ-icon {
-    width: 38px;
-    height: 38px;
+    width: 65px;
+    height: 65px;
     border-radius: 6px;
 }
 
@@ -128,3 +126,18 @@
     height: 20px;
 }
 
+.item-icon {
+    width: 55px;          /* antes 28–32px normalmente */
+    height: 55px;
+    margin-right: 4px;    /* separación horizontal */
+    object-fit: contain;
+}
+
+/* Contenedor que los mantiene alineados y evitando saltos */
+.items-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;             /* pequeña separación entre items */
+    white-space: nowrap;  /* evita que bajen de línea */
+}

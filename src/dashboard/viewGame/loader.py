@@ -92,11 +92,27 @@ def load_match_summary(match_id: str, allowed_queues=None, min_amigos: int = 1):
         farm = p.get("totalMinionsKilled", 0) + p.get("neutralMinionsKilled", 0)
         duration_minutes = max(1, info.get("gameDuration", 1) / 60)
 
-        items = [
-            p.get("item0"), p.get("item1"), p.get("item2"),
-            p.get("item3"), p.get("item4"), p.get("item5"),
-            p.get("item6"),
-        ]
+        # ======================================================
+        #  ITEMS — SOPORTA item0..item6 (tu caso real)
+        # ======================================================
+        raw_items = p.get("items")
+
+        if isinstance(raw_items, list) and len(raw_items) == 7:
+            items = raw_items
+        else:
+            # Formato oficial de Riot → item0..item6
+            items = [
+                p.get("item0", 0),
+                p.get("item1", 0),
+                p.get("item2", 0),
+                p.get("item3", 0),
+                p.get("item4", 0),
+                p.get("item5", 0),
+                p.get("item6", 0),
+            ]
+
+        print("\n Items for player", real_name, ":", items)
+
 
         perks = p.get("perks", {}).get("styles", [])
 

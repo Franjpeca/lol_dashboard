@@ -3,6 +3,9 @@ from .ui_assets import champ_icon, spell_icons, rune_icons, item_icons
 
 
 def player_row(p, patch=None):
+
+
+
     champ = p.get("champ", "")
     name = p.get("name", "Unknown")
     role = p.get("role", "?")
@@ -45,15 +48,7 @@ def player_row(p, patch=None):
 
     primary, secondary = extract_runes(p)
 
-    items = [
-        p.get("item0", 0),
-        p.get("item1", 0),
-        p.get("item2", 0),
-        p.get("item3", 0),
-        p.get("item4", 0),
-        p.get("item5", 0),
-        p.get("item6", 0),
-    ]
+    items = p.get("items", [])
 
     return html.Div(
         className="player-row",

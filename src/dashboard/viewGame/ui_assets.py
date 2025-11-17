@@ -56,9 +56,12 @@ def rune_icons(primary: int, secondary: int, patch=None):
 
 
 def item_icons(items: list[int], patch=None):
+    print("\n---- ITEM ICONS ui_assets.py ----")
+    print("  RECEIVED:", items)
     patch = patch or get_latest_patch()
     icons = []
     for it in items:
+        print("  Processing item:", it)
         if not it or it == 0:
             continue
         icons.append(
