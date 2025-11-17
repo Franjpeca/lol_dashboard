@@ -208,10 +208,12 @@ def get_chart_data(raw, selected_role: str):
 #   FUNCIÓN PARA USAR EN TU FLUJO (sin Dash)
 # ============================================================
 
-def render(pool_id: str, queue: int, min_friends: int):
+def render(pool_id: str, queue: int, min_friends: int, selected_role: str = None):
     """
     Función que retorna las figuras de Plotly para usar en tu flujo existente.
-    Devuelve figuras para todos los roles (5 roles x 12 métricas = 60 figuras).
+    Devuelve figuras para el rol seleccionado (si se pasa `selected_role`) o para todos los roles (si no se pasa).
+
+    :param selected_role: Rol a filtrar (por defecto None, lo que generará figuras para todos los roles).
     """
     data_file = get_data_file(pool_id, queue, min_friends)
     raw = load_json(data_file)
@@ -221,6 +223,11 @@ def render(pool_id: str, queue: int, min_friends: int):
         return []
     
     roles = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]
+    
+    # Si se pasa un rol específico, solo procesar ese rol
+    if selected_role:
+        roles = [selected_role]  # Solo incluir el rol seleccionado
+    
     figures = []
     
     for role in roles:

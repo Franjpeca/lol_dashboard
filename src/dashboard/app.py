@@ -16,7 +16,6 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 # ============================
 
 from charts.chart_01_metrics_players_games_winrate import render as render_winrate
-
 from charts.chart_02_metrics_champions_games_winrate import render as render_champions
 from charts.chart_03_metrics_games_frecuency import render as render_games_freq
 from charts.chart_04_metrics_win_lose_streak import render as render_streaks
@@ -37,12 +36,6 @@ def normalize_output(output, base_id_prefix: str):
     """
     Normaliza la salida de las funciones render_* para que siempre sea
     una lista de componentes Dash.
-
-    Soporta:
-    - Una sola figura Plotly -> un dcc.Graph
-    - Una lista/tupla de figuras -> varios dcc.Graph
-    - Un solo componente Dash -> una lista con ese componente
-    - Una lista/tupla de componentes Dash
     """
     if output is None:
         return []
@@ -63,7 +56,6 @@ def normalize_output(output, base_id_prefix: str):
                 comps.append(item)
             elif isinstance(item, go.Figure):
                 comps.append(dcc.Graph(figure=item, id=f"{base_id_prefix}-{idx}"))
-            # Si el item no es ni figura ni componente, se ignora
         return comps
 
     # Caso por defecto: se intenta tratar como figura
@@ -80,7 +72,7 @@ def normalize_output(output, base_id_prefix: str):
 
 def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
     app = Dash(__name__)
-    app.title = "Dashboard Datos LoL"
+    app.title = "🧀 Villaquesitos.gg "
 
     app.layout = html.Div(
         [
@@ -88,7 +80,7 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             html.Div(
                 [
                     html.H1(
-                        "Dashboard Datos LoL",
+                        "🧀 Villaquesitos.gg ",
                         style={"marginBottom": "5px"},
                     ),
                     html.Div(
@@ -154,12 +146,6 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
         # Tab: Winrate y partidas
         if selected_tab == "tab-win":
-            print("Rendering tab-win")
-            # Aqui puedes anadir las graficas de esta pestaña, una a una
-            # Cada render_* puede devolver:
-            # - una figura
-            # - una lista de figuras
-            # - componentes Dash directamente
             components += normalize_output(
                 render_winrate(pool_id, queue, min_friends),
                 "winrate",
@@ -172,8 +158,6 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                 render_games_freq(pool_id, queue, min_friends),
                 "games-freq",
             )
-
-            print("\n\nmin_friends\n\n:", min_friends)
             components += normalize_output(
                 render_streaks(pool_id, queue, min_friends),
                 "streaks",
@@ -181,7 +165,6 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
         # Tab: Estadisticas por persona
         elif selected_tab == "tab-player":
-            print("Rendering tab-player")
             components += normalize_output(
                 render_stats(pool_id, queue, min_friends),
                 "stats-persona",
@@ -205,23 +188,75 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
         # Tab: Estadisticas por rol
         elif selected_tab == "tab-rol":
-            print("Rendering tab-rol")
-            components += normalize_output(
-                render_stats_by_rol(pool_id, queue, min_friends),
-                "stats-rol",
+            # Dropdown específico para esta pestaña
+            rol_selector = html.Div(
+                [
+                    html.Span("Selecciona rol: ", style={"fontWeight": "bold", "marginRight": "10px"}),
+                    dcc.Dropdown(
+                        id="role-dropdown",
+                        options=[
+                            {"label": "TOP", "value": "TOP"},
+                            {"label": "JUNGLE", "value": "JUNGLE"},
+                            {"label": "MIDDLE", "value": "MIDDLE"},
+                            {"label": "BOTTOM", "value": "BOTTOM"},
+                            {"label": "UTILITY", "value": "UTILITY"},
+                        ],
+                        value="TOP",
+                        clearable=False,
+                        style={"width": "200px"},
+                    ),
+                ],
+                style={
+                    "display": "flex",
+                    "alignItems": "center",
+                    "marginBottom": "24px",
+                    "padding": "16px",
+                    "backgroundColor": "#222",
+                    "borderRadius": "8px",
+                },
             )
+            
+            # Contenedor dinámico para las gráficas
+            graphs_container = html.Div(id="rol-graphs-container")
+            
+            components.append(rol_selector)
+            components.append(graphs_container)
 
         # Tab: Records de jugadores
         elif selected_tab == "tab-record":
-            print("Rendering tab-record")
             components += normalize_output(
                 render_record_stats(pool_id, queue, min_friends),
                 "records",
             )
 
-        # Puedes envolver todo en una columna basica
         return html.Div(
             components,
+            style={
+                "display": "flex",
+                "flexDirection": "column",
+                "gap": "32px",
+            },
+        )
+
+    # ============================
+    # CALLBACK PARA ROL (solo activo en tab-rol)
+    # ============================
+    
+    @app.callback(
+        Output("rol-graphs-container", "children"),
+        Input("role-dropdown", "value"),
+        Input("min-friends-dropdown", "value"),
+    )
+    def update_rol_graphs(selected_role, min_friends):
+        if selected_role is None:
+            selected_role = "TOP"  # Por defecto TOP
+        
+        # Renderizar gráficas del rol seleccionado
+        return html.Div(
+            normalize_output(
+                render_stats_by_rol(pool_id, queue, min_friends, selected_role),
+                f"stats-rol-{selected_role}",
+            ),
             style={
                 "display": "flex",
                 "flexDirection": "column",
@@ -237,7 +272,7 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 # ============================
 
 def main():
-    parser = argparse.ArgumentParser(description="Dashboard Datos LoL")
+    parser = argparse.ArgumentParser(description="🧀 Villaquesitos.gg ")
     parser.add_argument(
         "--min",
         type=int,

@@ -1,0 +1,296 @@
+diff --git a/src/dashboard/app.py b/src/dashboard/app.py
+index 2fe70463a2ab400ff37ce4bba42c28366c2b1db7..4e0e973fd155001c21158b68e430a0f7201a7c78 100644
+--- a/src/dashboard/app.py
++++ b/src/dashboard/app.py
+@@ -1,101 +1,177 @@
+ import argparse
+ from pathlib import Path
+ 
+ import plotly.io as pio
+ import plotly.graph_objs as go
+ from dash import Dash, html, dcc, Input, Output
+ from dash.development.base_component import Component
+ 
+ pio.templates.default = "plotly_dark"
+ 
+ HOST, PORT = "127.0.0.1", 8080
+ BASE_DIR = Path(__file__).resolve().parents[2]
+ 
++ROLE_OPTIONS = [
++    {"label": role, "value": role}
++    for role in ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]
++]
++
++METRIC_CONFIGS = [
++    {"id": "winrate", "label": "Winrate %", "use_games": False},
++    {"id": "games", "label": "Partidas jugadas", "use_games": True},
++    {"id": "damage", "label": "Daño infligido medio", "use_games": False},
++    {"id": "damage_taken", "label": "Daño recibido", "use_games": False},
++    {"id": "gold", "label": "Oro", "use_games": False},
++    {"id": "farm", "label": "CS", "use_games": False},
++    {"id": "vision", "label": "Vision Score", "use_games": False},
++    {"id": "turret_damage", "label": "Daño a torres", "use_games": False},
++    {"id": "kills", "label": "Kills", "use_games": False},
++    {"id": "deaths", "label": "Muertes", "use_games": False},
++    {"id": "assists", "label": "Asistencias", "use_games": False},
++    {
++        "id": "kill_participation",
++        "label": "Kill Participation %",
++        "use_games": False,
++    },
++]
++
+ # ============================
+ # IMPORTS DE GRAFICOS
+ # ============================
+ 
+ from charts.chart_01_metrics_players_games_winrate import render as render_winrate
+ 
+ from charts.chart_02_metrics_champions_games_winrate import render as render_champions
+ from charts.chart_03_metrics_games_frecuency import render as render_games_freq
+ from charts.chart_04_metrics_win_lose_streak import render as render_streaks
+ from charts.chart_05_metrics_players_stats import render as render_stats
+ from charts.chart_06_metrics_ego_index import render as render_ego
+ from charts.chart_07_metrics_troll_index import render as render_troll
+ from charts.chart_08_metrics_first_metrics import render as render_first_metrics
+ from charts.chart_09_metrics_number_skills import render as render_skills
+-from charts.chart_10_metrics_stats_by_rol import render as render_stats_by_rol
++from charts.chart_10_metrics_stats_by_rol import (
++    get_data_file,
++    load_json,
++    get_chart_data,
++    make_fig,
++    make_fig_games,
++)
+ from charts.chart_11_metrics_stats_record import render as render_record_stats
+ 
+ 
+ # ============================
+ # FUNCION AUXILIAR FLEXIBLE
+ # ============================
+ 
+ def normalize_output(output, base_id_prefix: str):
+     """
+     Normaliza la salida de las funciones render_* para que siempre sea
+     una lista de componentes Dash.
+ 
+     Soporta:
+     - Una sola figura Plotly -> un dcc.Graph
+     - Una lista/tupla de figuras -> varios dcc.Graph
+     - Un solo componente Dash -> una lista con ese componente
+     - Una lista/tupla de componentes Dash
+     """
+     if output is None:
+         return []
+ 
+     # Un solo componente Dash
+     if isinstance(output, Component):
+         return [output]
+ 
+     # Una sola figura Plotly
+     if isinstance(output, go.Figure):
+         return [dcc.Graph(figure=output, id=f"{base_id_prefix}-0")]
+ 
+     # Iterables (lista o tupla)
+     if isinstance(output, (list, tuple)):
+         comps = []
+         for idx, item in enumerate(output):
+             if isinstance(item, Component):
+                 comps.append(item)
+             elif isinstance(item, go.Figure):
+                 comps.append(dcc.Graph(figure=item, id=f"{base_id_prefix}-{idx}"))
+             # Si el item no es ni figura ni componente, se ignora
+         return comps
+ 
+     # Caso por defecto: se intenta tratar como figura
+     try:
+         fig = go.Figure(output)
+         return [dcc.Graph(figure=fig, id=f"{base_id_prefix}-0")]
+     except Exception:
+         return []
+ 
+ 
++def render_stats_by_rol(pool_id, queue, min_friends):
++    """Construye el layout de la pestaña de estadisticas por rol."""
++
++    _ = (pool_id, queue, min_friends)  # mantenemos la firma por compatibilidad
++
++    blocks = []
++    for metric in METRIC_CONFIGS:
++        blocks.append(
++            html.Div(
++                [
++                    html.Div(
++                        [
++                            html.H3(metric["label"], style={"margin": "0"}),
++                            dcc.Dropdown(
++                                id=f"stats-rol-{metric['id']}-role",
++                                options=ROLE_OPTIONS,
++                                value="TOP",
++                                clearable=False,
++                                style={"width": "200px"},
++                            ),
++                        ],
++                        style={
++                            "display": "flex",
++                            "justifyContent": "space-between",
++                            "alignItems": "center",
++                            "gap": "12px",
++                            "marginBottom": "8px",
++                        },
++                    ),
++                    dcc.Graph(
++                        id=f"stats-rol-{metric['id']}-graph",
++                        figure=go.Figure(),
++                    ),
++                ],
++                style={
++                    "padding": "16px",
++                    "border": "1px solid #444",
++                    "borderRadius": "8px",
++                    "backgroundColor": "#1a1a1a",
++                },
++            )
++        )
++
++    return blocks
++
++
+ # ============================
+ # FUNCION PRINCIPAL DE APP
+ # ============================
+ 
+ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
+     app = Dash(__name__)
+     app.title = "Dashboard Datos LoL"
+ 
+     app.layout = html.Div(
+         [
+             # Cabecera
+             html.Div(
+                 [
+                     html.H1(
+                         "Dashboard Datos LoL",
+                         style={"marginBottom": "5px"},
+                     ),
+                     html.Div(
+                         [
+                             html.Span("Min friends: "),
+                             dcc.Dropdown(
+                                 id="min-friends-dropdown",
+                                 options=[
+                                     {"label": "4", "value": 4},
+                                     {"label": "5", "value": 5},
+@@ -184,75 +260,107 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
+             print("Rendering tab-player")
+             components += normalize_output(
+                 render_stats(pool_id, queue, min_friends),
+                 "stats-persona",
+             )
+             components += normalize_output(
+                 render_ego(pool_id, queue, min_friends),
+                 "ego-index",
+             )
+             components += normalize_output(
+                 render_troll(pool_id, queue, min_friends),
+                 "troll-index",
+             )
+             components += normalize_output(
+                 render_first_metrics(pool_id, queue, min_friends),
+                 "first-metrics",
+             )
+             components += normalize_output(
+                 render_skills(pool_id, queue, min_friends),
+                 "skills",
+             )
+ 
+         # Tab: Estadisticas por rol
+         elif selected_tab == "tab-rol":
+             print("Rendering tab-rol")
+-            components += normalize_output(
+-                render_stats_by_rol(pool_id, queue, min_friends),
+-                "stats-rol",
+-            )
++            components += render_stats_by_rol(pool_id, queue, min_friends)
+ 
+         # Tab: Records de jugadores
+         elif selected_tab == "tab-record":
+             print("Rendering tab-record")
+             components += normalize_output(
+                 render_record_stats(pool_id, queue, min_friends),
+                 "records",
+             )
+ 
+         # Puedes envolver todo en una columna basica
+         return html.Div(
+             components,
+             style={
+                 "display": "flex",
+                 "flexDirection": "column",
+                 "gap": "32px",
+             },
+         )
+ 
++    for metric in METRIC_CONFIGS:
++        app.callback(
++            Output(f"stats-rol-{metric['id']}-graph", "figure"),
++            Input(f"stats-rol-{metric['id']}-role", "value"),
++            Input("min-friends-dropdown", "value"),
++        )(
++            _make_role_metric_callback(
++                pool_id,
++                queue,
++                metric["id"],
++                metric["label"],
++                use_games=metric.get("use_games", False),
++            )
++        )
++
+     return app
+ 
+ 
++def _make_role_metric_callback(pool_id, queue, metric_id, title, use_games=False):
++    def _callback(role: str, min_friends: int):
++        data_file = get_data_file(pool_id, queue, min_friends)
++        raw = load_json(data_file)
++
++        if not raw:
++            return go.Figure()
++
++        data = get_chart_data(raw, role)
++        if data is None or metric_id not in data:
++            return go.Figure()
++
++        fig_builder = make_fig_games if use_games else make_fig
++        return fig_builder(data[metric_id], f"{title} - {role}")
++
++    # Dash requiere que las funciones tengan nombres unicos
++    _callback.__name__ = f"update_stats_rol_{metric_id}"
++    return _callback
++
++
+ # ============================
+ # ENTRYPOINT CLI
+ # ============================
+ 
+ def main():
+     parser = argparse.ArgumentParser(description="Dashboard Datos LoL")
+     parser.add_argument(
+         "--min",
+         type=int,
+         default=5,
+         help="Valor de min_friends (por defecto 5)",
+     )
+     args = parser.parse_args()
+ 
+     pool_id = "ac89fa8d"
+     queue = 440
+     min_friends = args.min
+ 
+     app = create_app(pool_id, queue, min_friends)
+     app.run(host=HOST, port=PORT, debug=False)
+ 
+ 
+ if __name__ == "__main__":
+     main()
+\ No newline at end of file

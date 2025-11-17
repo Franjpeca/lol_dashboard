@@ -18,3 +18,5 @@ postgres/
 
 # Ignorar archivos de bases de datos
 *.db
+
+LICENSE
