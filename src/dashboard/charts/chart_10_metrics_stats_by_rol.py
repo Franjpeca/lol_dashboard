@@ -9,25 +9,11 @@ pio.templates.default = "plotly_dark"
 BASE_DIR = Path(__file__).resolve().parents[3]
 
 
-# ============================================================
-#   LOCALIZAR ARCHIVO SEGÚN pool / queue / min
-# ============================================================
-
 def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
-    """
-    Obtiene la ruta del archivo de datos basado en los parámetros proporcionados.
-    """
     return BASE_DIR / "data" / "results" / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}" / "metrics_10_stats_by_rol.json"
 
 
-# ============================================================
-#   CARGA DE DATOS
-# ============================================================
-
 def load_json(path: Path):
-    """
-    Carga los datos JSON desde la ruta proporcionada.
-    """
     if not path.exists():
         print(f"[ERROR] Archivo no encontrado: {path}")
         return {}
@@ -35,112 +21,32 @@ def load_json(path: Path):
         return json.load(f)
 
 
-# ============================================================
-#   FUNCIONES PARA LAS GRÁFICAS
-# ============================================================
-
 def make_fig(df: pd.DataFrame, title: str):
-    """Figura genérica horizontal."""
     n = len(df)
     tick_font = max(12, min(22, int(320 / max(1, n))))
     height = int(max(550, min(1000, 35 * max(1, n))) * 0.75)
-
-    fig = px.bar(
-        df,
-        x="value",
-        y="persona",
-        orientation="h",
-        text="value",
-        color="value",
-        color_continuous_scale="Turbo",
-        title=title,
-    )
-
+    fig = px.bar(df, x="value", y="persona", orientation="h", text="value", color="value", color_continuous_scale="Turbo", title=title)
     fig.update_layout(bargap=0.18)
-
-    fig.update_traces(
-        textposition="inside",
-        insidetextanchor="middle",
-        marker_line_width=0,
-        textfont=dict(
-            color="white",
-            size=max(12, min(20, int(220 / max(1, n))))
-        ),
-    )
-
-    fig.update_layout(
-        autosize=True,
-        height=height + 90,
-        margin=dict(l=170, r=50, t=60, b=40),
-        xaxis_title="",
-        yaxis=dict(
-            type="category",
-            tickvals=df["persona"].tolist(),
-            ticktext=df["persona"].tolist(),
-            tickfont=dict(size=tick_font),
-            automargin=True,
-        ),
-    )
-
+    fig.update_traces(textposition="inside", insidetextanchor="middle", marker_line_width=0, textfont=dict(color="white", size=max(12, min(20, int(220 / max(1, n))))) )
+    fig.update_layout(autosize=True, height=height + 90, margin=dict(l=170, r=50, t=60, b=40), xaxis_title="", yaxis=dict(type="category", tickvals=df["persona"].tolist(), ticktext=df["persona"].tolist(), tickfont=dict(size=tick_font), automargin=True))
     return fig
 
 
 def make_fig_games(df: pd.DataFrame, title: str):
-    """Figura para Games con tooltip de % total."""
     n = len(df)
     tick_font = max(12, min(22, int(320 / max(1, n))))
     height = int(max(550, min(1000, 35 * max(1, n))) * 0.75)
-
-    fig = px.bar(
-        df,
-        x="value",
-        y="persona",
-        orientation="h",
-        text="value",
-        color="value",
-        color_continuous_scale="Turbo",
-        title=title,
-        hover_data={"value": False, "tooltip": True},
-    )
-
+    fig = px.bar(df, x="value", y="persona", orientation="h", text="value", color="value", color_continuous_scale="Turbo", title=title, hover_data={"value": False, "tooltip": True})
     fig.update_layout(bargap=0.18)
-
-    fig.update_traces(
-        textposition="inside",
-        insidetextanchor="middle",
-        marker_line_width=0,
-        textfont=dict(
-            color="white",
-            size=max(12, min(20, int(220 / max(1, n))))
-        ),
-        customdata=df["tooltip"],
-        hovertemplate="<b>%{y}</b><br>Games: %{x}<br>%{customdata}<extra></extra>",
-    )
-
-    fig.update_layout(
-        autosize=True,
-        height=height + 90,
-        margin=dict(l=170, r=50, t=60, b=40),
-        xaxis_title="",
-        yaxis=dict(
-            type="category",
-            tickvals=df["persona"].tolist(),
-            ticktext=df["persona"].tolist(),
-            tickfont=dict(size=tick_font),
-            automargin=True,
-        ),
-    )
-
+    fig.update_traces(textposition="inside", insidetextanchor="middle", marker_line_width=0, textfont=dict(color="white", size=max(12, min(20, int(220 / max(1, n))))) , customdata=df["tooltip"], hovertemplate="<b>%{y}</b><br>Games: %{x}<br>%{customdata}<extra></extra>")
+    fig.update_layout(autosize=True, height=height + 90, margin=dict(l=170, r=50, t=60, b=40), xaxis_title="", yaxis=dict(type="category", tickvals=df["persona"].tolist(), ticktext=df["persona"].tolist(), tickfont=dict(size=tick_font), automargin=True))
     return fig
 
 
-def get_chart_data(raw, selected_role: str):
-    """Obtiene datos preparados para un rol específico."""
+def get_chart_data(raw, selected_role: str, min_games: int):
     if selected_role not in raw:
         return None
-
     role_data = raw[selected_role]
-    
     rows_winrate = []
     rows_games = []
     rows_damage = []
@@ -153,30 +59,21 @@ def get_chart_data(raw, selected_role: str):
     rows_deaths = []
     rows_assists = []
     rows_kill_participation = []
-
     total_games = sum(player["games"] for player in role_data.values())
-
     for persona, stats in role_data.items():
+        if stats.get("games", 0) < min_games:
+            continue
+        if stats.get("games", 0) < min_games:
+            continue
         games = stats.get("games", 0)
-        
-        # % del total global
         global_pct = (games / total_games * 100) if total_games > 0 else 0
-        
-        # Total de games del jugador en TODOS los roles
         player_total_games = 0
         for role in raw.values():
             if persona in role:
                 player_total_games += role[persona].get("games", 0)
-        
-        # % de games en este rol vs sus games totales
         player_role_pct = (games / player_total_games * 100) if player_total_games > 0 else 0
-        
         rows_winrate.append({"persona": persona, "value": stats.get("winrate", 0)})
-        rows_games.append({
-            "persona": persona,
-            "value": games,
-            "tooltip": f"{global_pct:.1f}% en global | {player_role_pct:.1f}% en sus partidas"
-        })
+        rows_games.append({"persona": persona, "value": games, "tooltip": f"{global_pct:.1f}% en global | {player_role_pct:.1f}% en sus partidas"})
         rows_damage.append({"persona": persona, "value": stats.get("avg_damage", 0)})
         rows_damage_taken.append({"persona": persona, "value": stats.get("avg_damage_taken", 0)})
         rows_gold.append({"persona": persona, "value": stats.get("avg_gold", 0)})
@@ -187,7 +84,6 @@ def get_chart_data(raw, selected_role: str):
         rows_deaths.append({"persona": persona, "value": stats.get("avg_deaths", 0)})
         rows_assists.append({"persona": persona, "value": stats.get("avg_assists", 0)})
         rows_kill_participation.append({"persona": persona, "value": stats.get("avg_kill_participation", 0)})
-
     return {
         "winrate": pd.DataFrame(rows_winrate).sort_values("value"),
         "games": pd.DataFrame(rows_games).sort_values("value"),
@@ -204,39 +100,21 @@ def get_chart_data(raw, selected_role: str):
     }
 
 
-# ============================================================
-#   FUNCIÓN PARA USAR EN TU FLUJO (sin Dash)
-# ============================================================
-
-def render(pool_id: str, queue: int, min_friends: int, selected_role: str = None):
-    """
-    Función que retorna las figuras de Plotly para usar en tu flujo existente.
-    Devuelve figuras para el rol seleccionado (si se pasa `selected_role`) o para todos los roles (si no se pasa).
-
-    :param selected_role: Rol a filtrar (por defecto None, lo que generará figuras para todos los roles).
-    """
+def render(pool_id: str, queue: int, min_friends: int, selected_role: str = None, min_games: int = 0):
     data_file = get_data_file(pool_id, queue, min_friends)
     raw = load_json(data_file)
-    
     if not raw:
         print(f"[ERROR] No se pudieron cargar datos de {data_file}")
         return []
-    
     roles = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]
-    
-    # Si se pasa un rol específico, solo procesar ese rol
     if selected_role:
-        roles = [selected_role]  # Solo incluir el rol seleccionado
-    
+        roles = [selected_role]
+        roles = [selected_role]
     figures = []
-    
     for role in roles:
-        data = get_chart_data(raw, role)
-        
+        data = get_chart_data(raw, role, min_games)
         if data is None:
             continue
-        
-        # 12 métricas por rol
         figures.append(make_fig(data["winrate"], f"Winrate % - {role}"))
         figures.append(make_fig_games(data["games"], f"Partidas jugadas - {role}"))
         figures.append(make_fig(data["damage"], f"Daño infligido medio - {role}"))
@@ -249,5 +127,4 @@ def render(pool_id: str, queue: int, min_friends: int, selected_role: str = None
         figures.append(make_fig(data["deaths"], f"Muertes - {role}"))
         figures.append(make_fig(data["assists"], f"Asistencias - {role}"))
         figures.append(make_fig(data["kill_participation"], f"Kill Participation % - {role}"))
-    
     return figures
