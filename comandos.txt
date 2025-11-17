@@ -1,0 +1,33 @@
+Activar entorno:
+.venv\Scripts\activate
+
+
+Lanzar Docker:
+docker compose up -d
+
+Bajar Docker:
+Docker compose down
+
+Ojo, L1 ya tiene las cuentas juntadas, por lo que no hay que tenerlo en cuenta en los scripts
+
+### TODO
+
+- Cambiar el nombre del os ficheros para que sea mas fácil recorrerlos a la hora de mostrar en la web varios datos de diferentes colas/nºjugadores
+
+
+----
+
+01 X
+02 XX
+03 X
+04 X				
+05 X
+06 X
+07 X
+08 X
+09 X
+
+
+Añadir Kparticipation en las graficas por rol
+Maximo de kills, de muerte, de asistencia, de visión, de creeps, de daño infringido, de oro obtenido, partida mas larga 
+Añadir un visor de partidas que dada la id puedas ver las cosas

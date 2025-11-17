@@ -1,0 +1,89 @@
+version: "3.9"
+
+services:
+  # =========================
+  #  MONGO: BASE DE DATOS RAW (PARTIDAS CRUDAS)
+  # =========================
+  mongo:
+    image: mongo:7
+    container_name: mongo_lol
+    restart: unless-stopped
+    ports:
+      - "${MONGO_PORT}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+    volumes:
+      - ./mongo/data:/data/db
+      - ./mongo/dump:/dump
+    networks:
+      - lol_network
+
+  # =========================
+  #  MONGO EXPRESS: PANEL WEB PARA MONGO
+  # =========================
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo_express_lol
+    restart: unless-stopped
+    ports:
+      - "${MONGO_EXPRESS_PORT}:8081"
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"          # 👈 usamos el root para el panel
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root123
+      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+    depends_on:
+      - mongo
+    networks:
+      - lol_network
+
+  # =========================
+  #  POSTGRES: BASE DE DATOS PROCESADA (RESULTADOS LIMPIOS)
+  # =========================
+  postgres:
+    image: postgres:16
+    container_name: postgres_lol
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lol_network
+
+  # =========================
+  #  ADMINER: PANEL WEB SQL PARA POSTGRES
+  # =========================
+  adminer:
+    image: adminer:latest
+    container_name: adminer_lol
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT}:8080"
+    depends_on:
+      - postgres
+    networks:
+      - lol_network
+
+# =========================
+#  RED COMPARTIDA ENTRE CONTENEDORES
+# =========================
+networks:
+  lol_network:
+    name: lol_network

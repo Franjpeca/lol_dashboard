@@ -1,0 +1,20 @@
+# Ignorar archivos .rar
+*.rar
+
+# Mantener .env (por si lo tienes en el repositorio)
+!.env
+
+# Ignorar entorno virtual
+.venv/
+
+# Ignorar MongoDB
+mongo/
+
+# Ignorar PostgreSQL
+postgres/
+
+# Ignorar archivos log
+*.log
+
+# Ignorar archivos de bases de datos
+*.db
