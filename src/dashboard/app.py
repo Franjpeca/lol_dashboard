@@ -83,7 +83,11 @@ def normalize_output(output, base_id_prefix: str):
 
 
 def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
-    app = Dash(__name__)
+    app = Dash(
+        __name__,
+        requests_pathname_prefix="/dashlol/",
+        routes_pathname_prefix="/dashlol/"
+    )
     app.title = "Villaquesitos.gg"
 
     app.layout = html.Div([
