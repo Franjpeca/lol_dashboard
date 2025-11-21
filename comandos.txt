@@ -28,6 +28,3 @@ Ojo, L1 ya tiene las cuentas juntadas, por lo que no hay que tenerlo en cuenta e
 09 X
 
 
-Añadir Kparticipation en las graficas por rol
-Maximo de kills, de muerte, de asistencia, de visión, de creeps, de daño infringido, de oro obtenido, partida mas larga 
-Añadir un visor de partidas que dada la id puedas ver las cosas

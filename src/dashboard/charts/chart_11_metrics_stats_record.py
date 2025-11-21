@@ -22,6 +22,9 @@ def load_json(path: Path):
         return json.load(f)
 
 
+# ======================================================
+# CONVERSION DE "51m 47s" → 3107
+# ======================================================
 def convert_to_seconds(longest_game_str):
     numbers = re.findall(r'(\d+)', longest_game_str)
     if len(numbers) == 2:
@@ -32,11 +35,27 @@ def convert_to_seconds(longest_game_str):
     return 0
 
 
+# ======================================================
+# CONVERSION INVERSA (si hiciera falta)
+# ======================================================
+def seconds_to_str(seconds):
+    m = seconds // 60
+    s = seconds % 60
+    return f"{m}m {s}s"
+
+
+# ======================================================
+# CREACION DEL DATAFRAME
+# ======================================================
 def build_df_records(data):
     rows = []
     for persona, stats in data.items():
+        longest_str = stats.get("longest_game", {}).get("value", "0m 0s")
+        longest_seconds = convert_to_seconds(longest_str)
+
         rows.append({
             "persona": persona,
+
             "max_kills": stats.get("max_kills", {}).get("value", 0),
             "max_kills_id": stats.get("max_kills", {}).get("game_id"),
 
@@ -58,12 +77,19 @@ def build_df_records(data):
             "max_gold": stats.get("max_gold", {}).get("value", 0),
             "max_gold_id": stats.get("max_gold", {}).get("game_id"),
 
-            "longest_game": convert_to_seconds(stats.get("longest_game", {}).get("value", "0m 0s")),
+            # ***********************
+            # PARTIDA MAS LARGA
+            # ***********************
+            "longest_game_str": longest_str,            # para mostrar
+            "longest_game_seconds": longest_seconds,    # para ordenar
             "longest_game_id": stats.get("longest_game", {}).get("game_id"),
         })
     return pd.DataFrame(rows)
 
 
+# ======================================================
+# CREACION DE FIGURAS HORIZONTALES
+# ======================================================
 def make_fig_horizontal(df: pd.DataFrame, x: str, title: str, match_ids):
     n = len(df)
     tick_font_size = max(12, min(22, int(320 / n)))
@@ -108,6 +134,9 @@ def make_fig_horizontal(df: pd.DataFrame, x: str, title: str, match_ids):
     return fig
 
 
+# ======================================================
+# RENDER PRINCIPAL
+# ======================================================
 def render(pool_id: str, queue: int, min_friends: int):
     data_file = get_data_file(pool_id, queue, min_friends)
     data = load_json(data_file)
@@ -181,10 +210,10 @@ def render(pool_id: str, queue: int, min_friends: int):
         },
         {
             "fig": make_fig_horizontal(
-                df.sort_values("longest_game"),
-                "longest_game",
+                df.sort_values("longest_game_seconds"),
+                "longest_game_str",   # mostrado tal cual → "51m 47s"
                 "Partida mas larga",
-                df.sort_values("longest_game")["longest_game_id"].tolist()
+                df.sort_values("longest_game_seconds")["longest_game_id"].tolist()
             )
         },
     ]

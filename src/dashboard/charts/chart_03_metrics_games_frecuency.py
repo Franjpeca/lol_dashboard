@@ -60,7 +60,7 @@ def make_global_fig(df):
         color="games",
         color_continuous_scale="Turbo",
         labels={"games": "Partidas", "date": "Fecha"},
-        title="Frecuencia global de partidas por día",
+        title="Frecuencia global de partidas por dia",
     )
 
     fig.update_traces(textposition="outside")
@@ -83,7 +83,7 @@ def make_player_fig(df, persona):
         color="games",
         color_continuous_scale="Tealgrn",
         labels={"games": "Partidas", "date": "Fecha"},
-        title=f"Partidas por día - {persona}",
+        title=f"Partidas por dia - {persona}",
     )
 
     fig.update_traces(textposition="outside")
@@ -106,15 +106,20 @@ def render(pool_id: str, queue: int, min_friends: int):
     df_global = build_df_global(data)
     df_players = build_df_players(data)
 
-    figs = []
+    result = {
+        "global": None,
+        "players": {}
+    }
 
     if not df_global.empty:
-        figs.append(make_global_fig(df_global))
+        result["global"] = make_global_fig(df_global)
 
-    for persona, df in df_players.items():
+    for persona in sorted(df_players.keys()):
+        df = df_players[persona]
         if not df.empty:
-            figs.append(make_player_fig(df, persona))
+            result["players"][persona] = make_player_fig(df, persona)
 
-    print("[DEBUG] RESULTADO FREQUENCY:", len(figs), "figuras generadas")
+    total_figs = (1 if result["global"] is not None else 0) + len(result["players"])
+    print("[DEBUG] RESULTADO FREQUENCY:", total_figs, "figuras generadas")
 
-    return figs
+    return result

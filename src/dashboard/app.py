@@ -131,7 +131,46 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
         if selected_tab == "tab-win":
             components += normalize_output(render_winrate(pool_id, queue, min_friends), "winrate")
             components += normalize_output(render_champions(pool_id, queue, min_friends), "champions")
-            components += normalize_output(render_games_freq(pool_id, queue, min_friends), "games-freq")
+
+            freq_data = render_games_freq(pool_id, queue, min_friends)
+            global_fig = freq_data.get("global")
+            player_figs = freq_data.get("players", {})
+
+            if global_fig is not None:
+                components.append(
+                    dcc.Graph(
+                        figure=global_fig,
+                        id="freq-global-graph"
+                    )
+                )
+
+            players = list(player_figs.keys())
+
+            if players:
+                first_player = players[0]
+
+                components.append(
+                    html.Div([
+                        html.Span("Selecciona jugador:", style={"fontWeight": "bold", "marginRight": "10px"}),
+                        dcc.Dropdown(
+                            id="freq-player-dropdown",
+                            options=[{"label": p, "value": p} for p in players],
+                            value=first_player,
+                            clearable=False,
+                            style={"width": "240px"}
+                        ),
+                    ], style={
+                        "display": "flex",
+                        "alignItems": "center",
+                        "backgroundColor": "#222",
+                        "padding": "16px",
+                        "borderRadius": "8px",
+                        "marginBottom": "16px"
+                    })
+                )
+
+                components.append(html.Div(id="freq-player-graph-container"))
+
             components += normalize_output(render_streaks(pool_id, queue, min_friends), "streaks")
 
         elif selected_tab == "tab-player":
@@ -205,7 +244,7 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                         dcc.Input(
                             id="match-id-input",
                             type="text",
-                            placeholder="ID (solo números)",
+                            placeholder="ID (solo numeros)",
                             style={"width": "180px", "marginLeft": "12px", "marginRight": "12px"}
                         ),
 
@@ -301,6 +340,29 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                 f"stats-rol-{selected_role}",
             ),
             style={"display": "flex", "flexDirection": "column", "gap": "32px"},
+        )
+
+
+    @app.callback(
+        Output("freq-player-graph-container", "children"),
+        Input("freq-player-dropdown", "value"),
+        Input("min-friends-dropdown", "value"),
+    )
+    def update_freq_player_graph(selected_player, min_friends):
+        freq_data = render_games_freq(pool_id, queue, min_friends)
+        player_figs = freq_data.get("players", {})
+
+        if not player_figs:
+            return html.Div("No hay datos de frecuencia por jugador", style={"color": "red"})
+
+        if not selected_player or selected_player not in player_figs:
+            selected_player = list(player_figs.keys())[0]
+
+        fig = player_figs[selected_player]
+
+        return dcc.Graph(
+            figure=fig,
+            id=f"freq-player-graph-{selected_player}"
         )
 
     return app
