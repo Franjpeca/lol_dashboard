@@ -1454,11 +1454,11 @@
     },
     {
       "date": "2025-11-15",
-      "games": 2
+      "games": 3
     },
     {
       "date": "2025-11-16",
-      "games": 0
+      "games": 4
     },
     {
       "date": "2025-11-17",
@@ -1466,11 +1466,11 @@
     },
     {
       "date": "2025-11-18",
-      "games": 0
+      "games": 4
     },
     {
       "date": "2025-11-19",
-      "games": 0
+      "games": 5
     },
     {
       "date": "2025-11-20",
@@ -1482,7 +1482,7 @@
     },
     {
       "date": "2025-11-22",
-      "games": 0
+      "games": 1
     },
     {
       "date": "2025-11-23",
@@ -1490,7 +1490,7 @@
     },
     {
       "date": "2025-11-24",
-      "games": 0
+      "games": 2
     },
     {
       "date": "2025-11-25",
@@ -1498,6 +1498,22 @@
     },
     {
       "date": "2025-11-26",
+      "games": 0
+    },
+    {
+      "date": "2025-11-27",
+      "games": 0
+    },
+    {
+      "date": "2025-11-28",
+      "games": 0
+    },
+    {
+      "date": "2025-11-29",
+      "games": 0
+    },
+    {
+      "date": "2025-11-30",
       "games": 0
     }
   ],
@@ -1512,7 +1528,7 @@
         "HoZyg5vVFI9fcD3rCcV-ku7YN3-ULmhvq9qSvIO84W4w4Xfq0iqoGWVSi1jaElVrW3RjGriCTwpEoQ",
         "y-LYP9gK5qFyC4PJI9BltyeYiBPtWCxUH1iJF92HBaWAasC1r5Zh7fQZ6afdm18V6KEQy-7vJQ4Ceg"
       ],
-      "total_games": 718,
+      "total_games": 726,
       "games": [
         {
           "date": "2024-11-17",
@@ -2968,11 +2984,11 @@
         },
         {
           "date": "2025-11-15",
-          "games": 2
+          "games": 3
         },
         {
           "date": "2025-11-16",
-          "games": 0
+          "games": 3
         },
         {
           "date": "2025-11-17",
@@ -2980,11 +2996,11 @@
         },
         {
           "date": "2025-11-18",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-19",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-20",
@@ -3013,6 +3029,22 @@
         {
           "date": "2025-11-26",
           "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
+          "games": 0
         }
       ]
     },
@@ -3026,7 +3058,7 @@
         "1dQoJ2alNbNmNhJ0HbkKNWH5_xbF-T_NP5JKG-PkgjeF6_hLHdrOhTh9y4NuG9DRXeJLyz40Sivg9A",
         "DE4AIs67AIcPPvPhAM28u7J7S5Lj-ZEfv7amN3rGab7LJSaiq1aLk3GBjMHgoQnNGbqfvz54mO3-Cg"
       ],
-      "total_games": 759,
+      "total_games": 766,
       "games": [
         {
           "date": "2024-11-17",
@@ -4482,11 +4514,11 @@
         },
         {
           "date": "2025-11-15",
-          "games": 1
+          "games": 2
         },
         {
           "date": "2025-11-16",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-17",
@@ -4494,11 +4526,11 @@
         },
         {
           "date": "2025-11-18",
-          "games": 0
+          "games": 3
         },
         {
           "date": "2025-11-19",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-20",
@@ -4526,6 +4558,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]
@@ -6039,6 +6087,22 @@
         {
           "date": "2025-11-26",
           "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
+          "games": 0
         }
       ]
     },
@@ -6052,7 +6116,7 @@
         "Zh8Iz6dUdfhwJBNvRS72OqhsSPz6EU3nws5k6PVVEhn4GcR9HmOy_XpX0E2GOUQTAuE-wAx5GgBFVA",
         "dIj60lZG0ERDx05KNmhwVwojMQzN3LAKfWyZ6QtF5VoBz0scIRMLvRESOJQAjLJgmx4ysnOrJJBkfw"
       ],
-      "total_games": 544,
+      "total_games": 555,
       "games": [
         {
           "date": "2024-11-17",
@@ -7512,7 +7576,7 @@
         },
         {
           "date": "2025-11-16",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-17",
@@ -7520,11 +7584,11 @@
         },
         {
           "date": "2025-11-18",
-          "games": 0
+          "games": 3
         },
         {
           "date": "2025-11-19",
-          "games": 0
+          "games": 5
         },
         {
           "date": "2025-11-20",
@@ -7544,7 +7608,7 @@
         },
         {
           "date": "2025-11-24",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-25",
@@ -7552,6 +7616,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]
@@ -7564,7 +7644,7 @@
       "puuids": [
         "J3hYkDDy8GYWzeMUteus4yFgYykFFoWUsKJADOLQjYw7vEPeyl0ufcPOdmeERbzSRCTKghdyqtEuuw"
       ],
-      "total_games": 158,
+      "total_games": 163,
       "games": [
         {
           "date": "2024-11-17",
@@ -9024,7 +9104,7 @@
         },
         {
           "date": "2025-11-16",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-17",
@@ -9036,7 +9116,7 @@
         },
         {
           "date": "2025-11-19",
-          "games": 0
+          "games": 3
         },
         {
           "date": "2025-11-20",
@@ -9048,7 +9128,7 @@
         },
         {
           "date": "2025-11-22",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-23",
@@ -9064,6 +9144,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]
@@ -9076,7 +9172,7 @@
       "puuids": [
         "TnqLh_Vrs4gaDIN1wpDvo1ZYnk-7yki1-yRtLoDa380W-AGeGDwWCApGD1p_C0B6S9lIuMWvcPhcBw"
       ],
-      "total_games": 165,
+      "total_games": 168,
       "games": [
         {
           "date": "2024-11-17",
@@ -10536,7 +10632,7 @@
         },
         {
           "date": "2025-11-16",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-17",
@@ -10568,7 +10664,7 @@
         },
         {
           "date": "2025-11-24",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-25",
@@ -10576,6 +10672,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]
@@ -12089,6 +12201,22 @@
         {
           "date": "2025-11-26",
           "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
+          "games": 0
         }
       ]
     },
@@ -12114,7 +12242,7 @@
         "oJ2RE5t7et1DHBnzEG2opYJYL878zlYzzT5d9NVTYI0vtXGgWwMVQtdLCVsgqlaaotzuJmgHpJ3sIQ",
         "wzGEOAnaFqRkSnxrHGqMNwqyw0Mp9OquFniJ5xQpbr5hrwgfHhXdtwgnDJP4Ff6P48TSYnWa2FwgNg"
       ],
-      "total_games": 607,
+      "total_games": 617,
       "games": [
         {
           "date": "2024-11-17",
@@ -13574,7 +13702,7 @@
         },
         {
           "date": "2025-11-16",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-17",
@@ -13582,11 +13710,11 @@
         },
         {
           "date": "2025-11-18",
-          "games": 0
+          "games": 3
         },
         {
           "date": "2025-11-19",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-20",
@@ -13598,7 +13726,7 @@
         },
         {
           "date": "2025-11-22",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-23",
@@ -13606,7 +13734,7 @@
         },
         {
           "date": "2025-11-24",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-25",
@@ -13614,6 +13742,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]
@@ -13626,7 +13770,7 @@
       "puuids": [
         "AtDfx42FWgr6hcrUoM40Y_p9Z-B7gUwINeqroNQ6GU27tlsmjgGoai5sP9zeegBkocMfn12ifno4kQ"
       ],
-      "total_games": 584,
+      "total_games": 597,
       "games": [
         {
           "date": "2024-11-17",
@@ -15086,7 +15230,7 @@
         },
         {
           "date": "2025-11-16",
-          "games": 0
+          "games": 3
         },
         {
           "date": "2025-11-17",
@@ -15094,11 +15238,11 @@
         },
         {
           "date": "2025-11-18",
-          "games": 0
+          "games": 4
         },
         {
           "date": "2025-11-19",
-          "games": 0
+          "games": 5
         },
         {
           "date": "2025-11-20",
@@ -15110,7 +15254,7 @@
         },
         {
           "date": "2025-11-22",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-23",
@@ -15127,6 +15271,22 @@
         {
           "date": "2025-11-26",
           "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
+          "games": 0
         }
       ]
     },
@@ -15138,7 +15298,7 @@
       "puuids": [
         "i2RoqLJ4pWHoycWlI087unUtN9qqKf07QnTiHJhr_BS5toxrBsy7xR4drmPXNUzqIotG5rr3RDwJxw"
       ],
-      "total_games": 101,
+      "total_games": 106,
       "games": [
         {
           "date": "2024-11-17",
@@ -16606,11 +16766,11 @@
         },
         {
           "date": "2025-11-18",
-          "games": 0
+          "games": 3
         },
         {
           "date": "2025-11-19",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-20",
@@ -16639,6 +16799,22 @@
         {
           "date": "2025-11-26",
           "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
+          "games": 0
         }
       ]
     },
@@ -16654,7 +16830,7 @@
         "0S5tj6lDsMDvuLvMAfG2M2Bo9eK6uJRvUUeW_7o9sTNBQFVQj7ZVLw9oFkInqvq-ruSVmymMzRbtnw",
         "CTJMZyorexJQWkt1NKuJt6xEaUbQzlezvWF-HrALGA45kOLfX4jWAVQ6iyM5ebjgB-n9tw113cwfuA"
       ],
-      "total_games": 674,
+      "total_games": 686,
       "games": [
         {
           "date": "2024-11-17",
@@ -18110,11 +18286,11 @@
         },
         {
           "date": "2025-11-15",
-          "games": 2
+          "games": 3
         },
         {
           "date": "2025-11-16",
-          "games": 0
+          "games": 3
         },
         {
           "date": "2025-11-17",
@@ -18126,7 +18302,7 @@
         },
         {
           "date": "2025-11-19",
-          "games": 0
+          "games": 5
         },
         {
           "date": "2025-11-20",
@@ -18138,7 +18314,7 @@
         },
         {
           "date": "2025-11-22",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-23",
@@ -18146,7 +18322,7 @@
         },
         {
           "date": "2025-11-24",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-25",
@@ -18154,6 +18330,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]
@@ -18166,7 +18358,7 @@
       "puuids": [
         "UtBnnCNiz3qNAmNahJcL2HEKxzMU7cBSxZCe9sPf_MdKUmL7pvWirEOW3HgEhSWKJ0oYh0C2w1puZg"
       ],
-      "total_games": 30,
+      "total_games": 31,
       "games": [
         {
           "date": "2024-11-17",
@@ -19622,7 +19814,7 @@
         },
         {
           "date": "2025-11-15",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-16",
@@ -19666,6 +19858,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]
@@ -21179,6 +21387,22 @@
         {
           "date": "2025-11-26",
           "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
+          "games": 0
         }
       ]
     },
@@ -22690,6 +22914,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]
@@ -24203,6 +24443,22 @@
         {
           "date": "2025-11-26",
           "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
+          "games": 0
         }
       ]
     },
@@ -24214,7 +24470,7 @@
       "puuids": [
         "B9ZyN61kui_NvEzNAdc8McdFnHCVioHUGofaexg8ZpoEgU-YK6P163iNh1Z7t8usS6rN4N9zSJPZyw"
       ],
-      "total_games": 725,
+      "total_games": 735,
       "games": [
         {
           "date": "2024-11-17",
@@ -25670,11 +25926,11 @@
         },
         {
           "date": "2025-11-15",
-          "games": 2
+          "games": 3
         },
         {
           "date": "2025-11-16",
-          "games": 0
+          "games": 4
         },
         {
           "date": "2025-11-17",
@@ -25682,7 +25938,7 @@
         },
         {
           "date": "2025-11-18",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-19",
@@ -25698,7 +25954,7 @@
         },
         {
           "date": "2025-11-22",
-          "games": 0
+          "games": 1
         },
         {
           "date": "2025-11-23",
@@ -25706,7 +25962,7 @@
         },
         {
           "date": "2025-11-24",
-          "games": 0
+          "games": 2
         },
         {
           "date": "2025-11-25",
@@ -25714,6 +25970,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]
@@ -27227,6 +27499,22 @@
         {
           "date": "2025-11-26",
           "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
+          "games": 0
         }
       ]
     },
@@ -28739,6 +29027,22 @@
         {
           "date": "2025-11-26",
           "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
+          "games": 0
         }
       ]
     },
@@ -30250,6 +30554,22 @@
         },
         {
           "date": "2025-11-26",
+          "games": 0
+        },
+        {
+          "date": "2025-11-27",
+          "games": 0
+        },
+        {
+          "date": "2025-11-28",
+          "games": 0
+        },
+        {
+          "date": "2025-11-29",
+          "games": 0
+        },
+        {
+          "date": "2025-11-30",
           "games": 0
         }
       ]

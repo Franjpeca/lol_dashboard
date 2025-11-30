@@ -1,6 +1,11 @@
 import argparse
 import sys
 from pathlib import Path
+import dash
+
+
+import threading
+
 
 import plotly.io as pio
 import plotly.graph_objs as go
@@ -30,6 +35,10 @@ from viewGame.render_match import render_match
 from viewGame.loader import load_match_summary
 
 from utils.api_key_manager import save_new_temp_key
+
+from run import main as run_pipeline
+
+from run import PIPELINE_QUEUE
 
 def normalize_output(output, base_id_prefix: str):
     results = []
@@ -292,11 +301,12 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
 
         elif selected_tab == "tab-api":
+            # Aquí solo necesitas un `append()` con un único objeto, que es un `html.Div()`
             components.append(
-                html.Div([
+                html.Div([  # Solo un `html.Div` que contiene todos los elementos dentro
                     html.H3("Configurar API Key de Riot", style={"color": "white"}),
 
-                    html.Div([
+                    html.Div([  # Botones, inputs, etc. dentro de este div
                         dcc.Input(
                             id="input-api-key",
                             type="text",
@@ -313,13 +323,47 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
                     html.Div(id="api-key-status", style={"marginTop": "20px", "color": "yellow"}),
 
-                ], style={
-                    "padding": "20px",
-                    "backgroundColor": "#222",
-                    "borderRadius": "8px"
-                })
-            )
+                    # El nuevo botón para ejecutar las métricas completas
+                    html.Button(
+                        "Ejecutar métricas completas",
+                        id="btn-run-pipeline",
+                        n_clicks=0,
+                        style={
+                            "marginTop": "30px",
+                            "padding": "10px 18px",
+                            "backgroundColor": "#28a745",
+                            "color": "white",
+                            "border": "none",
+                            "borderRadius": "6px",
+                            "cursor": "pointer"
+                        }
+                    ),
 
+                    # Estado de ejecución del pipeline
+                    html.Div(id="pipeline-status", style={"marginTop": "15px", "color": "yellow"}),
+
+                    html.Div(
+                        [
+                            dcc.Interval(id="log-refresh", interval=500, n_intervals=0),
+                            html.Pre(
+                                id="pipeline-log",
+                                style={
+                                    "whiteSpace": "pre-wrap",
+                                    "backgroundColor": "#111",
+                                    "padding": "12px",
+                                    "border": "1px solid #444",
+                                    "borderRadius": "6px",
+                                    "color": "white",
+                                    "maxHeight": "400px",
+                                    "overflowY": "scroll",
+                                    "marginTop": "20px"
+                                }
+                            ),
+                        ]
+                    )
+
+                ])  # Solo un `html.Div` en `append()`
+            )
         return html.Div(components, style={"display": "flex", "flexDirection": "column", "gap": "32px"})
 
 
@@ -427,8 +471,45 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
         except Exception as e:
             return f"Error inesperado: {e}"
 
-    return app
 
+
+
+    @app.callback(
+        Output("pipeline-status", "children"),
+        Input("btn-run-pipeline", "n_clicks"),
+        State("min-friends-dropdown", "value"),
+        prevent_initial_call=True
+    )
+    def execute_pipeline(_, min_friends):
+
+        def worker():
+            try:
+                run_pipeline(min_friends)
+            except Exception as e:
+                print("[ERROR EN PIPELINE]", e)
+
+        threading.Thread(target=worker).start()
+
+        return f"🚀 Ejecutando pipeline con min_friends = {min_friends}..."
+
+
+
+    @app.callback(
+        Output("pipeline-log", "children"),
+        Input("log-refresh", "n_intervals")
+    )
+    def update_pipeline_log(_):
+        lines = []
+        while not PIPELINE_QUEUE.empty():
+            lines.append(PIPELINE_QUEUE.get())
+        
+        # Si la cola está vacía, no actualices el log, sino no_update
+        if not lines:
+            return dash.no_update
+        return "".join(lines)
+
+    
+    return app
 
 def main():
     parser = argparse.ArgumentParser(description="Villaquesitos.gg")

@@ -1,5 +1,7 @@
 import sys
 
+sys.stdout.reconfigure(encoding='utf-8')
+
 from metrics_01_players_games_winrate import main as run_winrate_players
 from metrics_02_champions_games_winrate import main as run_champions_winrate
 from metrics_03_games_frecuency import main as run_games_frecuency
