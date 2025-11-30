@@ -3,18 +3,22 @@ import json
 import datetime
 from collections import defaultdict
 from pathlib import Path
-
+import argparse
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
+# Cargar variables de entorno desde .env
 load_dotenv()
 
+# Variables de conexión MongoDB
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("MONGO_DB", "lol_data")
 
+# Conexión a la base de datos de MongoDB
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
+# Directorio base para los resultados
 BASE_DIR = Path(__file__).resolve().parents[2]
 RESULTS_DIR = BASE_DIR / "data" / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -87,19 +91,35 @@ def load_users_index():
 
 
 def main():
-    print("[03] Starting ... using collection: L1_q440_min5_pool_ac89fa8d")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--queue", type=int, default=DEFAULT_QUEUE)
+    parser.add_argument("--min", type=int, default=DEFAULT_MIN)
+    args = parser.parse_args()
 
+    queue = args.queue
+    min_friends = args.min
+
+    # Generar la ruta de la carpeta destino usando los parámetros
+    dataset_folder = RESULTS_DIR / f"pool_{DEFAULT_POOL}" / f"q{queue}" / f"min{min_friends}" 
+
+    # Asegurarse de que la carpeta existe
+    dataset_folder.mkdir(parents=True, exist_ok=True)
+
+    print(f"[INFO] Ejecutando estadísticas para: {dataset_folder}")
+
+    # Aquí el resto de tu código...
     users_by_persona, puuid_to_persona, personas_index = load_users_index()
     if not users_by_persona:
         pass
 
-    # Buscar colecciones L1 filtradas
+    # Buscar colecciones L1 filtradas dependiendo de min_friends
     l1_collections = [
         name for name in db.list_collection_names()
-        if name.startswith("L1_q") and f"min{DEFAULT_MIN}" in name and f"pool_{DEFAULT_POOL}" in name
+        if name.startswith(f"L1_q{queue}") and f"min{min_friends}" in name and f"pool_{DEFAULT_POOL}" in name
     ]
 
     if not l1_collections:
+        print(f"[ERROR] No se encontraron colecciones para los parámetros: queue={queue}, min_friends={min_friends}")
         return
 
     global_days = defaultdict(int)                       # date -> games
@@ -183,17 +203,14 @@ def main():
             }
         )
 
-    # Guardar todo junto en un solo archivo JSON
-    save_json(
-        RESULTS_DIR / "pool_ac89fa8d" / "q440" / "min5" / "metrics_03_games_frecuency.json",
-        {
-            "global_frequency": global_series,
-            "players_frequency": players_out,
-        }
-    )
+    # Guardar todo junto en un solo archivo JSON dentro de la carpeta correspondiente
+    output_file = dataset_folder / "metrics_03_games_frecuency.json"
+    save_json(output_file, {
+        "global_frequency": global_series,
+        "players_frequency": players_out,
+    })
 
-    print("[03] Ended")
-
+    print("[INFO] Finalizado estadísticas por rol")
 
 if __name__ == "__main__":
     main()
