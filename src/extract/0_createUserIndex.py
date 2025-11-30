@@ -12,13 +12,15 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from riotwatcher import RiotWatcher
+from utils.api_key_manager import get_api_key
+
 
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("MONGO_DB", "lol_data")
 REGIONAL = os.getenv("REGIONAL_ROUTING", "europe")
-API_KEY = os.getenv("RIOT_API_KEY")
+API_KEY = get_api_key(REGIONAL)
 
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]

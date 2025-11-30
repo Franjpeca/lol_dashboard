@@ -1,15 +1,18 @@
 import argparse
+import sys
 from pathlib import Path
 
 import plotly.io as pio
 import plotly.graph_objs as go
-from dash import Dash, html, dcc, Input, Output, ALL
+from dash import Dash, html, dcc, Input, Output, State, ALL
 from dash.development.base_component import Component
 
 pio.templates.default = "plotly_dark"
 
 HOST, PORT = "127.0.0.1", 8080
+
 BASE_DIR = Path(__file__).resolve().parents[2]
+sys.path.append(str(BASE_DIR / "src"))
 
 from charts.chart_01_metrics_players_games_winrate import render as render_winrate
 from charts.chart_02_metrics_champions_games_winrate import render as render_champions
@@ -26,6 +29,7 @@ from charts.chart_11_metrics_stats_record import render as render_record_stats
 from viewGame.render_match import render_match
 from viewGame.loader import load_match_summary
 
+from utils.api_key_manager import save_new_temp_key
 
 def normalize_output(output, base_id_prefix: str):
     results = []
@@ -102,7 +106,11 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                 html.Span("Min friends:"),
                 dcc.Dropdown(
                     id="min-friends-dropdown",
-                    options=[{"label": "4", "value": 4}, {"label": "5", "value": 5}],
+                    options=[
+                        {"label": "3", "value": 3},
+                        {"label": "4", "value": 4},
+                        {"label": "5", "value": 5}
+                    ],
                     value=min_friends_default,
                     clearable=False,
                     style={"width": "120px"},
@@ -117,6 +125,7 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             dcc.Tab(label="Estadisticas por rol", value="tab-rol"),
             dcc.Tab(label="Records de jugadores", value="tab-record"),
             dcc.Tab(label="Ver partida", value="tab-view-match"),
+            dcc.Tab(label="Config API Key", value="tab-api"),
         ], style={"backgroundColor": "#111"}),
 
         html.Div(id="tab-content", style={"padding": "24px"}),
@@ -281,6 +290,36 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                 })
             )
 
+
+        elif selected_tab == "tab-api":
+            components.append(
+                html.Div([
+                    html.H3("Configurar API Key de Riot", style={"color": "white"}),
+
+                    html.Div([
+                        dcc.Input(
+                            id="input-api-key",
+                            type="text",
+                            placeholder="Introduce tu API Key...",
+                            style={"width": "400px", "marginRight": "12px"}
+                        ),
+                        html.Button(
+                            "Guardar API Key",
+                            id="btn-save-api",
+                            n_clicks=0,
+                            style={"padding": "6px 14px"}
+                        ),
+                    ], style={"marginTop": "10px", "display": "flex", "alignItems": "center"}),
+
+                    html.Div(id="api-key-status", style={"marginTop": "20px", "color": "yellow"}),
+
+                ], style={
+                    "padding": "20px",
+                    "backgroundColor": "#222",
+                    "borderRadius": "8px"
+                })
+            )
+
         return html.Div(components, style={"display": "flex", "flexDirection": "column", "gap": "32px"})
 
 
@@ -368,6 +407,25 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             figure=fig,
             id=f"freq-player-graph-{selected_player}"
         )
+
+
+    @app.callback(
+        Output("api-key-status", "children"),
+        Input("btn-save-api", "n_clicks"),
+        State("input-api-key", "value"),
+        prevent_initial_call=True
+    )
+    def save_api_key(_, user_key):
+        if not user_key:
+            return "Introduce una clave válida."
+
+        try:
+            save_new_temp_key(user_key)  # valida y guarda 30h
+            return "API Key guardada correctamente. Durará 30h."
+        except ValueError:
+            return "La API Key no es válida o está caducada."
+        except Exception as e:
+            return f"Error inesperado: {e}"
 
     return app
 

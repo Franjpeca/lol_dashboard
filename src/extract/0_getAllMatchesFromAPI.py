@@ -1,19 +1,29 @@
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 import os
 import json
 import datetime
 import time
-from pathlib import Path
 from dotenv import load_dotenv
 from pymongo import MongoClient, errors
 from riotwatcher import LolWatcher, RiotWatcher
+
+from utils.api_key_manager import get_api_key
+
+BASE_DIR = Path(__file__).resolve().parents[1]  # carpeta src/
+sys.path.append(str(BASE_DIR))
 
 # ============================
 # CONFIGURACION
 # ============================
 load_dotenv()
 
-API_KEY = os.getenv("RIOT_API_KEY")
+
 REGIONAL = os.getenv("REGIONAL_ROUTING", "europe")
+API_KEY = get_api_key()
 QUEUE_FLEX = int(os.getenv("QUEUE_FLEX", "440"))
 COUNT_PER_PLAYER = int(os.getenv("COUNT_PER_PLAYER", "800"))
 SLEEP = float(os.getenv("SLEEP_BETWEEN_CALLS", "0.2"))
