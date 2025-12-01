@@ -1,4 +1,5 @@
 import os
+import argparse
 from datetime import datetime, timezone
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -8,19 +9,19 @@ load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("MONGO_DB")
 
-COLL_L1 = "L1_q440_min5_pool_ac89fa8d"
+COLL_L0 = "L0_all_raw_matches"  # Cambié el nombre de la colección
 
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
-coll = db[COLL_L1]
+coll = db[COLL_L0]  # Ahora estamos utilizando la colección L0_all_raw_matches
 
 
 # ======================================================
-# BUSCAR TODAS LAS PARTIDAS DE UN DÍA (L1)
+# BUSCAR TODAS LAS PARTIDAS DE UN DÍA (L0)
 # ======================================================
-def find_matches_by_date(target_date_str="2025-05-15"):
+def find_matches_by_date(target_date_str="2023-12-10"):
     """
-    Devuelve todos los matchId de L1 que fueron jugados exactamente ese día.
+    Devuelve todos los matchId de L0 que fueron jugados exactamente ese día.
     """
     # Convertimos la fecha a rango de timestamps (en ms)
     target_date = datetime.strptime(target_date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
@@ -28,7 +29,7 @@ def find_matches_by_date(target_date_str="2025-05-15"):
     start_ts = int(target_date.timestamp() * 1000)
     end_ts = int(target_date.replace(hour=23, minute=59, second=59).timestamp() * 1000)
 
-    print(f"Buscando partidas de L1 del día {target_date_str}")
+    print(f"Buscando partidas de L0 del día {target_date_str}")
     print(f"Rango timestamp: {start_ts} → {end_ts}\n")
 
     matches_found = []
@@ -60,10 +61,16 @@ def find_matches_by_date(target_date_str="2025-05-15"):
 # MAIN
 # ======================================================
 if __name__ == "__main__":
-    matches = find_matches_by_date("2025-05-15")
+    # Configurar argparse para leer la fecha desde la terminal
+    parser = argparse.ArgumentParser(description="Buscar partidas de L0 por fecha")
+    parser.add_argument("date", type=str, help="Fecha en formato YYYY-MM-DD")
+    args = parser.parse_args()
+
+    # Llamar a la función pasando la fecha desde la terminal
+    matches = find_matches_by_date(args.date)
 
     print("\n=====================================")
-    print(" Partidas de L1 jugadas el 2025-05-15")
+    print(f" Partidas de L0 jugadas el {args.date}")
     print("=====================================\n")
 
     if matches:
