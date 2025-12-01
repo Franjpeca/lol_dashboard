@@ -31,7 +31,7 @@ def auto_select_l1(queue_id: int, min_friends: int):
         print(f"no L1 found for queue={queue_id} min={min_friends}")
         return None
 
-    candidates.sort()  # pick latest by name
+    candidates.sort()
     return candidates[-1]
 
 
@@ -77,6 +77,10 @@ def build_l2_from_l1(l1_name):
         teams = info.get("teams", [])
         duration = info.get("gameDuration")
 
+        # fechas de la partida
+        game_start = info.get("gameStartTimestamp")
+        game_end = info.get("gameEndTimestamp")
+
         queue_id = doc.get("queue")
         min_friends = doc.get("min_friends")
         pool_version = doc.get("pool_version")
@@ -91,6 +95,8 @@ def build_l2_from_l1(l1_name):
             "teams": teams,
             "friends_present": friends_present,
             "personas_present": doc.get("personas_present", []),
+            "gameStartTimestamp": game_start,
+            "gameEndTimestamp": game_end,
             "filtered_at": now_utc(),
         }
 
@@ -118,6 +124,8 @@ def build_l2_from_l1(l1_name):
                 "queue": queue_id,
                 "min_friends": min_friends,
                 "pool_version": pool_version,
+                "gameStartTimestamp": game_start,
+                "gameEndTimestamp": game_end,
                 "filtered_at": now_utc(),
             }
 

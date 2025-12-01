@@ -7,29 +7,24 @@ import argparse
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-# Cargar variables de entorno desde .env
 load_dotenv()
 
-# Variables de conexión MongoDB
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("MONGO_DB", "lol_data")
 
-# Conexión a la base de datos de MongoDB
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
-# Directorio base para los resultados
 BASE_DIR = Path(__file__).resolve().parents[2]
 RESULTS_DIR = BASE_DIR / "data" / "results"
-RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+RUNTIME_DIR = BASE_DIR / "data" / "runtime"
 
-# Valores por defecto
-DEFAULT_QUEUE = 440  # Flex
-DEFAULT_MIN = 5  # Mínimo de amigos
-DEFAULT_POOL = "ac89fa8d"  # Pool por defecto
+DEFAULT_QUEUE = 440
+DEFAULT_MIN = 5
+DEFAULT_POOL = "ac89fa8d"
+
 
 def to_date(ts_ms):
-    """Convierte timestamp en milisegundos de Riot a YYYY-MM-DD."""
     if not ts_ms:
         return None
     dt = datetime.datetime.utcfromtimestamp(ts_ms / 1000)
@@ -37,7 +32,6 @@ def to_date(ts_ms):
 
 
 def ensure_date_range(daily_dict, min_date, max_date):
-    """Rellena días faltantes en [min_date, max_date] con games = 0."""
     start = datetime.date.fromisoformat(min_date)
     end = datetime.date.fromisoformat(max_date)
 
@@ -56,12 +50,6 @@ def save_json(path, data):
 
 
 def load_users_index():
-    """
-    Lee L0_users_index y construye:
-      - users_by_persona: persona -> {riotIds, puuids}
-      - puuid_to_persona: puuid -> persona
-      - personas_index: lista de personas
-    """
     coll = db["L0_users_index"]
 
     users_by_persona = {}
@@ -94,69 +82,82 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--queue", type=int, default=DEFAULT_QUEUE)
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
+    parser.add_argument("--start", type=str, default=None)
+    parser.add_argument("--end", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
     min_friends = args.min
+    start_date = args.start
+    end_date = args.end
 
-    # Generar la ruta de la carpeta destino usando los parámetros
-    dataset_folder = RESULTS_DIR / f"pool_{DEFAULT_POOL}" / f"q{queue}" / f"min{min_friends}" 
+    if start_date and end_date:
+        dataset_folder = RUNTIME_DIR / f"pool_{DEFAULT_POOL}" / f"q{queue}" / f"min{min_friends}"
+    else:
+        dataset_folder = RESULTS_DIR / f"pool_{DEFAULT_POOL}" / f"q{queue}" / f"min{min_friends}"
 
-    # Asegurarse de que la carpeta existe
     dataset_folder.mkdir(parents=True, exist_ok=True)
+    print(f"[03] Running for: {dataset_folder}")
 
-    print(f"[INFO] Ejecutando estadísticas para: {dataset_folder}")
-
-    # Aquí el resto de tu código...
     users_by_persona, puuid_to_persona, personas_index = load_users_index()
-    if not users_by_persona:
-        pass
 
-    # Buscar colecciones L1 filtradas dependiendo de min_friends
     l1_collections = [
         name for name in db.list_collection_names()
-        if name.startswith(f"L1_q{queue}") and f"min{min_friends}" in name and f"pool_{DEFAULT_POOL}" in name
+        if name.startswith(f"L1_q{queue}") 
+        and f"min{min_friends}" in name 
+        and f"pool_{DEFAULT_POOL}" in name
     ]
 
     if not l1_collections:
-        print(f"[ERROR] No se encontraron colecciones para los parámetros: queue={queue}, min_friends={min_friends}")
+        print(f"[ERROR] No L1 collections for queue={queue} min={min_friends}")
         return
 
-    global_days = defaultdict(int)                       # date -> games
-    player_days = defaultdict(lambda: defaultdict(int))  # persona -> date -> games
+    global_days = defaultdict(int)
+    player_days = defaultdict(lambda: defaultdict(int))
 
-    # Inicializar personas conocidas
     for persona in personas_index:
         _ = player_days[persona]
 
     min_date = None
     max_date = None
 
+    # Convert date filters to timestamps
+    if start_date and end_date:
+        start_ts = int(datetime.datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
+        end_ts = int(datetime.datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+    else:
+        start_ts = None
+        end_ts = None
+
     for coll_name in l1_collections:
         coll = db[coll_name]
-
         cursor = coll.find({}, {"data.info": 1, "friends_present": 1})
 
         for doc in cursor:
             info = doc.get("data", {}).get("info", {}) or {}
 
-            date = (
-                to_date(info.get("gameEndTimestamp"))
-                or to_date(info.get("gameStartTimestamp"))
-                or to_date(info.get("gameCreation"))
-            )
+            game_end = info.get("gameEndTimestamp")
+            game_start = info.get("gameStartTimestamp")
+            game_creation = info.get("gameCreation")
+
+            ts = game_end or game_start or game_creation
+            date = to_date(ts)
+
             if date is None:
                 continue
+
+            # temporal filter
+            if start_ts and end_ts:
+                if ts < start_ts or ts > end_ts:
+                    continue
 
             if min_date is None or date < min_date:
                 min_date = date
             if max_date is None or date > max_date:
                 max_date = date
 
-            # Global: una partida cuenta una vez
             global_days[date] += 1
 
-            # Personas presentes en la partida según puuids amigos
             friends_present = doc.get("friends_present", []) or []
             personas_en_partida = set()
 
@@ -169,19 +170,16 @@ def main():
                 player_days[persona][date] += 1
 
     if min_date is None:
+        print("[03] No matches in this window")
         return
 
-    # Extender hasta hoy, aunque no haya partidas recientes
     today_str = datetime.date.today().isoformat()
     if today_str > max_date:
         max_date = today_str
 
-    # Serie global rellenada
     global_series = ensure_date_range(global_days, min_date, max_date)
 
-    # Serie por persona rellenada
     players_out = []
-    # Incluir también personas que hayan aparecido aunque no estuvieran en L0
     all_personas = set(personas_index) | set(player_days.keys())
 
     for persona in sorted(all_personas):
@@ -203,14 +201,22 @@ def main():
             }
         )
 
-    # Guardar todo junto en un solo archivo JSON dentro de la carpeta correspondiente
-    output_file = dataset_folder / "metrics_03_games_frecuency.json"
+    if start_date and end_date:
+        filename = f"metrics_03_games_frecuency_{start_date}_to_{end_date}.json"
+    else:
+        filename = "metrics_03_games_frecuency.json"
+
+    output_file = dataset_folder / filename
+
     save_json(output_file, {
+        "start_date": start_date if start_date else None,
+        "end_date": end_date if end_date else None,
         "global_frequency": global_series,
         "players_frequency": players_out,
     })
 
-    print("[INFO] Finalizado estadísticas por rol")
+    print("[03] Done")
+
 
 if __name__ == "__main__":
     main()

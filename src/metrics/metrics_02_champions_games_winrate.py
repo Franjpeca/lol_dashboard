@@ -5,6 +5,7 @@ import json
 import argparse
 from pathlib import Path
 from collections import defaultdict
+from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -19,6 +20,7 @@ client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
 RESULTS_ROOT = Path("data/results")
+RUNTIME_ROOT = Path("data/runtime")
 
 
 def auto_select_l2(queue, min_friends):
@@ -35,29 +37,41 @@ def l2_to_l1(l2_name):
 
 
 def extract_pool_from_l1(l1_name):
-    # L1_q440_min5_pool_ab12cd34 -> pool_ab12cd34
     return "pool_" + l1_name.split("_pool_", 1)[1]
 
 
-def compute_metrics(l2_players, l2_enemies, dataset_folder):
+def compute_metrics(l2_players, l2_enemies, dataset_folder, start_date=None, end_date=None):
+
+    if start_date and end_date:
+        start_ts = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
+        end_ts = int(datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+
+        match_filter = {
+            "gameStartTimestamp": {"$gte": start_ts, "$lte": end_ts}
+        }
+    else:
+        match_filter = {}
+
     champ_games = defaultdict(int)
     champ_wins = defaultdict(int)
 
     enemy_games = defaultdict(int)
     enemy_wins = defaultdict(int)
 
-    # players
     coll_p = db[l2_players]
-    for doc in coll_p.find({}, {"championName": 1, "win": 1}):
+    cursor_p = coll_p.find(match_filter, {"championName": 1, "win": 1})
+
+    for doc in cursor_p:
         champ = doc.get("championName", "UNKNOWN")
         win = doc.get("win", False)
         champ_games[champ] += 1
         if win:
             champ_wins[champ] += 1
 
-    # enemies
     coll_e = db[l2_enemies]
-    for doc in coll_e.find({}, {"championName": 1, "win": 1}):
+    cursor_e = coll_e.find(match_filter, {"championName": 1, "win": 1})
+
+    for doc in cursor_e:
         champ = doc.get("championName", "UNKNOWN")
         win = doc.get("win", False)
         enemy_games[champ] += 1
@@ -87,52 +101,60 @@ def compute_metrics(l2_players, l2_enemies, dataset_folder):
     champs.sort(key=lambda x: x["games"], reverse=True)
     enemy_champs.sort(key=lambda x: x["games"], reverse=True)
 
-    out_path = dataset_folder / "metrics_02_champions_games_winrate.json"
+    output_json = {
+        "start_date": start_date if start_date else None,
+        "end_date": end_date if end_date else None,
+        "champions": champs,
+        "enemy_champions": enemy_champs,
+    }
+
+    dataset_folder.mkdir(parents=True, exist_ok=True)
+
+    if start_date and end_date:
+        filename = f"metrics_02_champions_games_winrate_{start_date}_to_{end_date}.json"
+    else:
+        filename = "metrics_02_champions_games_winrate.json"
+
+    out_path = dataset_folder / filename
+
     with out_path.open("w", encoding="utf-8") as f:
-        json.dump(
-            {
-                "champions": champs,
-                "enemy_champions": enemy_champs,
-            },
-            f,
-            ensure_ascii=False,
-            indent=2,
-        )
+        json.dump(output_json, f, ensure_ascii=False, indent=2)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--queue", type=int, default=DEFAULT_QUEUE)
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
+    parser.add_argument("--start", type=str, default=None)
+    parser.add_argument("--end", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
     min_friends = args.min
+    start_date = args.start
+    end_date = args.end
 
-    print(f"[02] Starting ... using collection: L2_players_flat_q{queue}_min{min_friends}")
-    
+    print(f"[02] Starting ... using L2 for queue={queue} min={min_friends}")
+
     l2_players = auto_select_l2(queue, min_friends)
     if not l2_players:
         return
 
-    # derive enemy L2
     l2_enemies = l2_players.replace("L2_players_flat_", "L2_enemies_flat_")
 
-    # derive L1
     l1_name = l2_to_l1(l2_players)
     pool_id = extract_pool_from_l1(l1_name)
 
-    dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
-    dataset_folder.mkdir(parents=True, exist_ok=True)
+    if start_date and end_date:
+        dataset_folder = RUNTIME_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+        print("Guardado en:", dataset_folder)
+    else:
+        dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
 
-    compute_metrics(l2_players, l2_enemies, dataset_folder)
-    
+    compute_metrics(l2_players, l2_enemies, dataset_folder, start_date, end_date)
+
     print(f"[02] Ended")
 
 
-def run():
-    main()
-
-
 if __name__ == "__main__":
-    run()
+    main()

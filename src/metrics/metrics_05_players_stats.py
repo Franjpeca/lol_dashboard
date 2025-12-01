@@ -2,6 +2,7 @@ import os
 import json
 import argparse
 from pathlib import Path
+from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -17,10 +18,10 @@ client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
 RESULTS_ROOT = Path("data/results")
+RUNTIME_ROOT = Path("data/runtime")
 
 
 def auto_select_l1(queue, min_friends):
-    """Selecciona la colección L1 más reciente según los parámetros queue y min_friends."""
     prefix = f"L1_q{queue}_min{min_friends}_"
     cands = [c for c in db.list_collection_names() if c.startswith(prefix)]
     if not cands:
@@ -30,48 +31,55 @@ def auto_select_l1(queue, min_friends):
 
 
 def extract_pool_from_l1(l1_name):
-    """Extrae el pool de un nombre de colección L1 (ej. 'L1_q440_min5_pool_ab12cd34' -> 'pool_ab12cd34')."""
     return "pool_" + l1_name.split("_pool_", 1)[1]
 
 
-def calculate_player_stats(l1_collection):
-    """Calcula las estadísticas de los jugadores (kills, deaths, assists, etc.) desde una colección L1."""
+def calculate_player_stats(l1_collection, start_date=None, end_date=None):
+
     coll = db[l1_collection]
-    
-    # Cargar mapeo de puuid -> persona desde L0_users_index
-    l0_coll = db["L0_users_index"]
+
+    # Filtro temporal opcional
+    if start_date and end_date:
+        ts_start = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
+        ts_end = int(datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+        match_query = {
+            "data.info.gameStartTimestamp": {"$gte": ts_start, "$lte": ts_end}
+        }
+    else:
+        match_query = {}
+
+    # Mapeo puuid → persona
     puuid_to_persona = {}
-    for user in l0_coll.find({}, {"_id": 1, "persona": 1, "puuids": 1}):
-        persona = user.get("persona", "Unknown")
-        for puuid in user.get("puuids", []):
-            puuid_to_persona[puuid] = persona
+    for row in db["L0_users_index"].find({}, {"persona": 1, "puuids": 1}):
+        persona = row["persona"]
+        for pid in row.get("puuids", []):
+            puuid_to_persona[pid] = persona
 
     user_stats = {}
 
-    cursor = coll.find(
-        {},
-        {
-            "data.info.participants": 1,
-            "data.info.gameStartTimestamp": 1,
-            "data.info.gameId": 1,
-            "friends_present": 1
-        }
-    )
+    cursor = coll.find(match_query, {
+        "data.info.participants": 1,
+        "data.info.gameId": 1,
+        "data.info.gameStartTimestamp": 1,
+        "friends_present": 1
+    })
 
     for doc in cursor:
-        info = doc.get("data", {}).get("info", {}) or {}
+        info = doc.get("data", {}).get("info", {})
         participants = info.get("participants", [])
         friends_present = doc.get("friends_present", [])
 
         for p in participants:
             pid = p.get("puuid")
             if pid not in friends_present:
-                continue  # Solo jugadores presentes en la partida
+                continue
 
-            if pid not in user_stats:
-                persona = puuid_to_persona.get(pid, "Unknown")
-                user_stats[pid] = {
-                    "name": persona,
+            persona = puuid_to_persona.get(pid)
+            if not persona:
+                continue
+
+            if persona not in user_stats:
+                user_stats[persona] = {
                     "kills": 0,
                     "deaths": 0,
                     "assists": 0,
@@ -89,88 +97,102 @@ def calculate_player_stats(l1_collection):
             deaths = p.get("deaths", 0)
             assists = p.get("assists", 0)
             gold = p.get("goldEarned", 0)
-            damage_dealt = p.get("totalDamageDealtToChampions", 0)
-            damage_taken = p.get("totalDamageTaken", 0)
-            vision_score = p.get("visionScore", 0)
-            game_id = doc.get("data", {}).get("info", {}).get("gameId", "")
+            dmg = p.get("totalDamageDealtToChampions", 0)
+            taken = p.get("totalDamageTaken", 0)
+            vision = p.get("visionScore", 0)
+            game_id = info.get("gameId", "")
 
-            # Sumar los valores
-            user_stats[pid]["kills"] += kills
-            user_stats[pid]["deaths"] += deaths
-            user_stats[pid]["assists"] += assists
-            user_stats[pid]["gold"] += gold
-            user_stats[pid]["damage_dealt"] += damage_dealt
-            user_stats[pid]["damage_taken"] += damage_taken
-            user_stats[pid]["vision_score"] += vision_score
-            user_stats[pid]["games"] += 1
+            s = user_stats[persona]
 
-            # Actualizar máximos
-            if kills > user_stats[pid]["max_kills"]["kills"]:
-                user_stats[pid]["max_kills"] = {"kills": kills, "match_id": game_id}
-            if deaths > user_stats[pid]["max_deaths"]["deaths"]:
-                user_stats[pid]["max_deaths"] = {"deaths": deaths, "match_id": game_id}
-            if assists > user_stats[pid]["max_assists"]["assists"]:
-                user_stats[pid]["max_assists"] = {"assists": assists, "match_id": game_id}
+            s["kills"] += kills
+            s["deaths"] += deaths
+            s["assists"] += assists
+            s["gold"] += gold
+            s["damage_dealt"] += dmg
+            s["damage_taken"] += taken
+            s["vision_score"] += vision
+            s["games"] += 1
+
+            if kills > s["max_kills"]["kills"]:
+                s["max_kills"] = {"kills": kills, "match_id": game_id}
+            if deaths > s["max_deaths"]["deaths"]:
+                s["max_deaths"] = {"deaths": deaths, "match_id": game_id}
+            if assists > s["max_assists"]["assists"]:
+                s["max_assists"] = {"assists": assists, "match_id": game_id}
 
     return user_stats
 
 
-def save_stats_to_file(stats, pool_id, queue, min_friends):
-    out_path = RESULTS_ROOT / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}" / "metrics_05_players_stats.json"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
+def save_stats(stats, dataset_folder, l1_name, start_date, end_date):
+    out_file = dataset_folder / (
+        f"metrics_05_players_stats_{start_date}_to_{end_date}.json"
+        if start_date and end_date else "metrics_05_players_stats.json"
+    )
 
-    # Formatear los resultados
-    formatted_stats = {}
-    for pid, stats_data in stats.items():
-        persona = stats_data.get("name", "Unknown")  # Aseguramos que el nombre sea correcto, por defecto "Unknown"
-        formatted_stats[persona] = {
-            "avg_kda": (stats_data["kills"] + stats_data["assists"]) / stats_data["deaths"] if stats_data["deaths"] != 0 else 0,
-            "avg_kills": stats_data["kills"] / stats_data["games"],
-            "avg_deaths": stats_data["deaths"] / stats_data["games"],
-            "avg_assists": stats_data["assists"] / stats_data["games"],
-            "avg_gold": stats_data["gold"] / stats_data["games"],
-            "avg_damage_dealt": stats_data["damage_dealt"] / stats_data["games"],
-            "avg_damage_taken": stats_data["damage_taken"] / stats_data["games"],
-            "avg_vision_score": stats_data["vision_score"] / stats_data["games"],
-            "max_kills": stats_data["max_kills"],
-            "max_deaths": stats_data["max_deaths"],
-            "max_assists": stats_data["max_assists"],
+    formatted = {}
+
+    for persona, s in stats.items():
+        g = max(s["games"], 1)  # evitar división por cero
+        formatted[persona] = {
+            "avg_kda": (s["kills"] + s["assists"]) / s["deaths"] if s["deaths"] > 0 else 0,
+            "avg_kills": s["kills"] / g,
+            "avg_deaths": s["deaths"] / g,
+            "avg_assists": s["assists"] / g,
+            "avg_gold": s["gold"] / g,
+            "avg_damage_dealt": s["damage_dealt"] / g,
+            "avg_damage_taken": s["damage_taken"] / g,
+            "avg_vision_score": s["vision_score"] / g,
+            "max_kills": s["max_kills"],
+            "max_deaths": s["max_deaths"],
+            "max_assists": s["max_assists"],
         }
 
-    with out_path.open("w", encoding="utf-8") as f:
-        json.dump(formatted_stats, f, ensure_ascii=False, indent=2)
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+
+    # ESTRUCTURA CORRECTA TIPO M01/M04
+    json_data = {
+        "source_L1": l1_name,
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "start_date": start_date,
+        "end_date": end_date,
+        "players": formatted
+    }
+
+    with out_file.open("w", encoding="utf-8") as f:
+        json.dump(json_data, f, indent=2, ensure_ascii=False)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Calcular estadísticas de jugadores en LoL")
-    parser.add_argument("--queue", type=int, default=DEFAULT_QUEUE, help="Queue ID (ej. 440 para Flex)")
-    parser.add_argument("--min", type=int, default=DEFAULT_MIN, help="Mínimo de amigos por partida")
-    parser.add_argument("--pool", type=str, default=DEFAULT_POOL, help="Pool ID (ej. ac89fa8d)")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--queue", type=int, default=DEFAULT_QUEUE)
+    parser.add_argument("--min", type=int, default=DEFAULT_MIN)
+    parser.add_argument("--start", type=str, default=None)
+    parser.add_argument("--end", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
-    min_friends = args.min
-    pool_id = args.pool
+    min_f = args.min
+    start = args.start
+    end = args.end
 
-    print(f"[05] Starting ... using collection: L1_q{queue}_min{min_friends}_pool_{pool_id}")
-    
-    # Detectar colección L1 correspondiente
-    l1_name = auto_select_l1(queue, min_friends)
+    l1_name = auto_select_l1(queue, min_f)
     if not l1_name:
         return
 
-    # Calcular estadísticas
-    player_stats = calculate_player_stats(l1_name)
+    pool_id = extract_pool_from_l1(l1_name)
 
-    # Guardar estadísticas en un archivo
-    save_stats_to_file(player_stats, pool_id, queue, min_friends)
-    
-    print(f"[05] Ended")
+    if start and end:
+        folder = RUNTIME_ROOT / pool_id / f"q{queue}" / f"min{min_f}"
+    else:
+        folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_f}"
 
+    print(f"[05] Starting using {l1_name}")
 
-def run():
-    main()
+    stats = calculate_player_stats(l1_name, start, end)
+    save_stats(stats, folder, l1_name, start, end)
+
+    print("[05] Ended")
 
 
 if __name__ == "__main__":
-    run()
+    main()
