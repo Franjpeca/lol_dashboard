@@ -1,0 +1,1648 @@
+{
+  "start_date": "2025-07-27",
+  "end_date": "2025-10-15",
+  "champions": [
+    {
+      "champion": "Rell",
+      "games": 69,
+      "winrate": 47.83
+    },
+    {
+      "champion": "Gwen",
+      "games": 67,
+      "winrate": 50.75
+    },
+    {
+      "champion": "Ahri",
+      "games": 49,
+      "winrate": 40.82
+    },
+    {
+      "champion": "Ezreal",
+      "games": 44,
+      "winrate": 56.82
+    },
+    {
+      "champion": "Nami",
+      "games": 34,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Ambessa",
+      "games": 33,
+      "winrate": 51.52
+    },
+    {
+      "champion": "MissFortune",
+      "games": 32,
+      "winrate": 65.62
+    },
+    {
+      "champion": "Akali",
+      "games": 31,
+      "winrate": 58.06
+    },
+    {
+      "champion": "Yunara",
+      "games": 28,
+      "winrate": 39.29
+    },
+    {
+      "champion": "Nautilus",
+      "games": 28,
+      "winrate": 32.14
+    },
+    {
+      "champion": "Kaisa",
+      "games": 27,
+      "winrate": 62.96
+    },
+    {
+      "champion": "Sejuani",
+      "games": 25,
+      "winrate": 56.0
+    },
+    {
+      "champion": "Syndra",
+      "games": 25,
+      "winrate": 48.0
+    },
+    {
+      "champion": "Aurora",
+      "games": 23,
+      "winrate": 39.13
+    },
+    {
+      "champion": "Volibear",
+      "games": 22,
+      "winrate": 77.27
+    },
+    {
+      "champion": "Briar",
+      "games": 21,
+      "winrate": 52.38
+    },
+    {
+      "champion": "Caitlyn",
+      "games": 19,
+      "winrate": 26.32
+    },
+    {
+      "champion": "Lulu",
+      "games": 19,
+      "winrate": 31.58
+    },
+    {
+      "champion": "Malzahar",
+      "games": 18,
+      "winrate": 55.56
+    },
+    {
+      "champion": "Sylas",
+      "games": 17,
+      "winrate": 41.18
+    },
+    {
+      "champion": "Galio",
+      "games": 17,
+      "winrate": 76.47
+    },
+    {
+      "champion": "Jhin",
+      "games": 16,
+      "winrate": 37.5
+    },
+    {
+      "champion": "Braum",
+      "games": 16,
+      "winrate": 62.5
+    },
+    {
+      "champion": "Taliyah",
+      "games": 16,
+      "winrate": 56.25
+    },
+    {
+      "champion": "Sett",
+      "games": 15,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Samira",
+      "games": 14,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Amumu",
+      "games": 14,
+      "winrate": 42.86
+    },
+    {
+      "champion": "Diana",
+      "games": 13,
+      "winrate": 15.38
+    },
+    {
+      "champion": "Ashe",
+      "games": 13,
+      "winrate": 61.54
+    },
+    {
+      "champion": "Naafiri",
+      "games": 13,
+      "winrate": 84.62
+    },
+    {
+      "champion": "Smolder",
+      "games": 12,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Aatrox",
+      "games": 12,
+      "winrate": 66.67
+    },
+    {
+      "champion": "DrMundo",
+      "games": 12,
+      "winrate": 41.67
+    },
+    {
+      "champion": "Poppy",
+      "games": 12,
+      "winrate": 58.33
+    },
+    {
+      "champion": "JarvanIV",
+      "games": 12,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Orianna",
+      "games": 11,
+      "winrate": 36.36
+    },
+    {
+      "champion": "Milio",
+      "games": 11,
+      "winrate": 45.45
+    },
+    {
+      "champion": "Akshan",
+      "games": 11,
+      "winrate": 45.45
+    },
+    {
+      "champion": "Vi",
+      "games": 11,
+      "winrate": 45.45
+    },
+    {
+      "champion": "Soraka",
+      "games": 11,
+      "winrate": 36.36
+    },
+    {
+      "champion": "KSante",
+      "games": 11,
+      "winrate": 45.45
+    },
+    {
+      "champion": "Rakan",
+      "games": 11,
+      "winrate": 72.73
+    },
+    {
+      "champion": "Pantheon",
+      "games": 10,
+      "winrate": 50.0
+    },
+    {
+      "champion": "XinZhao",
+      "games": 10,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Yone",
+      "games": 10,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Jax",
+      "games": 10,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Xayah",
+      "games": 10,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Aphelios",
+      "games": 10,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Seraphine",
+      "games": 10,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Thresh",
+      "games": 9,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Hwei",
+      "games": 9,
+      "winrate": 55.56
+    },
+    {
+      "champion": "Nocturne",
+      "games": 9,
+      "winrate": 44.44
+    },
+    {
+      "champion": "Jinx",
+      "games": 9,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Yasuo",
+      "games": 8,
+      "winrate": 37.5
+    },
+    {
+      "champion": "Lux",
+      "games": 8,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Nilah",
+      "games": 8,
+      "winrate": 25.0
+    },
+    {
+      "champion": "Mel",
+      "games": 8,
+      "winrate": 62.5
+    },
+    {
+      "champion": "Karma",
+      "games": 8,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Olaf",
+      "games": 8,
+      "winrate": 37.5
+    },
+    {
+      "champion": "Kayn",
+      "games": 7,
+      "winrate": 57.14
+    },
+    {
+      "champion": "Hecarim",
+      "games": 7,
+      "winrate": 28.57
+    },
+    {
+      "champion": "Lucian",
+      "games": 7,
+      "winrate": 42.86
+    },
+    {
+      "champion": "Leona",
+      "games": 7,
+      "winrate": 57.14
+    },
+    {
+      "champion": "Chogath",
+      "games": 7,
+      "winrate": 71.43
+    },
+    {
+      "champion": "Yorick",
+      "games": 7,
+      "winrate": 42.86
+    },
+    {
+      "champion": "Zac",
+      "games": 7,
+      "winrate": 57.14
+    },
+    {
+      "champion": "Morgana",
+      "games": 7,
+      "winrate": 57.14
+    },
+    {
+      "champion": "Ryze",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Tryndamere",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Vex",
+      "games": 6,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Qiyana",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Lillia",
+      "games": 6,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Ornn",
+      "games": 6,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Senna",
+      "games": 6,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Renata",
+      "games": 6,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Kayle",
+      "games": 6,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Sona",
+      "games": 6,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Viktor",
+      "games": 6,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Sion",
+      "games": 6,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Sivir",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Viego",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Vladimir",
+      "games": 6,
+      "winrate": 66.67
+    },
+    {
+      "champion": "RekSai",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Irelia",
+      "games": 5,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Tristana",
+      "games": 5,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Camille",
+      "games": 5,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Mordekaiser",
+      "games": 5,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Lissandra",
+      "games": 5,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Azir",
+      "games": 5,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Alistar",
+      "games": 5,
+      "winrate": 20.0
+    },
+    {
+      "champion": "MonkeyKing",
+      "games": 4,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Zyra",
+      "games": 4,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Veigar",
+      "games": 4,
+      "winrate": 25.0
+    },
+    {
+      "champion": "MasterYi",
+      "games": 4,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Renekton",
+      "games": 4,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Khazix",
+      "games": 4,
+      "winrate": 25.0
+    },
+    {
+      "champion": "Malphite",
+      "games": 4,
+      "winrate": 25.0
+    },
+    {
+      "champion": "Blitzcrank",
+      "games": 4,
+      "winrate": 25.0
+    },
+    {
+      "champion": "Darius",
+      "games": 4,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Teemo",
+      "games": 4,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Neeko",
+      "games": 3,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Garen",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Ziggs",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Anivia",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Kennen",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Nasus",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Twitch",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Trundle",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Varus",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Fiora",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Kassadin",
+      "games": 3,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Brand",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Shen",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Udyr",
+      "games": 3,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Gnar",
+      "games": 3,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Karthus",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Maokai",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Zeri",
+      "games": 3,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Swain",
+      "games": 2,
+      "winrate": 0.0
+    },
+    {
+      "champion": "FiddleSticks",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Annie",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Shaco",
+      "games": 2,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Janna",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Skarner",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Rumble",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Illaoi",
+      "games": 2,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Ekko",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Nunu",
+      "games": 2,
+      "winrate": 100.0
+    },
+    {
+      "champion": "AurelionSol",
+      "games": 2,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Leblanc",
+      "games": 2,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Vayne",
+      "games": 2,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Gragas",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Jayce",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "TahmKench",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Belveth",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Urgot",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Xerath",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Rammus",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Warwick",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Ivern",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Riven",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Corki",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Velkoz",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "LeeSin",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Elise",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Singed",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Pyke",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Yuumi",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Taric",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Quinn",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Katarina",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Talon",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Zed",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Fizz",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Bard",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Shyvana",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Draven",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Cassiopeia",
+      "games": 1,
+      "winrate": 100.0
+    }
+  ],
+  "enemy_champions": [
+    {
+      "champion": "Nautilus",
+      "games": 25,
+      "winrate": 56.0
+    },
+    {
+      "champion": "Yunara",
+      "games": 22,
+      "winrate": 59.09
+    },
+    {
+      "champion": "Mel",
+      "games": 21,
+      "winrate": 52.38
+    },
+    {
+      "champion": "Caitlyn",
+      "games": 21,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Thresh",
+      "games": 20,
+      "winrate": 65.0
+    },
+    {
+      "champion": "Nami",
+      "games": 19,
+      "winrate": 63.16
+    },
+    {
+      "champion": "Volibear",
+      "games": 19,
+      "winrate": 73.68
+    },
+    {
+      "champion": "Jhin",
+      "games": 19,
+      "winrate": 42.11
+    },
+    {
+      "champion": "Sylas",
+      "games": 18,
+      "winrate": 38.89
+    },
+    {
+      "champion": "Yasuo",
+      "games": 17,
+      "winrate": 52.94
+    },
+    {
+      "champion": "Ezreal",
+      "games": 16,
+      "winrate": 56.25
+    },
+    {
+      "champion": "Morgana",
+      "games": 16,
+      "winrate": 25.0
+    },
+    {
+      "champion": "MissFortune",
+      "games": 15,
+      "winrate": 53.33
+    },
+    {
+      "champion": "JarvanIV",
+      "games": 15,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Kaisa",
+      "games": 15,
+      "winrate": 53.33
+    },
+    {
+      "champion": "Twitch",
+      "games": 15,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Viego",
+      "games": 15,
+      "winrate": 26.67
+    },
+    {
+      "champion": "Malzahar",
+      "games": 15,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Samira",
+      "games": 15,
+      "winrate": 73.33
+    },
+    {
+      "champion": "Diana",
+      "games": 15,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Jinx",
+      "games": 15,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Smolder",
+      "games": 15,
+      "winrate": 46.67
+    },
+    {
+      "champion": "Sivir",
+      "games": 15,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Milio",
+      "games": 15,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Rakan",
+      "games": 14,
+      "winrate": 35.71
+    },
+    {
+      "champion": "Vayne",
+      "games": 14,
+      "winrate": 64.29
+    },
+    {
+      "champion": "Shaco",
+      "games": 13,
+      "winrate": 53.85
+    },
+    {
+      "champion": "Jax",
+      "games": 13,
+      "winrate": 46.15
+    },
+    {
+      "champion": "LeeSin",
+      "games": 13,
+      "winrate": 61.54
+    },
+    {
+      "champion": "Velkoz",
+      "games": 13,
+      "winrate": 46.15
+    },
+    {
+      "champion": "Senna",
+      "games": 13,
+      "winrate": 38.46
+    },
+    {
+      "champion": "Galio",
+      "games": 13,
+      "winrate": 38.46
+    },
+    {
+      "champion": "Veigar",
+      "games": 13,
+      "winrate": 61.54
+    },
+    {
+      "champion": "Sion",
+      "games": 12,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Aphelios",
+      "games": 12,
+      "winrate": 41.67
+    },
+    {
+      "champion": "Poppy",
+      "games": 12,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Hwei",
+      "games": 12,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Lux",
+      "games": 12,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Yorick",
+      "games": 12,
+      "winrate": 41.67
+    },
+    {
+      "champion": "Orianna",
+      "games": 12,
+      "winrate": 58.33
+    },
+    {
+      "champion": "Warwick",
+      "games": 12,
+      "winrate": 83.33
+    },
+    {
+      "champion": "DrMundo",
+      "games": 12,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Soraka",
+      "games": 11,
+      "winrate": 54.55
+    },
+    {
+      "champion": "Leblanc",
+      "games": 11,
+      "winrate": 54.55
+    },
+    {
+      "champion": "Kayn",
+      "games": 11,
+      "winrate": 45.45
+    },
+    {
+      "champion": "Ashe",
+      "games": 11,
+      "winrate": 54.55
+    },
+    {
+      "champion": "Ahri",
+      "games": 11,
+      "winrate": 36.36
+    },
+    {
+      "champion": "Garen",
+      "games": 11,
+      "winrate": 36.36
+    },
+    {
+      "champion": "Yone",
+      "games": 11,
+      "winrate": 45.45
+    },
+    {
+      "champion": "Pyke",
+      "games": 11,
+      "winrate": 45.45
+    },
+    {
+      "champion": "Akali",
+      "games": 10,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Lucian",
+      "games": 10,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Ziggs",
+      "games": 10,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Gnar",
+      "games": 10,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Ryze",
+      "games": 10,
+      "winrate": 30.0
+    },
+    {
+      "champion": "Lillia",
+      "games": 10,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Kayle",
+      "games": 10,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Darius",
+      "games": 10,
+      "winrate": 70.0
+    },
+    {
+      "champion": "Pantheon",
+      "games": 10,
+      "winrate": 30.0
+    },
+    {
+      "champion": "Syndra",
+      "games": 10,
+      "winrate": 70.0
+    },
+    {
+      "champion": "Lulu",
+      "games": 10,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Qiyana",
+      "games": 10,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Tristana",
+      "games": 10,
+      "winrate": 30.0
+    },
+    {
+      "champion": "Sett",
+      "games": 9,
+      "winrate": 77.78
+    },
+    {
+      "champion": "Trundle",
+      "games": 9,
+      "winrate": 44.44
+    },
+    {
+      "champion": "Aurora",
+      "games": 9,
+      "winrate": 44.44
+    },
+    {
+      "champion": "Karma",
+      "games": 9,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Teemo",
+      "games": 9,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Braum",
+      "games": 9,
+      "winrate": 44.44
+    },
+    {
+      "champion": "Shen",
+      "games": 9,
+      "winrate": 55.56
+    },
+    {
+      "champion": "XinZhao",
+      "games": 9,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Leona",
+      "games": 9,
+      "winrate": 44.44
+    },
+    {
+      "champion": "Nunu",
+      "games": 9,
+      "winrate": 22.22
+    },
+    {
+      "champion": "Lissandra",
+      "games": 9,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Alistar",
+      "games": 9,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Briar",
+      "games": 9,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Nocturne",
+      "games": 8,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Aatrox",
+      "games": 8,
+      "winrate": 62.5
+    },
+    {
+      "champion": "Irelia",
+      "games": 8,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Ornn",
+      "games": 8,
+      "winrate": 25.0
+    },
+    {
+      "champion": "Mordekaiser",
+      "games": 8,
+      "winrate": 37.5
+    },
+    {
+      "champion": "Zed",
+      "games": 8,
+      "winrate": 37.5
+    },
+    {
+      "champion": "Amumu",
+      "games": 8,
+      "winrate": 25.0
+    },
+    {
+      "champion": "Vladimir",
+      "games": 8,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Viktor",
+      "games": 8,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Renekton",
+      "games": 8,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Urgot",
+      "games": 8,
+      "winrate": 37.5
+    },
+    {
+      "champion": "Gwen",
+      "games": 7,
+      "winrate": 42.86
+    },
+    {
+      "champion": "Janna",
+      "games": 7,
+      "winrate": 42.86
+    },
+    {
+      "champion": "Bard",
+      "games": 7,
+      "winrate": 71.43
+    },
+    {
+      "champion": "Vi",
+      "games": 7,
+      "winrate": 57.14
+    },
+    {
+      "champion": "Fizz",
+      "games": 7,
+      "winrate": 28.57
+    },
+    {
+      "champion": "KSante",
+      "games": 7,
+      "winrate": 42.86
+    },
+    {
+      "champion": "Varus",
+      "games": 7,
+      "winrate": 57.14
+    },
+    {
+      "champion": "Swain",
+      "games": 7,
+      "winrate": 42.86
+    },
+    {
+      "champion": "Gragas",
+      "games": 7,
+      "winrate": 42.86
+    },
+    {
+      "champion": "Malphite",
+      "games": 7,
+      "winrate": 42.86
+    },
+    {
+      "champion": "Blitzcrank",
+      "games": 7,
+      "winrate": 42.86
+    },
+    {
+      "champion": "TahmKench",
+      "games": 7,
+      "winrate": 57.14
+    },
+    {
+      "champion": "Zac",
+      "games": 7,
+      "winrate": 28.57
+    },
+    {
+      "champion": "Annie",
+      "games": 6,
+      "winrate": 50.0
+    },
+    {
+      "champion": "FiddleSticks",
+      "games": 6,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Seraphine",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "AurelionSol",
+      "games": 6,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Yuumi",
+      "games": 6,
+      "winrate": 50.0
+    },
+    {
+      "champion": "MonkeyKing",
+      "games": 6,
+      "winrate": 50.0
+    },
+    {
+      "champion": "MasterYi",
+      "games": 6,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Ekko",
+      "games": 6,
+      "winrate": 16.67
+    },
+    {
+      "champion": "Katarina",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Singed",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Xayah",
+      "games": 6,
+      "winrate": 83.33
+    },
+    {
+      "champion": "Neeko",
+      "games": 6,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Xerath",
+      "games": 5,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Udyr",
+      "games": 5,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Nasus",
+      "games": 5,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Azir",
+      "games": 5,
+      "winrate": 60.0
+    },
+    {
+      "champion": "Shyvana",
+      "games": 5,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Skarner",
+      "games": 5,
+      "winrate": 40.0
+    },
+    {
+      "champion": "Ivern",
+      "games": 5,
+      "winrate": 40.0
+    },
+    {
+      "champion": "RekSai",
+      "games": 5,
+      "winrate": 20.0
+    },
+    {
+      "champion": "Draven",
+      "games": 5,
+      "winrate": 20.0
+    },
+    {
+      "champion": "Ambessa",
+      "games": 5,
+      "winrate": 20.0
+    },
+    {
+      "champion": "Camille",
+      "games": 4,
+      "winrate": 25.0
+    },
+    {
+      "champion": "Fiora",
+      "games": 4,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Chogath",
+      "games": 4,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Nilah",
+      "games": 4,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Graves",
+      "games": 4,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Renata",
+      "games": 4,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Talon",
+      "games": 4,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Sejuani",
+      "games": 4,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Gangplank",
+      "games": 4,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Khazix",
+      "games": 4,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Zoe",
+      "games": 4,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Heimerdinger",
+      "games": 4,
+      "winrate": 25.0
+    },
+    {
+      "champion": "Elise",
+      "games": 4,
+      "winrate": 25.0
+    },
+    {
+      "champion": "Rell",
+      "games": 4,
+      "winrate": 75.0
+    },
+    {
+      "champion": "Akshan",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Rengar",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Maokai",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "KogMaw",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Zyra",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Nidalee",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "TwistedFate",
+      "games": 3,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Anivia",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Illaoi",
+      "games": 3,
+      "winrate": 66.67
+    },
+    {
+      "champion": "Olaf",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Evelynn",
+      "games": 3,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Kalista",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Rumble",
+      "games": 3,
+      "winrate": 33.33
+    },
+    {
+      "champion": "Vex",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Sona",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Rammus",
+      "games": 2,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Kled",
+      "games": 2,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Tryndamere",
+      "games": 2,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Zilean",
+      "games": 2,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Hecarim",
+      "games": 2,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Cassiopeia",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Riven",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Naafiri",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Taliyah",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Jayce",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Zeri",
+      "games": 2,
+      "winrate": 50.0
+    },
+    {
+      "champion": "Corki",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Karthus",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Kennen",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Brand",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Taric",
+      "games": 1,
+      "winrate": 0.0
+    },
+    {
+      "champion": "Kassadin",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Kindred",
+      "games": 1,
+      "winrate": 100.0
+    },
+    {
+      "champion": "Belveth",
+      "games": 1,
+      "winrate": 100.0
+    }
+  ]
+}

@@ -1,0 +1,307 @@
+{
+  "source_L2": "L2_players_flat_q440_min5_pool_ac89fa8d",
+  "generated_at": "2025-12-02 16:15:35",
+  "start_date": "2025-07-27",
+  "end_date": "2025-10-15",
+  "global_winrate_mean": 0.49466192170818507,
+  "users": [
+    {
+      "persona": "Kyoraku",
+      "total_games": 165,
+      "total_wins": 80,
+      "winrate": 0.48484848484848486,
+      "puuids": {
+        "-mhTYxn6Q_-yHk8hQ60gSwB_NmUszOSY89HfTiksW-ViG1NrOd6oOHFAHOytrFZn6oR569vUNneeGA": {
+          "riotId": "TheAshenOne#1715",
+          "games": 87,
+          "wins": 39,
+          "winrate": 0.4482758620689655
+        },
+        "CTJMZyorexJQWkt1NKuJt6xEaUbQzlezvWF-HrALGA45kOLfX4jWAVQ6iyM5ebjgB-n9tw113cwfuA": {
+          "riotId": "TamedByWajoo#Dexus",
+          "games": 9,
+          "wins": 7,
+          "winrate": 0.7777777777777778
+        },
+        "0S5tj6lDsMDvuLvMAfG2M2Bo9eK6uJRvUUeW_7o9sTNBQFVQj7ZVLw9oFkInqvq-ruSVmymMzRbtnw": {
+          "riotId": "TheLastShinobi#1525",
+          "games": 69,
+          "wins": 34,
+          "winrate": 0.4927536231884058
+        }
+      }
+    },
+    {
+      "persona": "Dexus",
+      "total_games": 97,
+      "total_wins": 42,
+      "winrate": 0.4329896907216495,
+      "puuids": {
+        "dIj60lZG0ERDx05KNmhwVwojMQzN3LAKfWyZ6QtF5VoBz0scIRMLvRESOJQAjLJgmx4ysnOrJJBkfw": {
+          "riotId": "Demonio Albino#MTRK",
+          "games": 92,
+          "wins": 40,
+          "winrate": 0.43478260869565216
+        },
+        "Zh8Iz6dUdfhwJBNvRS72OqhsSPz6EU3nws5k6PVVEhn4GcR9HmOy_XpX0E2GOUQTAuE-wAx5GgBFVA": {
+          "riotId": "Dead Server#bird",
+          "games": 5,
+          "wins": 2,
+          "winrate": 0.4
+        }
+      }
+    },
+    {
+      "persona": "maibad",
+      "total_games": 67,
+      "total_wins": 29,
+      "winrate": 0.43283582089552236,
+      "puuids": {
+        "6d0h3PI6Q-4bkXhGK76G-YT32J5-121Ww3V9StR11J3VziJsJMweX6dpOcMiZuE3MERwugANiBJ9xw": {
+          "riotId": "maibad#6969",
+          "games": 67,
+          "wins": 29,
+          "winrate": 0.43283582089552236
+        }
+      }
+    },
+    {
+      "persona": "Nikken",
+      "total_games": 12,
+      "total_wins": 7,
+      "winrate": 0.5833333333333334,
+      "puuids": {
+        "y3ic7UQtNto1K33ua8llZxf9xt5eAaKl9o9J5JSbGPEVK7CgPC1rd1kR9wWwlbUN0ttkGmt8d-Brkg": {
+          "riotId": "Nikken#Ayna",
+          "games": 12,
+          "wins": 7,
+          "winrate": 0.5833333333333334
+        }
+      }
+    },
+    {
+      "persona": "Däzzler",
+      "total_games": 34,
+      "total_wins": 20,
+      "winrate": 0.5882352941176471,
+      "puuids": {
+        "J3hYkDDy8GYWzeMUteus4yFgYykFFoWUsKJADOLQjYw7vEPeyl0ufcPOdmeERbzSRCTKghdyqtEuuw": {
+          "riotId": "Däzzler#nico",
+          "games": 34,
+          "wins": 20,
+          "winrate": 0.5882352941176471
+        }
+      }
+    },
+    {
+      "persona": "Kayki マ",
+      "total_games": 6,
+      "total_wins": 1,
+      "winrate": 0.16666666666666666,
+      "puuids": {
+        "i2RoqLJ4pWHoycWlI087unUtN9qqKf07QnTiHJhr_BS5toxrBsy7xR4drmPXNUzqIotG5rr3RDwJxw": {
+          "riotId": "Kayki マ#b0nk",
+          "games": 6,
+          "wins": 1,
+          "winrate": 0.16666666666666666
+        }
+      }
+    },
+    {
+      "persona": "Frieren",
+      "total_games": 131,
+      "total_wins": 78,
+      "winrate": 0.5954198473282443,
+      "puuids": {
+        "wzGEOAnaFqRkSnxrHGqMNwqyw0Mp9OquFniJ5xQpbr5hrwgfHhXdtwgnDJP4Ff6P48TSYnWa2FwgNg": {
+          "riotId": "Amigas Hugo#broma",
+          "games": 77,
+          "wins": 40,
+          "winrate": 0.5194805194805194
+        },
+        "Gn20XTNwCq2mcdfxrP6QSASp0aSaZV8xGOXuy_jYA-XUvHg7JNq8QiTSPLzY2A0QrOS8b_FoWuFRpA": {
+          "riotId": "Plutillo#EUW",
+          "games": 19,
+          "wins": 16,
+          "winrate": 0.8421052631578947
+        },
+        "SJNRfHbDOhoJqOkc_BMd7Ttptx9XFmW4txQJVLNXY0yEN_W09O3S3fmCLQmp4_vD0lqvIqrqrTyCHQ": {
+          "riotId": "Tamaki Amajiki#AESPA",
+          "games": 20,
+          "wins": 13,
+          "winrate": 0.65
+        },
+        "6zP0v3O4rVLxWIv28ciMqYPDFCeb-vmTvqErFmzJmK0Q5xIgKjO6z94LhoeH1FM3VSljhBgFspcZbg": {
+          "riotId": "Amigas Ábalos#PSOE",
+          "games": 6,
+          "wins": 4,
+          "winrate": 0.6666666666666666
+        },
+        "f9r7oae2f5OSir1-bHmlYqlMnn1RD0zfBBA0rEa1yklK-ORicV3R5UrBCLRXgE2hzZ6YXpO9ZYhSuA": {
+          "riotId": "Frieren#Hana",
+          "games": 7,
+          "wins": 4,
+          "winrate": 0.5714285714285714
+        },
+        "-xx7BFet51IUyjNbXznTVWB6BmTLRf4-j4v3Jw-M_acvLweTK8cR9CTXfsZtCaQmOuSXmXExl-OOVg": {
+          "riotId": "Romance Ðawn#AGZ",
+          "games": 2,
+          "wins": 1,
+          "winrate": 0.5
+        }
+      }
+    },
+    {
+      "persona": "Bustamantefanboy",
+      "total_games": 205,
+      "total_wins": 102,
+      "winrate": 0.4975609756097561,
+      "puuids": {
+        "DE4AIs67AIcPPvPhAM28u7J7S5Lj-ZEfv7amN3rGab7LJSaiq1aLk3GBjMHgoQnNGbqfvz54mO3-Cg": {
+          "riotId": "The Abysswalker#28047",
+          "games": 197,
+          "wins": 98,
+          "winrate": 0.49746192893401014
+        },
+        "1dQoJ2alNbNmNhJ0HbkKNWH5_xbF-T_NP5JKG-PkgjeF6_hLHdrOhTh9y4NuG9DRXeJLyz40Sivg9A": {
+          "riotId": "Budxx#EUW",
+          "games": 8,
+          "wins": 4,
+          "winrate": 0.5
+        }
+      }
+    },
+    {
+      "persona": "ñoki",
+      "total_games": 4,
+      "total_wins": 3,
+      "winrate": 0.75,
+      "puuids": {
+        "FNOgi2SMmnvDhtUbQmL5C8evxfLIZnlecHVMZIaf8J0-WE9Ps8w21hvma0z4SwAUeOIes3_d5_68KA": {
+          "riotId": "ñoki#IYO",
+          "games": 4,
+          "wins": 3,
+          "winrate": 0.75
+        }
+      }
+    },
+    {
+      "persona": "En Vlc No F0II0",
+      "total_games": 77,
+      "total_wins": 34,
+      "winrate": 0.44155844155844154,
+      "puuids": {
+        "TnqLh_Vrs4gaDIN1wpDvo1ZYnk-7yki1-yRtLoDa380W-AGeGDwWCApGD1p_C0B6S9lIuMWvcPhcBw": {
+          "riotId": "En Vlc No F0II0#VLC",
+          "games": 77,
+          "wins": 34,
+          "winrate": 0.44155844155844154
+        }
+      }
+    },
+    {
+      "persona": "FUSHROHDAH",
+      "total_games": 58,
+      "total_wins": 25,
+      "winrate": 0.43103448275862066,
+      "puuids": {
+        "0g3Z8E_vKeqi1D2vPVmy-X0cUuSaAhPanesCryV2__eRq8HmG9-P17GkkgOJ4QLBwewmwdpEZX32oQ": {
+          "riotId": "FUSHROHDAH#EUW",
+          "games": 58,
+          "wins": 25,
+          "winrate": 0.43103448275862066
+        }
+      }
+    },
+    {
+      "persona": "Banshee",
+      "total_games": 136,
+      "total_wins": 60,
+      "winrate": 0.4411764705882353,
+      "puuids": {
+        "y-LYP9gK5qFyC4PJI9BltyeYiBPtWCxUH1iJF92HBaWAasC1r5Zh7fQZ6afdm18V6KEQy-7vJQ4Ceg": {
+          "riotId": "faragullos#EUW",
+          "games": 15,
+          "wins": 8,
+          "winrate": 0.5333333333333333
+        },
+        "HoZyg5vVFI9fcD3rCcV-ku7YN3-ULmhvq9qSvIO84W4w4Xfq0iqoGWVSi1jaElVrW3RjGriCTwpEoQ": {
+          "riotId": "PinkLeopard#asa",
+          "games": 121,
+          "wins": 52,
+          "winrate": 0.4297520661157025
+        }
+      }
+    },
+    {
+      "persona": "SN Bin",
+      "total_games": 144,
+      "total_wins": 71,
+      "winrate": 0.4930555555555556,
+      "puuids": {
+        "D2QD4yFUsdAzUN1N9Zc8tI4vml4JDqIskx4lHEuzJqqGsZU3vXeFg09dwdjqLcGSz-zBsHWw33RoUA": {
+          "riotId": "SN Bin#KITTY",
+          "games": 144,
+          "wins": 71,
+          "winrate": 0.4930555555555556
+        }
+      }
+    },
+    {
+      "persona": "Morocha",
+      "total_games": 4,
+      "total_wins": 2,
+      "winrate": 0.5,
+      "puuids": {
+        "KAvIBxvTfh1SoweHoRknwy306GqGMT35OrqhDyTA3U5YPVA9zTPbxmn9T93TKejiV3tlffw-UYa6MQ": {
+          "riotId": "Morocha#MILFS",
+          "games": 4,
+          "wins": 2,
+          "winrate": 0.5
+        }
+      }
+    },
+    {
+      "persona": "Lady Maria",
+      "total_games": 11,
+      "total_wins": 6,
+      "winrate": 0.5454545454545454,
+      "puuids": {
+        "UtBnnCNiz3qNAmNahJcL2HEKxzMU7cBSxZCe9sPf_MdKUmL7pvWirEOW3HgEhSWKJ0oYh0C2w1puZg": {
+          "riotId": "Lady Maria#777",
+          "games": 11,
+          "wins": 6,
+          "winrate": 0.5454545454545454
+        }
+      }
+    },
+    {
+      "persona": "Joseph Joestar",
+      "total_games": 107,
+      "total_wins": 61,
+      "winrate": 0.5700934579439252,
+      "puuids": {
+        "AtDfx42FWgr6hcrUoM40Y_p9Z-B7gUwINeqroNQ6GU27tlsmjgGoai5sP9zeegBkocMfn12ifno4kQ": {
+          "riotId": "Joseph Joestar#Spam",
+          "games": 107,
+          "wins": 61,
+          "winrate": 0.5700934579439252
+        }
+      }
+    },
+    {
+      "persona": "TheChosenUndead",
+      "total_games": 147,
+      "total_wins": 74,
+      "winrate": 0.5034013605442177,
+      "puuids": {
+        "B9ZyN61kui_NvEzNAdc8McdFnHCVioHUGofaexg8ZpoEgU-YK6P163iNh1Z7t8usS6rN4N9zSJPZyw": {
+          "riotId": "TheChosenUndead#NJS",
+          "games": 147,
+          "wins": 74,
+          "winrate": 0.5034013605442177
+        }
+      }
+    }
+  ]
+}

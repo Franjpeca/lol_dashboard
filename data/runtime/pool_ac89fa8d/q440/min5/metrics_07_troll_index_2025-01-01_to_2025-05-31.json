@@ -1,0 +1,217 @@
+{
+  "source_L1": "L1_q440_min5_pool_ac89fa8d",
+  "generated_at": "2025-12-02 16:22:17",
+  "start_date": "2025-01-01",
+  "end_date": "2025-05-31",
+  "troll": {
+    "Frieren": {
+      "total_matches": 218,
+      "early_surrender_own": 2,
+      "early_surrender_enemy": 0,
+      "afk_own": 50,
+      "afk_enemy": 45,
+      "pct_early_surrender_own": 0.009174311926605505,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.22935779816513763,
+      "pct_afk_enemy": 0.20642201834862386
+    },
+    "Kyoraku": {
+      "total_matches": 292,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 1,
+      "afk_own": 50,
+      "afk_enemy": 48,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.003424657534246575,
+      "pct_afk_own": 0.17123287671232876,
+      "pct_afk_enemy": 0.1643835616438356
+    },
+    "Banshee": {
+      "total_matches": 328,
+      "early_surrender_own": 3,
+      "early_surrender_enemy": 0,
+      "afk_own": 70,
+      "afk_enemy": 58,
+      "pct_early_surrender_own": 0.009146341463414634,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.21341463414634146,
+      "pct_afk_enemy": 0.17682926829268292
+    },
+    "Bustamantefanboy": {
+      "total_matches": 195,
+      "early_surrender_own": 1,
+      "early_surrender_enemy": 1,
+      "afk_own": 36,
+      "afk_enemy": 26,
+      "pct_early_surrender_own": 0.005128205128205128,
+      "pct_early_surrender_enemy": 0.005128205128205128,
+      "pct_afk_own": 0.18461538461538463,
+      "pct_afk_enemy": 0.13333333333333333
+    },
+    "Dexus": {
+      "total_matches": 273,
+      "early_surrender_own": 1,
+      "early_surrender_enemy": 0,
+      "afk_own": 50,
+      "afk_enemy": 52,
+      "pct_early_surrender_own": 0.003663003663003663,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.18315018315018314,
+      "pct_afk_enemy": 0.19047619047619047
+    },
+    "SN Bin": {
+      "total_matches": 113,
+      "early_surrender_own": 1,
+      "early_surrender_enemy": 0,
+      "afk_own": 22,
+      "afk_enemy": 23,
+      "pct_early_surrender_own": 0.008849557522123894,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.19469026548672566,
+      "pct_afk_enemy": 0.20353982300884957
+    },
+    "Joseph Joestar": {
+      "total_matches": 218,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 51,
+      "afk_enemy": 51,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.23394495412844038,
+      "pct_afk_enemy": 0.23394495412844038
+    },
+    "TheChosenUndead": {
+      "total_matches": 225,
+      "early_surrender_own": 1,
+      "early_surrender_enemy": 0,
+      "afk_own": 45,
+      "afk_enemy": 44,
+      "pct_early_surrender_own": 0.0044444444444444444,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.2,
+      "pct_afk_enemy": 0.19555555555555557
+    },
+    "maibad": {
+      "total_matches": 292,
+      "early_surrender_own": 1,
+      "early_surrender_enemy": 1,
+      "afk_own": 67,
+      "afk_enemy": 53,
+      "pct_early_surrender_own": 0.003424657534246575,
+      "pct_early_surrender_enemy": 0.003424657534246575,
+      "pct_afk_own": 0.22945205479452055,
+      "pct_afk_enemy": 0.1815068493150685
+    },
+    "Kayki マ": {
+      "total_matches": 15,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 8,
+      "afk_enemy": 6,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.5333333333333333,
+      "pct_afk_enemy": 0.4
+    },
+    "En Vlc No F0II0": {
+      "total_matches": 21,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 4,
+      "afk_enemy": 7,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.19047619047619047,
+      "pct_afk_enemy": 0.3333333333333333
+    },
+    "Nikken": {
+      "total_matches": 100,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 1,
+      "afk_own": 16,
+      "afk_enemy": 14,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.01,
+      "pct_afk_own": 0.16,
+      "pct_afk_enemy": 0.14
+    },
+    "FUSHROHDAH": {
+      "total_matches": 8,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 1,
+      "afk_enemy": 2,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.125,
+      "pct_afk_enemy": 0.25
+    },
+    "Däzzler": {
+      "total_matches": 64,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 1,
+      "afk_own": 11,
+      "afk_enemy": 10,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.015625,
+      "pct_afk_own": 0.171875,
+      "pct_afk_enemy": 0.15625
+    },
+    "Morocha": {
+      "total_matches": 15,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 2,
+      "afk_enemy": 4,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.13333333333333333,
+      "pct_afk_enemy": 0.26666666666666666
+    },
+    "Lady Maria": {
+      "total_matches": 16,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 9,
+      "afk_enemy": 4,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.5625,
+      "pct_afk_enemy": 0.25
+    },
+    "gokusito": {
+      "total_matches": 9,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 1,
+      "afk_enemy": 0,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.1111111111111111,
+      "pct_afk_enemy": 0.0
+    },
+    "DETOXED": {
+      "total_matches": 14,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 2,
+      "afk_enemy": 1,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.14285714285714285,
+      "pct_afk_enemy": 0.07142857142857142
+    },
+    "ñoki": {
+      "total_matches": 24,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 5,
+      "afk_enemy": 7,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.20833333333333334,
+      "pct_afk_enemy": 0.2916666666666667
+    }
+  }
+}
