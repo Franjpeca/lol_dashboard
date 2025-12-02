@@ -211,7 +211,11 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             dcc.Tab(label="Config API Key", value="tab-api"),
         ], style={"backgroundColor": "#111"}),
 
-        html.Div(id="tab-content", style={"padding": "24px"}),
+        dcc.Loading(
+            id="loading-main-content",
+            type="default",
+            children=html.Div(id="tab-content", style={"padding": "24px"})
+        ),
 
     ], style={"backgroundColor": "black", "minHeight": "100vh"})
 
