@@ -1,4 +1,5 @@
 import sys
+import subprocess
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -19,12 +20,33 @@ def main():
 
     print("[INFO] Ejecutando métricas por jugador...")
     run_winrate_players()
+def run_metric_script(script_name, args):
+    cmd = [sys.executable, f"src/metrics/{script_name}.py"] + args
+    print(f"\n[RUNNING] {' '.join(cmd)}")
+    subprocess.run(cmd, check=True)
 
     print("[INFO] Ejecutando métricas globales de campeones...")
     run_champions_winrate()
 
     print("[INFO] Ejecutando frecuencias de partidas...")
     run_games_frecuency()
+def main():
+    print("[INIT] Inicio del orquestador de metricas")
+    
+    # Captura todos los argumentos pasados a metricsMain.py
+    cli_args = sys.argv[1:]
+    
+    scripts_to_run = [
+        "metrics_01_players_games_winrate", "metrics_02_champions_games_winrate",
+        "metrics_03_games_frecuency", "metrics_04_win_lose_streak",
+        "metrics_05_players_stats", "metrics_06_ego_index",
+        "metrics_07_troll_index", "metrics_08_first_metrics",
+        "metrics_09_number_skills", "metrics_10_stats_by_rol",
+        "metrics_11_stats_record"
+    ]
+    
+    for script in scripts_to_run:
+        run_metric_script(script, cli_args)
 
     print("[INFO] Ejecutando rachas de victorias y derrotas...")
     run_win_lose_streak()

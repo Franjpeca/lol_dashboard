@@ -3,11 +3,14 @@
 import os
 import json
 import argparse
+import sys
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
+
+sys.stdout.reconfigure(encoding='utf-8')
 
 load_dotenv()
 
@@ -20,6 +23,7 @@ client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
 RESULTS_ROOT = Path("data/results")
+RUNTIME_ROOT = Path("data/runtime")
 
 
 def run():
@@ -32,6 +36,7 @@ def now_utc():
 
 def log(msg):
     print(f"[{now_utc()}] {msg}", flush=True)
+
 
 
 # ============================================================
@@ -55,9 +60,19 @@ def extract_pool_from_l1(l1_name):
 # MAIN compute
 # ============================================================
 
-def compute_metrics(l1_name, dataset_folder):
+def compute_metrics(l1_name, dataset_folder, start_date=None, end_date=None):
     coll_matches = db[l1_name]
     coll_users = db["L0_users_index"]
+
+    # --- Filtro temporal opcional ---
+    if start_date and end_date:
+        ts_start = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
+        ts_end = int(datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+        match_query = {
+            "data.info.gameStartTimestamp": {"$gte": ts_start, "$lte": ts_end}
+        }
+    else:
+        match_query = {}
 
     users = list(coll_users.find({}, {"persona": 1, "puuids": 1}))
 
@@ -69,7 +84,7 @@ def compute_metrics(l1_name, dataset_folder):
 
         for puuid in puuids:
             cursor = coll_matches.find(
-                {"friends_present": puuid},
+                {"friends_present": puuid, **match_query},
                 {"data.info.participants": 1}
             )
 
@@ -88,6 +103,7 @@ def compute_metrics(l1_name, dataset_folder):
                         stats[persona]["R"].append(p.get("spell4Casts", 0))
                         break
 
+    # --- cálculo final ---
     result = {}
 
     for persona, values in stats.items():
@@ -108,12 +124,27 @@ def compute_metrics(l1_name, dataset_folder):
             "matches": len(q)
         }
 
-    out_path = dataset_folder / "metrics_09_number_skills.json"
-    with out_path.open("w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
+    out_file = dataset_folder / (
+        f"metrics_09_number_skills_{start_date}_to_{end_date}.json"
+        if start_date and end_date else "metrics_09_number_skills.json"
+    )
 
-    log(f"Guardado en {out_path}")
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+
+    json_data = {
+        "source_L1": l1_name,
+        "generated_at": now_utc(),
+        "start_date": start_date,
+        "end_date": end_date,
+        "skills": result
+    }
+
+    with out_file.open("w", encoding="utf-8") as f:
+        json.dump(json_data, f, indent=2, ensure_ascii=False)
+
+    log(f"Guardado en {out_file}")
     log("Proceso completado.")
+
 
 
 # ============================================================
@@ -124,24 +155,33 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--queue", type=int, default=DEFAULT_QUEUE)
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
+    parser.add_argument("--start", type=str, default=None)
+    parser.add_argument("--end", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
     min_friends = args.min
+    start = args.start
+    end = args.end
 
-    print("[09] Starting ... using collection: L1_q" + str(queue) + "_min" + str(min_friends))
-    
+    print(f"[09] Starting ... using queue={queue} min={min_friends}")
+
     l1_name = auto_select_l1(queue, min_friends)
     if not l1_name:
+        print("[09] ERROR: No L1 collection found")
         return
 
     pool_id = extract_pool_from_l1(l1_name)
 
-    dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+    if start and end:
+        dataset_folder = RUNTIME_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+    else:
+        dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+
     dataset_folder.mkdir(parents=True, exist_ok=True)
 
-    compute_metrics(l1_name, dataset_folder)
-    
+    compute_metrics(l1_name, dataset_folder, start, end)
+
     print("[09] Ended")
 
 

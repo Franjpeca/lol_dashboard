@@ -1,32 +1,35 @@
 import json
 import os
 import argparse
+import sys
 from pathlib import Path
 from collections import defaultdict
+from datetime import datetime
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
-# Cargar variables de entorno
+sys.stdout.reconfigure(encoding='utf-8')
+
 load_dotenv()
 
-# Ruta base
-BASE_DIR = Path(__file__).resolve().parents[3]
-DATA_DIR = BASE_DIR / "data" / "results"
+BASE_DIR = Path(__file__).resolve().parents[2]
+RESULTS_ROOT = BASE_DIR / "data" / "results"
+RUNTIME_ROOT = BASE_DIR / "data" / "runtime"
 
-# Conexión con MongoDB
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("MONGO_DB", "lol_data")
 DEFAULT_MIN = int(os.getenv("MIN_FRIENDS_IN_MATCH", "5"))
 DEFAULT_QUEUE = int(os.getenv("QUEUE_FLEX", "440"))
-DEFAULT_POOL = "ac89fa8d"
 
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
-RESULTS_ROOT = Path("data/results")
+
+
+def now_str():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 def auto_select_l1(queue, min_friends):
-    """Selecciona la colección L1 más reciente según los parámetros queue y min_friends."""
     prefix = f"L1_q{queue}_min{min_friends}_"
     cands = [c for c in db.list_collection_names() if c.startswith(prefix)]
     if not cands:
@@ -36,136 +39,176 @@ def auto_select_l1(queue, min_friends):
 
 
 def extract_pool_from_l1(l1_name):
-    """Extrae el pool de un nombre de colección L1."""
     return "pool_" + l1_name.split("_pool_", 1)[1]
 
-def process_stats(l1_collection):
-    """Procesa estadísticas por rol y jugador desde una colección L1."""
+
+def ts_to_date(ts_ms):
+    if not ts_ms:
+        return None
+    return datetime.utcfromtimestamp(ts_ms / 1000)
+
+
+def within_window(game_ts_ms, start_dt, end_dt):
+    if start_dt is None and end_dt is None:
+        return True
+    game_dt = ts_to_date(game_ts_ms)
+    if start_dt and game_dt < start_dt:
+        return False
+    if end_dt and game_dt > end_dt:
+        return False
+    return True
+
+
+def process_stats(l1_collection, start_dt, end_dt):
     coll = db[l1_collection]
-    
-    # Cargar mapeo de puuid -> persona desde L0_users_index
-    l0_coll = db["L0_users_index"]
+
     puuid_to_persona = {}
-    for user in l0_coll.find({}, {"_id": 1, "persona": 1, "puuids": 1}):
+    for user in db["L0_users_index"].find({}, {"persona": 1, "puuids": 1}):
         persona = user.get("persona", "Unknown")
-        for puuid in user.get("puuids", []):
-            puuid_to_persona[puuid] = persona
-    
-    # Estructura: role -> persona -> stats
-    stats_by_role = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
-    games_by_role_player = defaultdict(lambda: defaultdict(int))
-    kill_participation_by_role_player = defaultdict(lambda: defaultdict(list))
-    
-    cursor = coll.find({}, {"data.info.participants": 1, "friends_present": 1})
-    
+        for p in user.get("puuids", []):
+            puuid_to_persona[p] = persona
+
+    stats = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
+    games = defaultdict(lambda: defaultdict(int))
+    kp_lists = defaultdict(lambda: defaultdict(list))
+
+    cursor = coll.find(
+        {},
+        {
+            "data.info.participants": 1,
+            "data.info.gameStartTimestamp": 1,
+            "friends_present": 1,
+        }
+    )
+
     for doc in cursor:
-        participants = doc.get("data", {}).get("info", {}).get("participants", [])
-        friends_present = doc.get("friends_present", [])
-        
-        # Calcular kills totales por equipo en este juego
+        info = doc.get("data", {}).get("info", {})
+        game_ts = info.get("gameStartTimestamp")
+        participants = info.get("participants", [])
+        friends = doc.get("friends_present", [])
+
+        if not within_window(game_ts, start_dt, end_dt):
+            continue
+
         team_kills = defaultdict(int)
-        for player in participants:
-            team = player.get("teamId")
-            team_kills[team] += player.get("kills", 0)
-        
-        for player in participants:
-            puuid = player.get("puuid")
-            
-            # Solo procesar jugadores tracked
-            if puuid not in friends_present:
+        for p in participants:
+            team = p.get("teamId")
+            team_kills[team] += p.get("kills", 0)
+
+        for p in participants:
+            puuid = p.get("puuid")
+            if puuid not in friends:
                 continue
-            
+
             persona = puuid_to_persona.get(puuid, "Unknown")
-            position = player.get("teamPosition", "UNKNOWN")
-            
-            games_by_role_player[position][persona] += 1
-            stats_by_role[position][persona]["total_damage"] += player.get("totalDamageDealt", 0)
-            stats_by_role[position][persona]["damage_taken"] += player.get("totalDamageTaken", 0)
-            stats_by_role[position][persona]["gold"] += player.get("goldEarned", 0)
-            stats_by_role[position][persona]["farm"] += player.get("totalMinionsKilled", 0)
-            stats_by_role[position][persona]["vision"] += player.get("visionScore", 0)
-            stats_by_role[position][persona]["turret_damage"] += player.get("damageDealtToBuildings", 0)
-            stats_by_role[position][persona]["kills"] += player.get("kills", 0)
-            stats_by_role[position][persona]["deaths"] += player.get("deaths", 0)
-            stats_by_role[position][persona]["assists"] += player.get("assists", 0)
-            stats_by_role[position][persona]["wins"] += (1 if player.get("win", False) else 0)
-            
-            # Calcular kill participation para este juego
-            player_kills = player.get("kills", 0)
-            player_assists = player.get("assists", 0)
-            team_id = player.get("teamId")
-            total_team_kills = team_kills.get(team_id, 1)
-            
-            if total_team_kills > 0:
-                kill_participation = ((player_kills + player_assists) / total_team_kills) * 100
-            else:
-                kill_participation = 0
-            
-            kill_participation_by_role_player[position][persona].append(kill_participation)
-    
-    # Calcular promedios
+            role = p.get("teamPosition", "UNKNOWN")
+
+            games[role][persona] += 1
+
+            stats[role][persona]["total_damage"] += p.get("totalDamageDealt", 0)
+            stats[role][persona]["damage_taken"] += p.get("totalDamageTaken", 0)
+            stats[role][persona]["gold"] += p.get("goldEarned", 0)
+            stats[role][persona]["farm"] += p.get("totalMinionsKilled", 0)
+            stats[role][persona]["vision"] += p.get("visionScore", 0)
+            stats[role][persona]["turret"] += p.get("damageDealtToBuildings", 0)
+            stats[role][persona]["kills"] += p.get("kills", 0)
+            stats[role][persona]["deaths"] += p.get("deaths", 0)
+            stats[role][persona]["assists"] += p.get("assists", 0)
+            stats[role][persona]["wins"] += (1 if p.get("win", False) else 0)
+
+            team_id = p.get("teamId")
+            tk = team_kills.get(team_id, 1)
+            kp = ((p.get("kills", 0) + p.get("assists", 0)) / tk) * 100 if tk > 0 else 0
+            kp_lists[role][persona].append(kp)
+
     result = {}
-    for position in stats_by_role:
-        result[position] = {}
-        for persona in stats_by_role[position]:
-            games = games_by_role_player[position][persona]
-            if games > 0:
-                # Calcular promedio de kill participation
-                kp_list = kill_participation_by_role_player[position][persona]
-                avg_kill_participation = round(sum(kp_list) / len(kp_list), 2) if kp_list else 0
-                
-                result[position][persona] = {
-                    "games": games,
-                    "avg_damage": round(stats_by_role[position][persona]["total_damage"] / games, 2),
-                    "avg_damage_taken": round(stats_by_role[position][persona]["damage_taken"] / games, 2),
-                    "avg_gold": round(stats_by_role[position][persona]["gold"] / games, 2),
-                    "avg_farm": round(stats_by_role[position][persona]["farm"] / games, 2),
-                    "avg_vision": round(stats_by_role[position][persona]["vision"] / games, 2),
-                    "avg_turret_damage": round(stats_by_role[position][persona]["turret_damage"] / games, 2),
-                    "avg_kills": round(stats_by_role[position][persona]["kills"] / games, 2),
-                    "avg_deaths": round(stats_by_role[position][persona]["deaths"] / games, 2),
-                    "avg_assists": round(stats_by_role[position][persona]["assists"] / games, 2),
-                    "avg_kill_participation": avg_kill_participation,
-                    "winrate": round((stats_by_role[position][persona]["wins"] / games) * 100, 2),
-                }
-    
+
+    for role in stats:
+        result[role] = {}
+        for persona in stats[role]:
+            g = games[role][persona]
+            if g == 0:
+                continue
+
+            kp_list = kp_lists[role][persona]
+            avg_kp = round(sum(kp_list) / len(kp_list), 2) if kp_list else 0
+
+            s = stats[role][persona]
+            result[role][persona] = {
+                "games": g,
+                "avg_damage": round(s["total_damage"] / g, 2),
+                "avg_damage_taken": round(s["damage_taken"] / g, 2),
+                "avg_gold": round(s["gold"] / g, 2),
+                "avg_farm": round(s["farm"] / g, 2),
+                "avg_vision": round(s["vision"] / g, 2),
+                "avg_turret_damage": round(s["turret"] / g, 2),
+                "avg_kills": round(s["kills"] / g, 2),
+                "avg_deaths": round(s["deaths"] / g, 2),
+                "avg_assists": round(s["assists"] / g, 2),
+                "avg_kill_participation": avg_kp,
+                "winrate": round((s["wins"] / g) * 100, 2),
+            }
+
     return result
 
 
-def save_stats(stats, dataset_folder):
-    """Guarda las estadísticas en un archivo JSON."""
-    out_path = dataset_folder / "metrics_10_stats_by_rol.json"
+def save_stats(l1_name, start_date, end_date, stats, dataset_folder):
+    if start_date and end_date:
+        fname = f"metrics_10_stats_by_rol_{start_date}_to_{end_date}.json"
+    else:
+        fname = "metrics_10_stats_by_rol.json"
+
+    out_path = dataset_folder / fname
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
+    final = {
+        "source_L1": l1_name,
+        "generated_at": now_str(),
+        "start_date": start_date,
+        "end_date": end_date,
+        "roles": stats,
+    }
+
     with out_path.open("w", encoding="utf-8") as f:
-        json.dump(stats, f, ensure_ascii=False, indent=2)
+        json.dump(final, f, ensure_ascii=False, indent=2)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--queue", type=int, default=DEFAULT_QUEUE)
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
+    parser.add_argument("--start", type=str, default=None)
+    parser.add_argument("--end", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
     min_friends = args.min
-    pool_id = DEFAULT_POOL
+    start_date = args.start
+    end_date = args.end
 
-    print(f"[10] Starting ... using collection: L1_q{queue}_min{min_friends}")
-    
+    start_dt = datetime.strptime(start_date, "%Y-%m-%d") if start_date else None
+    end_dt = datetime.strptime(end_date, "%Y-%m-%d") if end_date else None
+
+    print(f"[10] Starting ... using collection L1_q{queue}_min{min_friends}")
+
     l1_name = auto_select_l1(queue, min_friends)
     if not l1_name:
+        print("[10] No L1 found")
         return
 
     pool_id = extract_pool_from_l1(l1_name)
 
-    dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+    if start_date and end_date:
+        dataset_folder = RUNTIME_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+    else:
+        dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+
     dataset_folder.mkdir(parents=True, exist_ok=True)
 
-    stats = process_stats(l1_name)
-    save_stats(stats, dataset_folder)
-    
-    print(f"[10] Ended")
+    stats = process_stats(l1_name, start_dt, end_dt)
+    save_stats(l1_name, start_date, end_date, stats, dataset_folder)
+
+    print("[10] Ended")
 
 
 def run():

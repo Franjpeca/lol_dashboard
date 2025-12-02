@@ -1,0 +1,518 @@
+{
+  "source_L1": "L1_q440_min5_pool_ac89fa8d",
+  "generated_at": "2025-12-02 02:51:51",
+  "start_date": "2025-10-06",
+  "end_date": "2025-12-09",
+  "records": {
+    "Joseph Joestar": {
+      "max_kills": {
+        "value": 18,
+        "game_id": 7606437328
+      },
+      "max_deaths": {
+        "value": 12,
+        "game_id": 7601862359
+      },
+      "max_assists": {
+        "value": 29,
+        "game_id": 7598142384
+      },
+      "max_vision_score": {
+        "value": 77,
+        "game_id": 7569040405
+      },
+      "max_farm": {
+        "value": 279,
+        "game_id": 7592570357
+      },
+      "max_damage_dealt": {
+        "value": 52905,
+        "game_id": 7600766228
+      },
+      "max_gold": {
+        "value": 18101,
+        "game_id": 7599544345
+      },
+      "longest_game": {
+        "value": "47m 5s",
+        "game_id": 7599544345
+      }
+    },
+    "Kyoraku": {
+      "max_kills": {
+        "value": 30,
+        "game_id": 7603721057
+      },
+      "max_deaths": {
+        "value": 12,
+        "game_id": 7603965944
+      },
+      "max_assists": {
+        "value": 27,
+        "game_id": 7601751913
+      },
+      "max_vision_score": {
+        "value": 90,
+        "game_id": 7601751913
+      },
+      "max_farm": {
+        "value": 402,
+        "game_id": 7601801493
+      },
+      "max_damage_dealt": {
+        "value": 94371,
+        "game_id": 7603721057
+      },
+      "max_gold": {
+        "value": 24715,
+        "game_id": 7601801493
+      },
+      "longest_game": {
+        "value": "48m 35s",
+        "game_id": 7601801493
+      }
+    },
+    "Frieren": {
+      "max_kills": {
+        "value": 25,
+        "game_id": 7601862359
+      },
+      "max_deaths": {
+        "value": 12,
+        "game_id": 7601801493
+      },
+      "max_assists": {
+        "value": 31,
+        "game_id": 7589381798
+      },
+      "max_vision_score": {
+        "value": 89,
+        "game_id": 7608729444
+      },
+      "max_farm": {
+        "value": 311,
+        "game_id": 7598142384
+      },
+      "max_damage_dealt": {
+        "value": 98523,
+        "game_id": 7569999457
+      },
+      "max_gold": {
+        "value": 25456,
+        "game_id": 7601862359
+      },
+      "longest_game": {
+        "value": "48m 35s",
+        "game_id": 7601801493
+      }
+    },
+    "SN Bin": {
+      "max_kills": {
+        "value": 11,
+        "game_id": 7603605646
+      },
+      "max_deaths": {
+        "value": 8,
+        "game_id": 7558297627
+      },
+      "max_assists": {
+        "value": 22,
+        "game_id": 7603544325
+      },
+      "max_vision_score": {
+        "value": 27,
+        "game_id": 7563268765
+      },
+      "max_farm": {
+        "value": 276,
+        "game_id": 7572516648
+      },
+      "max_damage_dealt": {
+        "value": 28017,
+        "game_id": 7558297627
+      },
+      "max_gold": {
+        "value": 15898,
+        "game_id": 7563268765
+      },
+      "longest_game": {
+        "value": "34m 34s",
+        "game_id": 7558297627
+      }
+    },
+    "TheChosenUndead": {
+      "max_kills": {
+        "value": 14,
+        "game_id": 7565357144
+      },
+      "max_deaths": {
+        "value": 13,
+        "game_id": 7603965944
+      },
+      "max_assists": {
+        "value": 30,
+        "game_id": 7601862359
+      },
+      "max_vision_score": {
+        "value": 94,
+        "game_id": 7575461744
+      },
+      "max_farm": {
+        "value": 268,
+        "game_id": 7598142384
+      },
+      "max_damage_dealt": {
+        "value": 51380,
+        "game_id": 7569999457
+      },
+      "max_gold": {
+        "value": 17304,
+        "game_id": 7600960791
+      },
+      "longest_game": {
+        "value": "48m 35s",
+        "game_id": 7601801493
+      }
+    },
+    "maibad": {
+      "max_kills": {
+        "value": 11,
+        "game_id": 7558380468
+      },
+      "max_deaths": {
+        "value": 4,
+        "game_id": 7558380468
+      },
+      "max_assists": {
+        "value": 11,
+        "game_id": 7558380468
+      },
+      "max_vision_score": {
+        "value": 23,
+        "game_id": 7558380468
+      },
+      "max_farm": {
+        "value": 186,
+        "game_id": 7558380468
+      },
+      "max_damage_dealt": {
+        "value": 36252,
+        "game_id": 7558380468
+      },
+      "max_gold": {
+        "value": 15300,
+        "game_id": 7558380468
+      },
+      "longest_game": {
+        "value": "37m 37s",
+        "game_id": 7558380468
+      }
+    },
+    "Bustamantefanboy": {
+      "max_kills": {
+        "value": 27,
+        "game_id": 7576641022
+      },
+      "max_deaths": {
+        "value": 13,
+        "game_id": 7601801493
+      },
+      "max_assists": {
+        "value": 27,
+        "game_id": 7558380468
+      },
+      "max_vision_score": {
+        "value": 41,
+        "game_id": 7600700279
+      },
+      "max_farm": {
+        "value": 345,
+        "game_id": 7601231648
+      },
+      "max_damage_dealt": {
+        "value": 81568,
+        "game_id": 7600960791
+      },
+      "max_gold": {
+        "value": 25045,
+        "game_id": 7601801493
+      },
+      "longest_game": {
+        "value": "48m 35s",
+        "game_id": 7601801493
+      }
+    },
+    "Banshee": {
+      "max_kills": {
+        "value": 17,
+        "game_id": 7600700279
+      },
+      "max_deaths": {
+        "value": 11,
+        "game_id": 7602819593
+      },
+      "max_assists": {
+        "value": 26,
+        "game_id": 7583847866
+      },
+      "max_vision_score": {
+        "value": 107,
+        "game_id": 7603965944
+      },
+      "max_farm": {
+        "value": 279,
+        "game_id": 7558731709
+      },
+      "max_damage_dealt": {
+        "value": 46773,
+        "game_id": 7602911858
+      },
+      "max_gold": {
+        "value": 19153,
+        "game_id": 7600700279
+      },
+      "longest_game": {
+        "value": "48m 35s",
+        "game_id": 7601801493
+      }
+    },
+    "Kayki マ": {
+      "max_kills": {
+        "value": 9,
+        "game_id": 7603896316
+      },
+      "max_deaths": {
+        "value": 13,
+        "game_id": 7569999457
+      },
+      "max_assists": {
+        "value": 23,
+        "game_id": 7577715197
+      },
+      "max_vision_score": {
+        "value": 90,
+        "game_id": 7569999457
+      },
+      "max_farm": {
+        "value": 283,
+        "game_id": 7607781517
+      },
+      "max_damage_dealt": {
+        "value": 25563,
+        "game_id": 7603896316
+      },
+      "max_gold": {
+        "value": 15510,
+        "game_id": 7601862359
+      },
+      "longest_game": {
+        "value": "47m 5s",
+        "game_id": 7599544345
+      }
+    },
+    "Dexus": {
+      "max_kills": {
+        "value": 25,
+        "game_id": 7603544325
+      },
+      "max_deaths": {
+        "value": 14,
+        "game_id": 7601862359
+      },
+      "max_assists": {
+        "value": 30,
+        "game_id": 7602819593
+      },
+      "max_vision_score": {
+        "value": 65,
+        "game_id": 7602819593
+      },
+      "max_farm": {
+        "value": 263,
+        "game_id": 7608729444
+      },
+      "max_damage_dealt": {
+        "value": 69357,
+        "game_id": 7603544325
+      },
+      "max_gold": {
+        "value": 23269,
+        "game_id": 7601840150
+      },
+      "longest_game": {
+        "value": "47m 5s",
+        "game_id": 7599544345
+      }
+    },
+    "Lady Maria": {
+      "max_kills": {
+        "value": 4,
+        "game_id": 7565357144
+      },
+      "max_deaths": {
+        "value": 10,
+        "game_id": 7603783097
+      },
+      "max_assists": {
+        "value": 32,
+        "game_id": 7603721057
+      },
+      "max_vision_score": {
+        "value": 59,
+        "game_id": 7565357144
+      },
+      "max_farm": {
+        "value": 16,
+        "game_id": 7565357144
+      },
+      "max_damage_dealt": {
+        "value": 8911,
+        "game_id": 7565357144
+      },
+      "max_gold": {
+        "value": 10957,
+        "game_id": 7603721057
+      },
+      "longest_game": {
+        "value": "32m 50s",
+        "game_id": 7565357144
+      }
+    },
+    "Däzzler": {
+      "max_kills": {
+        "value": 10,
+        "game_id": 7613339427
+      },
+      "max_deaths": {
+        "value": 12,
+        "game_id": 7600960791
+      },
+      "max_assists": {
+        "value": 36,
+        "game_id": 7576641022
+      },
+      "max_vision_score": {
+        "value": 106,
+        "game_id": 7593546408
+      },
+      "max_farm": {
+        "value": 236,
+        "game_id": 7576589011
+      },
+      "max_damage_dealt": {
+        "value": 38868,
+        "game_id": 7613339427
+      },
+      "max_gold": {
+        "value": 12889,
+        "game_id": 7600960791
+      },
+      "longest_game": {
+        "value": "43m 0s",
+        "game_id": 7600960791
+      }
+    },
+    "En Vlc No F0II0": {
+      "max_kills": {
+        "value": 11,
+        "game_id": 7595854080
+      },
+      "max_deaths": {
+        "value": 10,
+        "game_id": 7595854080
+      },
+      "max_assists": {
+        "value": 35,
+        "game_id": 7603544325
+      },
+      "max_vision_score": {
+        "value": 52,
+        "game_id": 7603544325
+      },
+      "max_farm": {
+        "value": 200,
+        "game_id": 7595904710
+      },
+      "max_damage_dealt": {
+        "value": 39062,
+        "game_id": 7595904710
+      },
+      "max_gold": {
+        "value": 15245,
+        "game_id": 7595904710
+      },
+      "longest_game": {
+        "value": "38m 36s",
+        "game_id": 7601231648
+      }
+    },
+    "Morocha": {
+      "max_kills": {
+        "value": 15,
+        "game_id": 7586158609
+      },
+      "max_deaths": {
+        "value": 11,
+        "game_id": 7586189118
+      },
+      "max_assists": {
+        "value": 12,
+        "game_id": 7599544345
+      },
+      "max_vision_score": {
+        "value": 33,
+        "game_id": 7599544345
+      },
+      "max_farm": {
+        "value": 262,
+        "game_id": 7586158609
+      },
+      "max_damage_dealt": {
+        "value": 43086,
+        "game_id": 7586158609
+      },
+      "max_gold": {
+        "value": 20367,
+        "game_id": 7586158609
+      },
+      "longest_game": {
+        "value": "47m 5s",
+        "game_id": 7599544345
+      }
+    },
+    "Nikken": {
+      "max_kills": {
+        "value": 5,
+        "game_id": 7598142384
+      },
+      "max_deaths": {
+        "value": 9,
+        "game_id": 7598142384
+      },
+      "max_assists": {
+        "value": 25,
+        "game_id": 7598142384
+      },
+      "max_vision_score": {
+        "value": 24,
+        "game_id": 7598142384
+      },
+      "max_farm": {
+        "value": 199,
+        "game_id": 7598142384
+      },
+      "max_damage_dealt": {
+        "value": 25253,
+        "game_id": 7598142384
+      },
+      "max_gold": {
+        "value": 14754,
+        "game_id": 7598142384
+      },
+      "longest_game": {
+        "value": "39m 0s",
+        "game_id": 7598142384
+      }
+    }
+  }
+}

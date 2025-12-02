@@ -3,9 +3,8 @@ import sys
 from pathlib import Path
 import dash
 
-
-import threading
-
+import threading  # lo sigues usando para el pipeline general
+import subprocess
 
 import plotly.io as pio
 import plotly.graph_objs as go
@@ -37,8 +36,8 @@ from viewGame.loader import load_match_summary
 from utils.api_key_manager import save_new_temp_key
 
 from run import main as run_pipeline
-
 from run import PIPELINE_QUEUE
+
 
 def normalize_output(output, base_id_prefix: str):
     results = []
@@ -95,6 +94,42 @@ def normalize_output(output, base_id_prefix: str):
     return results
 
 
+def run_metrics_script(queue: int, min_friends: int, start: str | None = None, end: str | None = None) -> str:
+    """
+    Ejecuta metricsMain.py de forma sincrona con los parametros adecuados.
+    Devuelve stdout+stderr para logs.
+    """
+    cmd = [
+        sys.executable,
+        str(BASE_DIR / "src" / "metrics" / "metricsMain.py"),
+        "--queue", str(queue),
+        "--min", str(min_friends),
+    ]
+
+    if start:
+        cmd += ["--start", start]
+    if end:
+        cmd += ["--end", end]
+
+    print("[METRICS] Ejecutando comando:")
+    print(" ".join(cmd))
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+    except Exception as e:
+        print("[METRICS] Error ejecutando metricsMain.py:", e)
+        return f"Error ejecutando metricsMain.py: {e}"
+
+    print("[METRICS] STDOUT:")
+    print(result.stdout)
+    print("[METRICS] STDERR:")
+    print(result.stderr)
+
+    if result.returncode != 0:
+        return "metricsMain.py termino con error. Revisa los logs del servidor."
+    return "metricsMain.py se ejecuto correctamente."
+
+
 def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
     app = Dash(
         __name__,
@@ -107,6 +142,7 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
         dcc.Store(id="copy-store"),
         html.Div(id="copy-msg", style={"color": "yellow", "marginLeft": "12px"}),
+        html.Div(id="metrics-status", style={"color": "cyan", "marginLeft": "12px"}),
 
         html.Div([
             html.H1("Villaquesitos.gg", style={"marginBottom": "5px"}),
@@ -116,8 +152,6 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                 dcc.Dropdown(
                     id="min-friends-dropdown",
                     options=[
-                        {"label": "1", "value": 1},
-                        {"label": "2", "value": 2},
                         {"label": "3", "value": 3},
                         {"label": "4", "value": 4},
                         {"label": "5", "value": 5}
@@ -126,9 +160,47 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                     clearable=False,
                     style={"width": "120px"},
                 ),
-            ], style={"marginTop": "10px", "display": "flex", "alignItems": "center", "gap": "10px"}),
 
-        ], style={"padding": "16px 24px", "backgroundColor": "#222", "color": "white", "borderBottom": "1px solid #444"}),
+                html.Span("Start:", style={"marginLeft": "16px", "color": "white"}),
+                dcc.DatePickerSingle(
+                    id="start-date",
+                    display_format="YYYY-MM-DD",
+                    style={"backgroundColor": "#333", "color": "white"}
+                ),
+
+                html.Span("End:", style={"marginLeft": "12px", "color": "white"}),
+                dcc.DatePickerSingle(
+                    id="end-date",
+                    display_format="YYYY-MM-DD",
+                    style={"backgroundColor": "#333", "color": "white"}
+                ),
+
+                html.Button(
+                    "Recargar metricas",
+                    id="btn-run-metrics",
+                    n_clicks=0,
+                    style={
+                        "marginLeft": "12px",
+                        "padding": "6px 14px",
+                        "backgroundColor": "#444",
+                        "color": "white",
+                        "border": "1px solid #666",
+                        "borderRadius": "6px",
+                    }
+                ),
+            ], style={
+                "marginTop": "10px",
+                "display": "flex",
+                "alignItems": "center",
+                "gap": "10px"
+            }),
+
+        ], style={
+            "padding": "16px 24px",
+            "backgroundColor": "#222",
+            "color": "white",
+            "borderBottom": "1px solid #444"
+        }),
 
         dcc.Tabs(id="tabs", value="tab-win", children=[
             dcc.Tab(label="Winrate y partidas", value="tab-win"),
@@ -143,20 +215,39 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
     ], style={"backgroundColor": "black", "minHeight": "100vh"})
 
-
+    # ============================================================
+    #  CALLBACK PRINCIPAL: tabs + min_friends + boton metricas
+    # ============================================================
     @app.callback(
         Output("tab-content", "children"),
+        Output("metrics-status", "children"),
         Input("tabs", "value"),
-        Input("min-friends-dropdown", "value"),
+        Input("min-friends-dropdown", "value"),  # Se añade el valor del dropdown
+        Input("btn-run-metrics", "n_clicks"),
+        State("start-date", "date"),
+        State("end-date", "date"),
     )
-    def update_tab_content(selected_tab, min_friends):
+    def update_tab_content(selected_tab, min_friends, n_clicks_run, start_date, end_date):
+        status_msg = dash.no_update
+
+        ctx = dash.callback_context
+        triggered_id = ctx.triggered[0]["prop_id"].split(".")[0] if ctx.triggered else None
+
+        if triggered_id == "btn-run-metrics" and n_clicks_run:
+            start = start_date if start_date else None
+            end = end_date if end_date else None
+
+            # Ejecutar metricsMain.py de forma sincrona
+            status_msg = run_metrics_script(queue, min_friends, start, end)
+
         components = []
 
+        # Aquí se genera el contenido en base al valor de min_friends y el tab seleccionado
         if selected_tab == "tab-win":
-            components += normalize_output(render_winrate(pool_id, queue, min_friends), "winrate")
-            components += normalize_output(render_champions(pool_id, queue, min_friends), "champions")
+            components += normalize_output(render_winrate(pool_id, queue, min_friends, start=start_date, end=end_date), "winrate")
+            components += normalize_output(render_champions(pool_id, queue, min_friends, start=start_date, end=end_date), "champions")
 
-            freq_data = render_games_freq(pool_id, queue, min_friends)
+            freq_data = render_games_freq(pool_id, queue, min_friends, start=start_date, end=end_date)
             global_fig = freq_data.get("global")
             player_figs = freq_data.get("players", {})
 
@@ -195,14 +286,14 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
                 components.append(html.Div(id="freq-player-graph-container"))
 
-            components += normalize_output(render_streaks(pool_id, queue, min_friends), "streaks")
+            components += normalize_output(render_streaks(pool_id, queue, min_friends, start=start_date, end=end_date), "streaks")
 
         elif selected_tab == "tab-player":
-            components += normalize_output(render_stats(pool_id, queue, min_friends), "stats-persona")
-            components += normalize_output(render_ego(pool_id, queue, min_friends), "ego-index")
-            components += normalize_output(render_troll(pool_id, queue, min_friends), "troll-index")
-            components += normalize_output(render_first_metrics(pool_id, queue, min_friends), "first-metrics")
-            components += normalize_output(render_skills(pool_id, queue, min_friends), "skills")
+            components += normalize_output(render_stats(pool_id, queue, min_friends, start=start_date, end=end_date), "stats-persona")
+            components += normalize_output(render_ego(pool_id, queue, min_friends, start=start_date, end=end_date), "ego-index")
+            components += normalize_output(render_troll(pool_id, queue, min_friends, start=start_date, end=end_date), "troll-index")
+            components += normalize_output(render_first_metrics(pool_id, queue, min_friends, start=start_date, end=end_date), "first-metrics")
+            components += normalize_output(render_skills(pool_id, queue, min_friends, start=start_date, end=end_date), "skills")
 
         elif selected_tab == "tab-rol":
             components.append(
@@ -234,7 +325,7 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             components.append(html.Div(id="rol-graphs-container"))
 
         elif selected_tab == "tab-record":
-            components += normalize_output(render_record_stats(pool_id, queue, min_friends), "record")
+            components += normalize_output(render_record_stats(pool_id, queue, min_friends, start=start_date, end=end_date), "record")
 
         elif selected_tab == "tab-view-match":
 
@@ -301,14 +392,12 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                 })
             )
 
-
         elif selected_tab == "tab-api":
-            # Aquí solo necesitas un `append()` con un único objeto, que es un `html.Div()`
             components.append(
-                html.Div([  # Solo un `html.Div` que contiene todos los elementos dentro
+                html.Div([
                     html.H3("Configurar API Key de Riot", style={"color": "white"}),
 
-                    html.Div([  # Botones, inputs, etc. dentro de este div
+                    html.Div([
                         dcc.Input(
                             id="input-api-key",
                             type="text",
@@ -325,49 +414,45 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
                     html.Div(id="api-key-status", style={"marginTop": "20px", "color": "yellow"}),
 
-                    # El nuevo botón para ejecutar las métricas completas
-                    html.Button(
-                        "Ejecutar métricas completas",
-                        id="btn-run-pipeline",
-                        n_clicks=0,
+                html.Button(
+                    "Ejecutar metricas completas",
+                    id="btn-run-pipeline",
+                    n_clicks=0,
+                    style={
+                        "marginTop": "30px",
+                        "padding": "10px 18px",
+                        "backgroundColor": "#28a745",
+                        "color": "white",
+                        "border": "none",
+                        "borderRadius": "6px",
+                        "cursor": "pointer"
+                    }
+                ),
+
+                html.Div(id="pipeline-status", style={"marginTop": "15px", "color": "yellow"}),
+
+                html.Div([
+                    dcc.Interval(id="log-refresh", interval=500, n_intervals=0),
+                    html.Pre(
+                        id="pipeline-log",
                         style={
-                            "marginTop": "30px",
-                            "padding": "10px 18px",
-                            "backgroundColor": "#28a745",
-                            "color": "white",
-                            "border": "none",
+                            "whiteSpace": "pre-wrap",
+                            "backgroundColor": "#111",
+                            "padding": "12px",
+                            "border": "1px solid #444",
                             "borderRadius": "6px",
-                            "cursor": "pointer"
+                            "color": "white",
+                            "maxHeight": "400px",
+                            "overflowY": "scroll",
+                            "marginTop": "20px"
                         }
                     ),
+                ])
 
-                    # Estado de ejecución del pipeline
-                    html.Div(id="pipeline-status", style={"marginTop": "15px", "color": "yellow"}),
-
-                    html.Div(
-                        [
-                            dcc.Interval(id="log-refresh", interval=500, n_intervals=0),
-                            html.Pre(
-                                id="pipeline-log",
-                                style={
-                                    "whiteSpace": "pre-wrap",
-                                    "backgroundColor": "#111",
-                                    "padding": "12px",
-                                    "border": "1px solid #444",
-                                    "borderRadius": "6px",
-                                    "color": "white",
-                                    "maxHeight": "400px",
-                                    "overflowY": "scroll",
-                                    "marginTop": "20px"
-                                }
-                            ),
-                        ]
-                    )
-
-                ])  # Solo un `html.Div` en `append()`
+                ])
             )
-        return html.Div(components, style={"display": "flex", "flexDirection": "column", "gap": "32px"})
 
+        return html.Div(components, style={"display": "flex", "flexDirection": "column", "gap": "32px"}), status_msg
 
     @app.callback(
         Output("match-render-container", "children"),
@@ -385,7 +470,6 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
         data = load_match_summary(full_id)
         return render_match(data)
 
-
     @app.callback(
         Output("copy-store", "data"),
         Output("copy-msg", "children"),
@@ -399,7 +483,6 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                 return match_id, f"Copiado ID: {match_id}"
         return None, ""
 
-
     app.clientside_callback(
         """
         function(data) {
@@ -412,33 +495,35 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
         Input("copy-store", "data")
     )
 
-
     @app.callback(
         Output("rol-graphs-container", "children"),
         Input("role-dropdown", "value"),
         Input("min-friends-dropdown", "value"),
         Input("min-games-slider", "value"),
+        State("start-date", "date"),
+        State("end-date", "date"),
     )
-    def update_rol_graphs(selected_role, min_friends, min_games):
+    def update_rol_graphs(selected_role, min_friends, min_games, start_date, end_date):
         if selected_role is None:
             selected_role = "TOP"
 
         return html.Div(
             normalize_output(
-                render_stats_by_rol(pool_id, queue, min_friends, selected_role, min_games=min_games),
+                render_stats_by_rol(pool_id, queue, min_friends, selected_role, min_games=min_games, start=start_date, end=end_date),
                 f"stats-rol-{selected_role}",
             ),
             style={"display": "flex", "flexDirection": "column", "gap": "32px"},
         )
 
-
     @app.callback(
         Output("freq-player-graph-container", "children"),
         Input("freq-player-dropdown", "value"),
         Input("min-friends-dropdown", "value"),
+        State("start-date", "date"),
+        State("end-date", "date"),
     )
-    def update_freq_player_graph(selected_player, min_friends):
-        freq_data = render_games_freq(pool_id, queue, min_friends)
+    def update_freq_player_graph(selected_player, min_friends, start_date, end_date):
+        freq_data = render_games_freq(pool_id, queue, min_friends, start=start_date, end=end_date)
         player_figs = freq_data.get("players", {})
 
         if not player_figs:
@@ -454,7 +539,6 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             id=f"freq-player-graph-{selected_player}"
         )
 
-
     @app.callback(
         Output("api-key-status", "children"),
         Input("btn-save-api", "n_clicks"),
@@ -463,18 +547,15 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
     )
     def save_api_key(_, user_key):
         if not user_key:
-            return "Introduce una clave válida."
+            return "Introduce una clave valida."
 
         try:
-            save_new_temp_key(user_key)  # valida y guarda 30h
-            return "API Key guardada correctamente. Durará 30h."
+            save_new_temp_key(user_key)
+            return "API Key guardada correctamente. Durara 30h."
         except ValueError:
-            return "La API Key no es válida o está caducada."
+            return "La API Key no es valida o esta caducada."
         except Exception as e:
             return f"Error inesperado: {e}"
-
-
-
 
     @app.callback(
         Output("pipeline-status", "children"),
@@ -492,9 +573,7 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
 
         threading.Thread(target=worker).start()
 
-        return f"🚀 Ejecutando pipeline con min_friends = {min_friends}..."
-
-
+        return f"Ejecutando pipeline con min_friends = {min_friends}..."
 
     @app.callback(
         Output("pipeline-log", "children"),
@@ -504,14 +583,13 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
         lines = []
         while not PIPELINE_QUEUE.empty():
             lines.append(PIPELINE_QUEUE.get())
-        
-        # Si la cola está vacía, no actualices el log, sino no_update
+
         if not lines:
             return dash.no_update
         return "".join(lines)
 
-    
     return app
+
 
 def main():
     parser = argparse.ArgumentParser(description="Villaquesitos.gg")

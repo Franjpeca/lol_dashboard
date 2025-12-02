@@ -10,9 +10,22 @@ pio.templates.default = "plotly_dark"
 BASE_DIR = Path(__file__).resolve().parents[3]
 
 
-def get_paths(pool_id, queue, min_friends):
-    return BASE_DIR / f"data/results/pool_{pool_id}/q{queue}/min{min_friends}/metrics_03_games_frecuency.json"
+# ============================================================
+#   LOCALIZAR RUTA DEL JSON SEGUN POOL / QUEUE / MIN / FECHAS
+# ============================================================
 
+def get_paths(pool_id, queue, min_friends, start_date=None, end_date=None):
+    # Si se proporcionan fechas, busca el archivo con el rango de fechas en el nombre
+    if start_date and end_date:
+        return BASE_DIR / f"data/runtime/pool_{pool_id}/q{queue}/min{min_friends}/metrics_03_games_frecuency_{start_date}_to_{end_date}.json"
+    else:
+        # Si no se proporcionan fechas, busca el archivo predeterminado
+        return BASE_DIR / f"data/results/pool_{pool_id}/q{queue}/min{min_friends}/metrics_03_games_frecuency.json"
+
+
+# ============================================================
+#   CARGA
+# ============================================================
 
 def load_json(path: Path):
     if not path.exists():
@@ -51,56 +64,71 @@ def build_df_players(data):
     return players
 
 
-def make_global_fig(df):
+# ============================================================
+#   FIGURA HORIZONTAL
+# ============================================================
+
+def make_fig_horizontal(df: pd.DataFrame, x: str, title: str):
+
+    n = len(df)
+
+    tick_font_size = max(12, min(22, int(320 / n)))
+
+    base_height = max(750, min(1200, 35 * n))
+    fig_height = int(base_height * 0.75)
+
     fig = px.bar(
         df,
-        x="date",
-        y="games",
-        text="games",
+        x=x,
+        y="date",
+        orientation="h",
+        text=x,
         color="games",
         color_continuous_scale="Turbo",
         labels={"games": "Partidas", "date": "Fecha"},
-        title="Frecuencia global de partidas por dia",
+        hover_data=["games"],
+        title=title,
     )
 
-    fig.update_traces(textposition="outside")
+    fig.update_layout(bargap=0.18)
+
+    fig.update_traces(
+        textposition="inside",
+        insidetextanchor="middle",
+        textfont=dict(
+            color="white",
+            size=max(12, min(20, int(220 / n))),
+        ),
+        marker_line_width=0,
+    )
 
     fig.update_layout(
         autosize=True,
-        height=450,
-        margin=dict(l=20, r=20, t=60, b=40),
-        xaxis=dict(type="category"),
+        height=fig_height + 90,
+        margin=dict(l=170, r=50, t=60, b=40),
+        xaxis_title="",
+        yaxis=dict(
+            type="category",
+            tickmode="array",
+            tickvals=df["date"].tolist(),
+            ticktext=df["date"].tolist(),
+            tickfont=dict(size=tick_font_size),
+            automargin=True,
+        ),
     )
+
     return fig
 
 
-def make_player_fig(df, persona):
-    fig = px.bar(
-        df,
-        x="date",
-        y="games",
-        text="games",
-        color="games",
-        color_continuous_scale="Tealgrn",
-        labels={"games": "Partidas", "date": "Fecha"},
-        title=f"Partidas por dia - {persona}",
-    )
+# ============================================================
+#   RENDER PRINCIPAL PARA DASH
+# ============================================================
 
-    fig.update_traces(textposition="outside")
-
-    fig.update_layout(
-        autosize=True,
-        height=450,
-        margin=dict(l=20, r=20, t=60, b=40),
-        xaxis=dict(type="category"),
-    )
-    return fig
-
-
-def render(pool_id: str, queue: int, min_friends: int):
+def render(pool_id: str, queue: int, min_friends: int, start=None, end=None):
     print("[INFO] Loading chart_03_metrics_games_frecuency.py")
 
-    data_path = get_paths(pool_id, queue, min_friends)
+    # Llamada a get_paths con las fechas
+    data_path = get_paths(pool_id, queue, min_friends, start, end)
     data = load_json(data_path)
 
     df_global = build_df_global(data)
@@ -112,12 +140,12 @@ def render(pool_id: str, queue: int, min_friends: int):
     }
 
     if not df_global.empty:
-        result["global"] = make_global_fig(df_global)
+        result["global"] = make_fig_horizontal(df_global, "games", "Frecuencia global de partidas por día")
 
     for persona in sorted(df_players.keys()):
         df = df_players[persona]
         if not df.empty:
-            result["players"][persona] = make_player_fig(df, persona)
+            result["players"][persona] = make_fig_horizontal(df, "games", f"Frecuencia de partidas por día - {persona}")
 
     total_figs = (1 if result["global"] is not None else 0) + len(result["players"])
     print("[DEBUG] RESULTADO FREQUENCY:", total_figs, "figuras generadas")

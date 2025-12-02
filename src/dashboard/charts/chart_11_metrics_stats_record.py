@@ -10,8 +10,18 @@ pio.templates.default = "plotly_dark"
 BASE_DIR = Path(__file__).resolve().parents[3]
 
 
-def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
-    return BASE_DIR / "data" / "results" / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}" / "metrics_11_stats_record.json"
+# ============================================================
+#   LOCALIZAR ARCHIVO SEGÚN pool / queue / min
+# ============================================================
+
+def get_data_file(pool_id: str, queue: int, min_friends: int, start_date: str | None = None, end_date: str | None = None) -> Path:
+    """
+    Obtiene la ruta del archivo de datos basado en los parámetros proporcionados.
+    """
+    base_path = BASE_DIR / "data" / ("runtime" if start_date and end_date else "results") / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}"
+    if start_date and end_date:
+        return base_path / f"metrics_11_stats_record_{start_date}_to_{end_date}.json"
+    return base_path / "metrics_11_stats_record.json"
 
 
 def load_json(path: Path):
@@ -48,8 +58,12 @@ def seconds_to_str(seconds):
 # CREACION DEL DATAFRAME
 # ======================================================
 def build_df_records(data):
+    # El JSON real tiene los jugadores dentro de "records"
+    records = data.get("records", {})
+
     rows = []
-    for persona, stats in data.items():
+    for persona, stats in records.items():
+
         longest_str = stats.get("longest_game", {}).get("value", "0m 0s")
         longest_seconds = convert_to_seconds(longest_str)
 
@@ -77,11 +91,8 @@ def build_df_records(data):
             "max_gold": stats.get("max_gold", {}).get("value", 0),
             "max_gold_id": stats.get("max_gold", {}).get("game_id"),
 
-            # ***********************
-            # PARTIDA MAS LARGA
-            # ***********************
-            "longest_game_str": longest_str,            # para mostrar
-            "longest_game_seconds": longest_seconds,    # para ordenar
+            "longest_game_str": longest_str,
+            "longest_game_seconds": longest_seconds,
             "longest_game_id": stats.get("longest_game", {}).get("game_id"),
         })
     return pd.DataFrame(rows)
@@ -113,7 +124,7 @@ def make_fig_horizontal(df: pd.DataFrame, x: str, title: str, match_ids):
         textposition="inside",
         insidetextanchor="middle",
         textfont=dict(color="white", size=max(12, min(20, int(220 / n)))),
-        marker_line_width=0,
+        marker_line_width=0
     )
 
     fig.update_layout(
@@ -137,14 +148,15 @@ def make_fig_horizontal(df: pd.DataFrame, x: str, title: str, match_ids):
 # ======================================================
 # RENDER PRINCIPAL
 # ======================================================
-def render(pool_id: str, queue: int, min_friends: int):
-    data_file = get_data_file(pool_id, queue, min_friends)
+def render(pool_id: str, queue: int, min_friends: int, start: str | None = None, end: str | None = None):
+    data_file = get_data_file(pool_id, queue, min_friends, start, end)
     data = load_json(data_file)
 
     if not data:
         print(f"[ERROR] No se pudieron cargar datos de {data_file}")
         return []
 
+    # ahora el DF se construye correctamente desde data["records"]
     df = build_df_records(data)
 
     if df.empty:
@@ -152,68 +164,19 @@ def render(pool_id: str, queue: int, min_friends: int):
         return []
 
     return [
-        {
-            "fig": make_fig_horizontal(
-                df.sort_values("max_kills"),
-                "max_kills",
-                "Maximos kills",
-                df.sort_values("max_kills")["max_kills_id"].tolist()
-            )
-        },
-        {
-            "fig": make_fig_horizontal(
-                df.sort_values("max_deaths"),
-                "max_deaths",
-                "Maximas muertes",
-                df.sort_values("max_deaths")["max_deaths_id"].tolist()
-            )
-        },
-        {
-            "fig": make_fig_horizontal(
-                df.sort_values("max_assists"),
-                "max_assists",
-                "Maximas asistencias",
-                df.sort_values("max_assists")["max_assists_id"].tolist()
-            )
-        },
-        {
-            "fig": make_fig_horizontal(
-                df.sort_values("max_vision_score"),
-                "max_vision_score",
-                "Maxima vision",
-                df.sort_values("max_vision_score")["max_vision_score_id"].tolist()
-            )
-        },
-        {
-            "fig": make_fig_horizontal(
-                df.sort_values("max_farm"),
-                "max_farm",
-                "Maximo farm",
-                df.sort_values("max_farm")["max_farm_id"].tolist()
-            )
-        },
-        {
-            "fig": make_fig_horizontal(
-                df.sort_values("max_damage_dealt"),
-                "max_damage_dealt",
-                "Maximo dano infligido",
-                df.sort_values("max_damage_dealt")["max_damage_dealt_id"].tolist()
-            )
-        },
-        {
-            "fig": make_fig_horizontal(
-                df.sort_values("max_gold"),
-                "max_gold",
-                "Maximo oro",
-                df.sort_values("max_gold")["max_gold_id"].tolist()
-            )
-        },
-        {
-            "fig": make_fig_horizontal(
-                df.sort_values("longest_game_seconds"),
-                "longest_game_str",   # mostrado tal cual → "51m 47s"
-                "Partida mas larga",
-                df.sort_values("longest_game_seconds")["longest_game_id"].tolist()
-            )
-        },
+        {"fig": make_fig_horizontal(df.sort_values("max_kills"), "max_kills", "Maximos kills", df.sort_values("max_kills")["max_kills_id"].tolist())},
+
+        {"fig": make_fig_horizontal(df.sort_values("max_deaths"), "max_deaths", "Maximas muertes", df.sort_values("max_deaths")["max_deaths_id"].tolist())},
+
+        {"fig": make_fig_horizontal(df.sort_values("max_assists"), "max_assists", "Maximas asistencias", df.sort_values("max_assists")["max_assists_id"].tolist())},
+
+        {"fig": make_fig_horizontal(df.sort_values("max_vision_score"), "max_vision_score", "Maxima vision", df.sort_values("max_vision_score")["max_vision_score_id"].tolist())},
+
+        {"fig": make_fig_horizontal(df.sort_values("max_farm"), "max_farm", "Maximo farm", df.sort_values("max_farm")["max_farm_id"].tolist())},
+
+        {"fig": make_fig_horizontal(df.sort_values("max_damage_dealt"), "max_damage_dealt", "Maximo daño infligido", df.sort_values("max_damage_dealt")["max_damage_dealt_id"].tolist())},
+
+        {"fig": make_fig_horizontal(df.sort_values("max_gold"), "max_gold", "Maximo oro", df.sort_values("max_gold")["max_gold_id"].tolist())},
+
+        {"fig": make_fig_horizontal(df.sort_values("longest_game_seconds"), "longest_game_str", "Partida mas larga", df.sort_values("longest_game_seconds")["longest_game_id"].tolist())},
     ]

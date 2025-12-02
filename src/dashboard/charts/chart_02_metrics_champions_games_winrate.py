@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
@@ -9,21 +8,33 @@ pio.templates.default = "plotly_dark"
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 
-
 # ============================================================
-#   LOCALIZAR RUTA DEL JSON SEGUN POOL / QUEUE / MIN
+#   LOCALIZAR RUTA DEL JSON SEGUN POOL / QUEUE / MIN / FECHAS
 # ============================================================
 
-def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
-    return (
-        BASE_DIR
-        / "data"
-        / "results"
-        / f"pool_{pool_id}"
-        / f"q{queue}"
-        / f"min{min_friends}"
-        / "metrics_02_champions_games_winrate.json"
-    )
+def get_data_file(pool_id: str, queue: int, min_friends: int, start_date=None, end_date=None) -> Path:
+    # Si se proporcionan fechas, busca el archivo con el rango de fechas en el nombre
+    if start_date and end_date:
+        return (
+            BASE_DIR
+            / "data"
+            / "runtime"
+            / f"pool_{pool_id}"
+            / f"q{queue}"
+            / f"min{min_friends}"
+            / f"metrics_02_champions_games_winrate_{start_date}_to_{end_date}.json"
+        )
+    else:
+        # Si no se proporcionan fechas, busca el archivo predeterminado
+        return (
+            BASE_DIR
+            / "data"
+            / "results"
+            / f"pool_{pool_id}"
+            / f"q{queue}"
+            / f"min{min_friends}"
+            / "metrics_02_champions_games_winrate.json"
+        )
 
 
 # ============================================================
@@ -99,8 +110,9 @@ def make_fig_horizontal(df: pd.DataFrame, x: str, title: str):
 #   RENDER PRINCIPAL PARA DASH
 # ============================================================
 
-def render(pool_id: str, queue: int, min_friends: int):
-    data_path = get_data_file(pool_id, queue, min_friends)
+def render(pool_id: str, queue: int, min_friends: int, start=None, end=None):
+    # Usa los parámetros pool_id, queue y min_friends para obtener el archivo de datos
+    data_path = get_data_file(pool_id, queue, min_friends, start, end)
 
     if not data_path.exists():
         print(f"[WARN] champions file not found: {data_path}")
@@ -108,11 +120,13 @@ def render(pool_id: str, queue: int, min_friends: int):
 
     data = load_data(data_path)
 
+    # Construcción de DataFrames para los jugadores y enemigos
     df_players = df_from_list(data.get("champions", []))
     df_enemies = df_from_list(data.get("enemy_champions", []))
 
     figs = []
 
+    # Gráficas para los jugadores
     if not df_players.empty:
         df_players_games = df_players.sort_values("games", ascending=True)
         df_players_wr = df_players.sort_values("winrate", ascending=True)
@@ -132,6 +146,7 @@ def render(pool_id: str, queue: int, min_friends: int):
             )
         )
 
+    # Gráficas para los enemigos
     if not df_enemies.empty:
         df_enemies_games = df_enemies.sort_values("games", ascending=True)
         df_enemies_wr = df_enemies.sort_values("winrate", ascending=True)

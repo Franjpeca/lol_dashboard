@@ -9,15 +9,20 @@ pio.templates.default = "plotly_dark"
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 
+
 # ============================================================
-#   LOCALIZAR ARCHIVO SEGÚN pool / queue / min
+#   LOCALIZAR ARCHIVO SEGÚN pool / queue / min / FECHAS
 # ============================================================
 
-def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
+def get_data_file(pool_id: str, queue: int, min_friends: int, start_date=None, end_date=None) -> Path:
     """
     Obtiene la ruta del archivo de datos basado en los parámetros proporcionados.
+    Si se proporcionan fechas, buscará el archivo con esas fechas en el nombre.
     """
-    return BASE_DIR / "data" / "results" / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}" / "metrics_04_win_lose_streak.json"
+    if start_date and end_date:
+        return BASE_DIR / f"data/runtime/pool_{pool_id}/q{queue}/min{min_friends}/metrics_04_win_lose_streak_{start_date}_to_{end_date}.json"
+    else:
+        return BASE_DIR / f"data/results/pool_{pool_id}/q{queue}/min{min_friends}/metrics_04_win_lose_streak.json"
 
 
 # ============================================================
@@ -35,10 +40,26 @@ def load_json(path: Path):
         return json.load(f)
 
 
-def build_df_streaks(data):
+def build_df_streaks(raw_data):
     """
     Construye el DataFrame para las rachas de victorias y derrotas.
+    El JSON nuevo contiene la estructura:
+    {
+        "source_L1": "...",
+        "start_date": "...",
+        "end_date": "...",
+        "generated_at": "...",
+        "streaks": {
+            "Frieren": {...},
+            "Kyoraku": {...}
+        }
+    }
     """
+    if not raw_data or "streaks" not in raw_data:
+        return pd.DataFrame()
+
+    data = raw_data["streaks"]
+
     rows = []
     for persona, stats in data.items():
         rows.append({
@@ -47,6 +68,7 @@ def build_df_streaks(data):
             "max_lose_streak": stats.get("max_lose_streak", 0),
             "current_streak": stats.get("current_streak", 0),
         })
+
     return pd.DataFrame(rows)
 
 
@@ -130,7 +152,7 @@ def create_app(pool_id="ac89fa8d", queue=440):
     app.layout = html.Div([
         html.H1("🎮 Rachas de Jugadores", 
                 style={"textAlign": "center", "marginBottom": "30px"}),
-        
+
         html.Div([
             html.Label("Selecciona mínimo de amigos:", 
                       style={"fontWeight": "bold", "marginBottom": "10px"}),
@@ -144,29 +166,53 @@ def create_app(pool_id="ac89fa8d", queue=440):
                 style={"width": "100%"}
             ),
         ], style={"width": "30%", "margin": "auto", "marginBottom": "30px"}),
-        
+
+        html.Div([ 
+            html.Label("Fecha de inicio:", 
+                       style={"fontWeight": "bold", "marginBottom": "10px"}),
+            dcc.DatePickerSingle(
+                id="start-date-picker",
+                display_format="YYYY-MM-DD",
+                style={"width": "100%"},
+            ),
+        ], style={"width": "30%", "margin": "auto", "marginBottom": "30px"}),
+
+        html.Div([ 
+            html.Label("Fecha de fin:", 
+                       style={"fontWeight": "bold", "marginBottom": "10px"}),
+            dcc.DatePickerSingle(
+                id="end-date-picker",
+                display_format="YYYY-MM-DD",
+                style={"width": "100%"},
+            ),
+        ], style={"width": "30%", "margin": "auto", "marginBottom": "30px"}),
+
         html.Div(id="graphs-container")
     ])
 
     @callback(
         Output("graphs-container", "children"),
-        Input("dropdown-min-friends", "value")
+        [
+            Input("dropdown-min-friends", "value"),
+            Input("start-date-picker", "date"),
+            Input("end-date-picker", "date")
+        ]
     )
-    def update_graphs(min_friends):
+    def update_graphs(min_friends, start_date, end_date):
         """
-        Actualiza las gráficas cuando se selecciona el número de amigos.
+        Actualiza las gráficas cuando se selecciona el número de amigos o las fechas.
         """
-        data_file = get_data_file(pool_id, queue, min_friends)
+        data_file = get_data_file(pool_id, queue, min_friends, start_date, end_date)
 
         # Cargar los datos
         data = load_json(data_file)
-        
+
         if not data:
             return html.Div([
                 html.H3("⚠️ No se encontraron datos", 
                        style={"textAlign": "center", "color": "#ef4444"})
             ])
-        
+
         df_streaks = build_df_streaks(data)
 
         if df_streaks.empty:
@@ -180,8 +226,6 @@ def create_app(pool_id="ac89fa8d", queue=440):
             dcc.Graph(figure=make_win_streak_fig(df_streaks)),
             html.Hr(),
             dcc.Graph(figure=make_lose_streak_fig(df_streaks)),
-            html.Hr(),
-            dcc.Graph(figure=make_current_streak_fig(df_streaks)),
         ])
 
     return app
@@ -191,25 +235,23 @@ def create_app(pool_id="ac89fa8d", queue=440):
 #   FUNCIÓN PARA USAR EN TU FLUJO (sin Dash)
 # ============================================================
 
-def render(pool_id: str, queue: int, min_friends: int):
+def render(pool_id: str, queue: int, min_friends: int, start=None, end=None):
     """
     Función que retorna las figuras de Plotly para usar en tu flujo existente.
-    Sin iniciar servidor Dash.
     """
-    data_file = get_data_file(pool_id, queue, min_friends)
-    data = load_json(data_file)
-    
-    if not data:
+    data_file = get_data_file(pool_id, queue, min_friends, start, end)
+    raw_data = load_json(data_file)
+
+    if not raw_data:
         print(f"[ERROR] No se pudieron cargar datos de {data_file}")
         return []
-    
-    df_streaks = build_df_streaks(data)
-    
+
+    df_streaks = build_df_streaks(raw_data)
+
     if df_streaks.empty:
         print("[WARN] DataFrame de rachas está vacío")
         return []
-    
-    # Retornar lista de figuras
+
     return [
         make_win_streak_fig(df_streaks),
         make_lose_streak_fig(df_streaks),

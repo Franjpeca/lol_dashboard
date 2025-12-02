@@ -13,11 +13,14 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 #   LOCALIZAR ARCHIVO SEGÚN pool / queue / min
 # ============================================================
 
-def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
+def get_data_file(pool_id: str, queue: int, min_friends: int, start_date: str | None = None, end_date: str | None = None) -> Path:
     """
     Obtiene la ruta del archivo de datos basado en los parámetros proporcionados.
     """
-    return BASE_DIR / "data" / "results" / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}" / "metrics_06_ego_index.json"
+    base_path = BASE_DIR / "data" / ("runtime" if start_date and end_date else "results") / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}"
+    if start_date and end_date:
+        return base_path / f"metrics_06_ego_index_{start_date}_to_{end_date}.json"
+    return base_path / "metrics_06_ego_index.json"
 
 
 # ============================================================
@@ -37,10 +40,12 @@ def load_json(path: Path):
 
 def build_df_ego(data):
     """
-    Construye el DataFrame para el ego index.
+    Construye el DataFrame para el ego index (nuevo esquema con data["ego"]).
     """
+    ego_block = data.get("ego", {})
+
     rows = []
-    for persona, stats in data.items():
+    for persona, stats in ego_block.items():
         rows.append({
             "persona": persona,
             "ego_index": stats.get("ego_index", 0),
@@ -56,7 +61,11 @@ def build_df_ego(data):
             "lost_surrender_rate": round(stats.get("lost_surrender_rate", 0) * 100, 2),
             "match_count": stats.get("match_count", 0),
         })
-    return pd.DataFrame(rows).sort_values("ego_index")
+    
+    df = pd.DataFrame(rows)
+    if df.empty:
+        return df
+    return df.sort_values("ego_index")
 
 
 # ============================================================
@@ -122,12 +131,12 @@ def make_ego_fig(df: pd.DataFrame):
 #   FUNCIÓN PARA USAR EN TU FLUJO (sin Dash)
 # ============================================================
 
-def render(pool_id: str, queue: int, min_friends: int):
+def render(pool_id: str, queue: int, min_friends: int, start: str | None = None, end: str | None = None):
     """
     Función que retorna las figuras de Plotly para usar en tu flujo existente.
     Sin iniciar servidor Dash.
     """
-    data_file = get_data_file(pool_id, queue, min_friends)
+    data_file = get_data_file(pool_id, queue, min_friends, start, end)
     data = load_json(data_file)
     
     if not data:

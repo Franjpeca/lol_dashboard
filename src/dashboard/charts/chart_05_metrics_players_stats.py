@@ -12,11 +12,14 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 #   LOCALIZAR ARCHIVO SEGÚN pool / queue / min
 # ============================================================
 
-def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
+def get_data_file(pool_id: str, queue: int, min_friends: int, start_date: str | None = None, end_date: str | None = None) -> Path:
     """
     Obtiene la ruta del archivo de datos basado en los parámetros proporcionados.
     """
-    return BASE_DIR / "data" / "results" / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}" / "metrics_05_players_stats.json"
+    base_path = BASE_DIR / "data" / ("runtime" if start_date and end_date else "results") / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}"
+    if start_date and end_date:
+        return base_path / f"metrics_05_players_stats_{start_date}_to_{end_date}.json"
+    return base_path / "metrics_05_players_stats.json"
 
 
 # ============================================================
@@ -35,9 +38,8 @@ def load_json(path: Path):
 
 
 def build_dataframes(raw):
-    """
-    Construye todos los DataFrames necesarios desde los datos raw.
-    """
+    players = raw.get("players", {})
+
     rows_kda = []
     rows_kills = []
     rows_deaths = []
@@ -47,7 +49,10 @@ def build_dataframes(raw):
     rows_damage_taken = []
     rows_vision = []
 
-    for persona, stats in raw.items():
+    for persona, stats in players.items():
+        if not isinstance(stats, dict):
+            continue
+        
         rows_kda.append({"persona": persona, "value": stats.get("avg_kda", 0)})
         rows_kills.append({"persona": persona, "value": stats.get("avg_kills", 0)})
         rows_deaths.append({"persona": persona, "value": stats.get("avg_deaths", 0)})
@@ -161,12 +166,12 @@ def make_vision_fig(df):
 #   FUNCIÓN PARA USAR EN TU FLUJO (sin Dash)
 # ============================================================
 
-def render(pool_id: str, queue: int, min_friends: int):
+def render(pool_id: str, queue: int, min_friends: int, start: str | None = None, end: str | None = None):
     """
     Función que retorna las figuras de Plotly para usar en tu flujo existente.
     Sin iniciar servidor Dash.
     """
-    data_file = get_data_file(pool_id, queue, min_friends)
+    data_file = get_data_file(pool_id, queue, min_friends, start, end)
     data = load_json(data_file)
     
     if not data:

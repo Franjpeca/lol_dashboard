@@ -3,11 +3,14 @@
 import os
 import json
 import argparse
+import sys
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
+
+sys.stdout.reconfigure(encoding='utf-8')
 
 load_dotenv()
 

@@ -13,11 +13,14 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 #   LOCALIZAR ARCHIVO SEGÚN pool / queue / min
 # ============================================================
 
-def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
+def get_data_file(pool_id: str, queue: int, min_friends: int, start_date: str | None = None, end_date: str | None = None) -> Path:
     """
     Obtiene la ruta del archivo de datos basado en los parámetros proporcionados.
     """
-    return BASE_DIR / "data" / "results" / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}" / "metrics_08_first_metrics.json"
+    base_path = BASE_DIR / "data" / ("runtime" if start_date and end_date else "results") / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}"
+    if start_date and end_date:
+        return base_path / f"metrics_08_first_metrics_{start_date}_to_{end_date}.json"
+    return base_path / "metrics_08_first_metrics.json"
 
 
 # ============================================================
@@ -31,8 +34,22 @@ def load_json(path: Path):
     if not path.exists():
         print(f"[ERROR] Archivo no encontrado: {path}")
         return {}
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        # Si viene en formato envoltorio (source_L1, generated_at, etc.)
+        # nos quedamos SOLO con la clave de métricas.
+        for key in ["first_metrics", "ego_index", "troll_index", "players_stats", "win_lose_streak"]:
+            if key in data and isinstance(data[key], dict):
+                return data[key]
+
+        return data
+
+    except Exception as e:
+        print(f"[ERROR] No se pudo leer JSON: {e}")
+        return {}
 
 
 def build_df_first_metrics(data):
@@ -132,45 +149,42 @@ def prep(df, abs_col, pct_col):
 #   FUNCIÓN PARA USAR EN TU FLUJO (sin Dash)
 # ============================================================
 
-def render(pool_id: str, queue: int, min_friends: int):
+def render(pool_id: str, queue: int, min_friends: int, start: str | None = None, end: str | None = None):
     """
     Función que retorna las figuras de Plotly para usar en tu flujo existente.
     Sin iniciar servidor Dash.
-    Devuelve 6 figuras (3 métricas x 2 vistas cada una: absoluto y porcentaje).
+    Devuelve 6 figuras (porcentaje + absoluto).
     """
-    data_file = get_data_file(pool_id, queue, min_friends)
+    data_file = get_data_file(pool_id, queue, min_friends, start, end)
     data = load_json(data_file)
-    
+
     if not data:
         print(f"[ERROR] No se pudieron cargar datos de {data_file}")
         return []
-    
+
+    # 🔥 FIX IMPORTANTE: filtrar el JSON para quedarnos con "first_metrics"
+    if "first_metrics" in data:
+        data = data["first_metrics"]
+
     df_all = build_df_first_metrics(data)
-    
+
     if df_all.empty:
         print("[WARN] DataFrame de first metrics está vacío")
         return []
-    
+
     # Preparar DataFrames
     df_fb_k_abs, df_fb_k_pct = prep(df_all, "fb_kills", "fb_kills_pct")
     df_fb_a_abs, df_fb_a_pct = prep(df_all, "fb_assists", "fb_assists_pct")
     df_fd_abs, df_fd_pct = prep(df_all, "fd_count", "fd_pct")
-    
-    # Retornar lista con 6 figuras (por defecto, mostramos las absolutas)
-    # Si tu app.py quiere implementar dropdowns, tendrás las 6 disponibles
+
+    # Retornar lista de figuras
     return [
-        # First Blood Kills - Absoluto
         make_fig(df_fb_k_abs, "Veces con First Blood (Kill)"),
-        # First Blood Kills - Porcentaje
         make_fig(df_fb_k_pct, "Porcentaje con First Blood (Kill)", percent=True),
-        
-        # First Blood Assists - Absoluto
+
         make_fig(df_fb_a_abs, "Asistencias en First Blood"),
-        # First Blood Assists - Porcentaje
         make_fig(df_fb_a_pct, "Porcentaje de Asistencias en First Blood", percent=True),
-        
-        # First Death - Absoluto
+
         make_fig(df_fd_abs, "Veces que muere primero"),
-        # First Death - Porcentaje
         make_fig(df_fd_pct, "Porcentaje de primeras muertes", percent=True),
     ]

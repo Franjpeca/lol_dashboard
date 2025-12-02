@@ -13,11 +13,14 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 #   LOCALIZAR ARCHIVO SEGÚN pool / queue / min
 # ============================================================
 
-def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
+def get_data_file(pool_id: str, queue: int, min_friends: int, start_date: str | None = None, end_date: str | None = None) -> Path:
     """
     Obtiene la ruta del archivo de datos basado en los parámetros proporcionados.
     """
-    return BASE_DIR / "data" / "results" / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}" / "metrics_07_troll_index.json"
+    base_path = BASE_DIR / "data" / ("runtime" if start_date and end_date else "results") / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}"
+    if start_date and end_date:
+        return base_path / f"metrics_07_troll_index_{start_date}_to_{end_date}.json"
+    return base_path / "metrics_07_troll_index.json"
 
 
 # ============================================================
@@ -37,13 +40,14 @@ def load_json(path: Path):
 
 def build_df_early_surrender(data):
     """
-    Construye el DataFrame para early surrender.
+    Construye el DataFrame para Early Surrender (métricas relacionadas con surrender temprano).
     """
     rows = []
-    
+
     for persona, stats in data.items():
         total = stats.get("total_matches", 1)
 
+        # Early surrender propio
         rows.append({
             "persona": persona,
             "metric": "Early FF propio",
@@ -53,6 +57,7 @@ def build_df_early_surrender(data):
             "total_matches": total,
         })
 
+        # Early surrender enemigo
         rows.append({
             "persona": persona,
             "metric": "Early FF enemigo",
@@ -71,7 +76,7 @@ def build_df_early_surrender(data):
 
 def make_early_surrender_fig(df: pd.DataFrame):
     """
-    Genera la figura de early surrender.
+    Genera la figura de "Early Surrender" por persona.
     """
     n = len(df["persona"].unique())
     tick_font = max(12, min(22, int(320 / max(1, n))))
@@ -120,25 +125,27 @@ def make_early_surrender_fig(df: pd.DataFrame):
 #   FUNCIÓN PARA USAR EN TU FLUJO (sin Dash)
 # ============================================================
 
-def render(pool_id: str, queue: int, min_friends: int):
+def render(pool_id: str, queue: int, min_friends: int, start: str | None = None, end: str | None = None):
     """
     Función que retorna las figuras de Plotly para usar en tu flujo existente.
     Sin iniciar servidor Dash.
     """
-    data_file = get_data_file(pool_id, queue, min_friends)
-    data = load_json(data_file)
-    
+    data_file = get_data_file(pool_id, queue, min_friends, start, end)
+    raw = load_json(data_file)
+
+    # Extraer los datos del bloque "troll"
+    data = raw.get("troll", {})
+
     if not data:
-        print(f"[ERROR] No se pudieron cargar datos de {data_file}")
+        print(f"[ERROR] No se pudieron cargar datos reales de {data_file}")
         return []
-    
+
     df_early = build_df_early_surrender(data)
-    
+
     if df_early.empty:
         print("[WARN] DataFrame de early surrender está vacío")
         return []
-    
-    # Retornar lista con una sola figura
+
     return [
         make_early_surrender_fig(df_early),
     ]

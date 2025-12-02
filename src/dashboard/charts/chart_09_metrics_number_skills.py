@@ -13,11 +13,14 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 #   LOCALIZAR ARCHIVO SEGÚN pool / queue / min
 # ============================================================
 
-def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
+def get_data_file(pool_id: str, queue: int, min_friends: int, start_date: str | None = None, end_date: str | None = None) -> Path:
     """
     Obtiene la ruta del archivo de datos basado en los parámetros proporcionados.
     """
-    return BASE_DIR / "data" / "results" / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}" / "metrics_09_number_skills.json"
+    base_path = BASE_DIR / "data" / ("runtime" if start_date and end_date else "results") / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}"
+    if start_date and end_date:
+        return base_path / f"metrics_09_number_skills_{start_date}_to_{end_date}.json"
+    return base_path / "metrics_09_number_skills.json"
 
 
 # ============================================================
@@ -103,25 +106,28 @@ def make_skills_fig(df: pd.DataFrame):
 #   FUNCIÓN PARA USAR EN TU FLUJO (sin Dash)
 # ============================================================
 
-def render(pool_id: str, queue: int, min_friends: int):
+def render(pool_id: str, queue: int, min_friends: int, start: str | None = None, end: str | None = None):
     """
     Función que retorna las figuras de Plotly para usar en tu flujo existente.
     Sin iniciar servidor Dash.
     """
-    data_file = get_data_file(pool_id, queue, min_friends)
+    data_file = get_data_file(pool_id, queue, min_friends, start, end)
     data = load_json(data_file)
     
     if not data:
         print(f"[ERROR] No se pudieron cargar datos de {data_file}")
         return []
-    
+
+    # 🔥 FIX IMPORTANTE: extraer el diccionario "skills"
+    if "skills" in data:
+        data = data["skills"]
+
     df_skills = build_df_skills(data)
     
     if df_skills.empty:
         print("[WARN] DataFrame de skills está vacío")
         return []
     
-    # Retornar lista con una sola figura
     return [
         make_skills_fig(df_skills),
     ]

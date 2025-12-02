@@ -3,10 +3,13 @@
 import os
 import json
 import argparse
+import sys
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
+
+sys.stdout.reconfigure(encoding='utf-8')
 
 load_dotenv()
 
@@ -19,10 +22,7 @@ client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
 RESULTS_ROOT = Path("data/results")
-
-
-def run():
-    main()
+RUNTIME_ROOT = Path("data/runtime")
 
 
 def now_utc():
@@ -62,9 +62,22 @@ def detect_afk(p):
     return False
 
 
-def get_sorted_matches_for_puuid(coll_matches, puuid):
+def extract_player(info, puuid):
+    for p in info.get("participants", []):
+        if p.get("puuid") == puuid:
+            return p
+    return None
+
+
+def get_sorted_matches_for_puuid(coll_matches, puuid, start_ts, end_ts):
+    match_filter = {"friends_present": puuid}
+
+    # ventana temporal opcional
+    if start_ts is not None and end_ts is not None:
+        match_filter["data.info.gameStartTimestamp"] = {"$gte": start_ts, "$lte": end_ts}
+
     cursor = coll_matches.find(
-        {"friends_present": puuid},
+        match_filter,
         {
             "data.info.participants": 1,
             "data.info.teams": 1,
@@ -85,25 +98,26 @@ def get_sorted_matches_for_puuid(coll_matches, puuid):
     return matches
 
 
-def extract_player(info, puuid):
-    for p in info.get("participants", []):
-        if p.get("puuid") == puuid:
-            return p
-    return None
-
-
 # ============================================================
 # MAIN compute
 # ============================================================
 
-def compute_troll_index(l1_name, dataset_folder):
+def compute_troll_index(l1_name, dataset_folder, start_date, end_date):
     coll_matches = db[l1_name]
     coll_users = db["L0_users_index"]
+
+    # convertir fechas a timestamps
+    if start_date and end_date:
+        start_ts = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
+        end_ts = int(datetime.strptime(end_date + " 23:59:59", "%Y-%m-%d %H:%M:%S").timestamp() * 1000)
+    else:
+        start_ts = None
+        end_ts = None
 
     users = list(coll_users.find({}, {"persona": 1, "puuids": 1}))
     log(f"Usuarios detectados: {len(users)}")
 
-    results = {}
+    troll_results = {}
 
     for u in users:
         persona = u["persona"]
@@ -116,10 +130,9 @@ def compute_troll_index(l1_name, dataset_folder):
         afk_enemy = 0
 
         for puuid in puuids:
-            matches = get_sorted_matches_for_puuid(coll_matches, puuid)
+            matches = get_sorted_matches_for_puuid(coll_matches, puuid, start_ts, end_ts)
 
             for _, info, match_id in matches:
-
                 participants = info.get("participants")
                 teams = info.get("teams")
                 duration = info.get("gameDuration", 0)
@@ -155,7 +168,7 @@ def compute_troll_index(l1_name, dataset_folder):
 
         # guardar
         if total_matches == 0:
-            results[persona] = {
+            troll_results[persona] = {
                 "total_matches": 0,
                 "early_surrender_own": 0,
                 "early_surrender_enemy": 0,
@@ -167,7 +180,7 @@ def compute_troll_index(l1_name, dataset_folder):
                 "pct_afk_enemy": 0,
             }
         else:
-            results[persona] = {
+            troll_results[persona] = {
                 "total_matches": total_matches,
                 "early_surrender_own": early_own,
                 "early_surrender_enemy": early_enemy,
@@ -181,11 +194,25 @@ def compute_troll_index(l1_name, dataset_folder):
 
         log(f"{persona} procesado")
 
-    out_path = dataset_folder / "metrics_07_troll_index.json"
-    with out_path.open("w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
+    # salida con el formato estandarizado
+    out_file = dataset_folder / (
+        f"metrics_07_troll_index_{start_date}_to_{end_date}.json"
+        if start_date and end_date else "metrics_07_troll_index.json"
+    )
 
-    log(f"Guardado en {out_path}")
+    json_data = {
+        "source_L1": l1_name,
+        "generated_at": now_utc(),
+        "start_date": start_date,
+        "end_date": end_date,
+        "troll": troll_results
+    }
+
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    with out_file.open("w", encoding="utf-8") as f:
+        json.dump(json_data, f, ensure_ascii=False, indent=2)
+
+    log(f"Guardado en {out_file}")
     log("Proceso completado.")
 
 
@@ -197,26 +224,35 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--queue", type=int, default=DEFAULT_QUEUE)
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
+    parser.add_argument("--start", type=str, default=None)
+    parser.add_argument("--end", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
     min_friends = args.min
+    start = args.start
+    end = args.end
 
-    print("[07] Starting ... using collection: L1_q" + str(queue) + "_min" + str(min_friends))
-    
+    print(f"[07] Starting ... queue={queue} min={min_friends}")
+
     l1_name = auto_select_l1(queue, min_friends)
     if not l1_name:
         return
 
     pool_id = extract_pool_from_l1(l1_name)
 
-    dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
-    dataset_folder.mkdir(parents=True, exist_ok=True)
+    # según ventana: results o runtime
+    if start and end:
+        folder = RUNTIME_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+    else:
+        folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
 
-    compute_troll_index(l1_name, dataset_folder)
-    
+    folder.mkdir(parents=True, exist_ok=True)
+
+    compute_troll_index(l1_name, folder, start, end)
+
     print("[07] Ended")
 
 
 if __name__ == "__main__":
-    run()
+    main()

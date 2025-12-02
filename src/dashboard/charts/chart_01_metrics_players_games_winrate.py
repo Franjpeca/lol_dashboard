@@ -10,19 +10,30 @@ pio.templates.default = "plotly_dark"
 BASE_DIR = Path(__file__).resolve().parents[3]
 
 # ============================================================
-#   LOCALIZAR FICHERO SEGÚN pool_id / queue / min
+#   LOCALIZAR FICHERO SEGÚN pool_id / queue / min / start_date / end_date
 # ============================================================
 
-def get_data_file(pool_id: str, queue: int, min_friends: int) -> Path:
-    return (
-        BASE_DIR
-        / "data"
-        / "results"
-        / f"pool_{pool_id}"
-        / f"q{queue}"
-        / f"min{min_friends}"
-        / "metrics_01_players_games_winrate.json"
-    )
+def get_data_file(pool_id: str, queue: int, min_friends: int, start_date=None, end_date=None) -> Path:
+    if start_date and end_date:
+        return (
+            BASE_DIR
+            / "data"
+            / "runtime"
+            / f"pool_{pool_id}"
+            / f"q{queue}"
+            / f"min{min_friends}"
+            / f"metrics_01_players_games_winrate_{start_date}_to_{end_date}.json"
+        )
+    else:
+        return (
+            BASE_DIR
+            / "data"
+            / "results"
+            / f"pool_{pool_id}"
+            / f"q{queue}"
+            / f"min{min_friends}"
+            / "metrics_01_players_games_winrate.json"
+        )
 
 
 # ============================================================
@@ -124,9 +135,9 @@ def make_fig_games(df: pd.DataFrame, x: str, title: str):
 #   FUNCION PRINCIPAL PARA DASH
 # ==========================
 
-def render(pool_id: str, queue: int, min_friends: int):
+def render(pool_id: str, queue: int, min_friends: int, start=None, end=None):
     # Usa los parámetros pool_id, queue y min_friends para obtener el archivo de datos
-    data_path = get_data_file(pool_id, queue, min_friends)
+    data_path = get_data_file(pool_id, queue, min_friends, start, end)
 
     if not data_path.exists():
         print(f"[WARN] champions file not found: {data_path}")

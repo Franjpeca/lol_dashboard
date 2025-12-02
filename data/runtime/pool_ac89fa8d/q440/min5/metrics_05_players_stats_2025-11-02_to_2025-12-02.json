@@ -1,0 +1,316 @@
+{
+  "source_L1": "L1_q440_min5_pool_ac89fa8d",
+  "generated_at": "2025-12-02 02:47:11",
+  "start_date": "2025-11-02",
+  "end_date": "2025-12-02",
+  "players": {
+    "Dexus": {
+      "avg_kda": 2.931451612903226,
+      "avg_kills": 8.44186046511628,
+      "avg_deaths": 5.767441860465116,
+      "avg_assists": 8.465116279069768,
+      "avg_gold": 13330.860465116279,
+      "avg_damage_dealt": 24536.53488372093,
+      "avg_damage_taken": 33185.651162790695,
+      "avg_vision_score": 19.906976744186046,
+      "max_kills": {
+        "kills": 25,
+        "match_id": 7603544325
+      },
+      "max_deaths": {
+        "deaths": 14,
+        "match_id": 7601862359
+      },
+      "max_assists": {
+        "assists": 30,
+        "match_id": 7602819593
+      }
+    },
+    "Kyoraku": {
+      "avg_kda": 3.685185185185185,
+      "avg_kills": 9.369565217391305,
+      "avg_deaths": 4.695652173913044,
+      "avg_assists": 7.934782608695652,
+      "avg_gold": 13433.0,
+      "avg_damage_dealt": 30979.782608695652,
+      "avg_damage_taken": 28565.58695652174,
+      "avg_vision_score": 19.347826086956523,
+      "max_kills": {
+        "kills": 30,
+        "match_id": 7603721057
+      },
+      "max_deaths": {
+        "deaths": 12,
+        "match_id": 7603965944
+      },
+      "max_assists": {
+        "assists": 27,
+        "match_id": 7601751913
+      }
+    },
+    "Joseph Joestar": {
+      "avg_kda": 2.6145833333333335,
+      "avg_kills": 4.578947368421052,
+      "avg_deaths": 5.052631578947368,
+      "avg_assists": 8.631578947368421,
+      "avg_gold": 11083.605263157895,
+      "avg_damage_dealt": 17465.894736842107,
+      "avg_damage_taken": 29594.657894736843,
+      "avg_vision_score": 23.86842105263158,
+      "max_kills": {
+        "kills": 18,
+        "match_id": 7606437328
+      },
+      "max_deaths": {
+        "deaths": 12,
+        "match_id": 7601862359
+      },
+      "max_assists": {
+        "assists": 29,
+        "match_id": 7598142384
+      }
+    },
+    "Bustamantefanboy": {
+      "avg_kda": 3.3266932270916336,
+      "avg_kills": 8.63265306122449,
+      "avg_deaths": 5.122448979591836,
+      "avg_assists": 8.408163265306122,
+      "avg_gold": 13534.265306122448,
+      "avg_damage_dealt": 28886.755102040817,
+      "avg_damage_taken": 33473.71428571428,
+      "avg_vision_score": 19.857142857142858,
+      "max_kills": {
+        "kills": 25,
+        "match_id": 7601801493
+      },
+      "max_deaths": {
+        "deaths": 13,
+        "match_id": 7601801493
+      },
+      "max_assists": {
+        "assists": 20,
+        "match_id": 7603721057
+      }
+    },
+    "Frieren": {
+      "avg_kda": 3.475,
+      "avg_kills": 8.4,
+      "avg_deaths": 5.333333333333333,
+      "avg_assists": 10.133333333333333,
+      "avg_gold": 12533.622222222222,
+      "avg_damage_dealt": 28069.355555555554,
+      "avg_damage_taken": 24628.31111111111,
+      "avg_vision_score": 27.977777777777778,
+      "max_kills": {
+        "kills": 25,
+        "match_id": 7601862359
+      },
+      "max_deaths": {
+        "deaths": 12,
+        "match_id": 7601801493
+      },
+      "max_assists": {
+        "assists": 31,
+        "match_id": 7589381798
+      }
+    },
+    "Däzzler": {
+      "avg_kda": 2.364705882352941,
+      "avg_kills": 3.1818181818181817,
+      "avg_deaths": 7.7272727272727275,
+      "avg_assists": 15.090909090909092,
+      "avg_gold": 9757.272727272728,
+      "avg_damage_dealt": 17575.454545454544,
+      "avg_damage_taken": 28394.0,
+      "avg_vision_score": 64.81818181818181,
+      "max_kills": {
+        "kills": 10,
+        "match_id": 7613339427
+      },
+      "max_deaths": {
+        "deaths": 12,
+        "match_id": 7600960791
+      },
+      "max_assists": {
+        "assists": 32,
+        "match_id": 7600960791
+      }
+    },
+    "Kayki マ": {
+      "avg_kda": 1.7650602409638554,
+      "avg_kills": 2.5185185185185186,
+      "avg_deaths": 6.148148148148148,
+      "avg_assists": 8.333333333333334,
+      "avg_gold": 9995.666666666666,
+      "avg_damage_dealt": 11853.25925925926,
+      "avg_damage_taken": 19873.11111111111,
+      "avg_vision_score": 38.0,
+      "max_kills": {
+        "kills": 9,
+        "match_id": 7603896316
+      },
+      "max_deaths": {
+        "deaths": 11,
+        "match_id": 7601840150
+      },
+      "max_assists": {
+        "assists": 23,
+        "match_id": 7599544345
+      }
+    },
+    "Lady Maria": {
+      "avg_kda": 3.388888888888889,
+      "avg_kills": 1.25,
+      "avg_deaths": 4.5,
+      "avg_assists": 14.0,
+      "avg_gold": 7928.25,
+      "avg_damage_dealt": 5523.5,
+      "avg_damage_taken": 14655.5,
+      "avg_vision_score": 44.5,
+      "max_kills": {
+        "kills": 3,
+        "match_id": 7603721057
+      },
+      "max_deaths": {
+        "deaths": 10,
+        "match_id": 7603783097
+      },
+      "max_assists": {
+        "assists": 32,
+        "match_id": 7603721057
+      }
+    },
+    "Banshee": {
+      "avg_kda": 2.8693181818181817,
+      "avg_kills": 4.676470588235294,
+      "avg_deaths": 5.176470588235294,
+      "avg_assists": 10.176470588235293,
+      "avg_gold": 11469.588235294117,
+      "avg_damage_dealt": 21939.147058823528,
+      "avg_damage_taken": 22619.58823529412,
+      "avg_vision_score": 32.3235294117647,
+      "max_kills": {
+        "kills": 17,
+        "match_id": 7600700279
+      },
+      "max_deaths": {
+        "deaths": 11,
+        "match_id": 7602819593
+      },
+      "max_assists": {
+        "assists": 25,
+        "match_id": 7600960791
+      }
+    },
+    "TheChosenUndead": {
+      "avg_kda": 2.4280155642023344,
+      "avg_kills": 3.925,
+      "avg_deaths": 6.425,
+      "avg_assists": 11.675,
+      "avg_gold": 10576.55,
+      "avg_damage_dealt": 18280.6,
+      "avg_damage_taken": 29488.025,
+      "avg_vision_score": 40.9,
+      "max_kills": {
+        "kills": 13,
+        "match_id": 7600960791
+      },
+      "max_deaths": {
+        "deaths": 13,
+        "match_id": 7603965944
+      },
+      "max_assists": {
+        "assists": 30,
+        "match_id": 7601862359
+      }
+    },
+    "En Vlc No F0II0": {
+      "avg_kda": 3.25,
+      "avg_kills": 3.0,
+      "avg_deaths": 6.4,
+      "avg_assists": 17.8,
+      "avg_gold": 9832.8,
+      "avg_damage_dealt": 16978.0,
+      "avg_damage_taken": 32176.7,
+      "avg_vision_score": 28.3,
+      "max_kills": {
+        "kills": 11,
+        "match_id": 7595854080
+      },
+      "max_deaths": {
+        "deaths": 10,
+        "match_id": 7595854080
+      },
+      "max_assists": {
+        "assists": 35,
+        "match_id": 7603544325
+      }
+    },
+    "Morocha": {
+      "avg_kda": 3.2,
+      "avg_kills": 6.5,
+      "avg_deaths": 3.75,
+      "avg_assists": 5.5,
+      "avg_gold": 11551.0,
+      "avg_damage_dealt": 20477.5,
+      "avg_damage_taken": 25300.25,
+      "avg_vision_score": 16.0,
+      "max_kills": {
+        "kills": 10,
+        "match_id": 7599544345
+      },
+      "max_deaths": {
+        "deaths": 7,
+        "match_id": 7599544345
+      },
+      "max_assists": {
+        "assists": 12,
+        "match_id": 7599544345
+      }
+    },
+    "Nikken": {
+      "avg_kda": 3.3333333333333335,
+      "avg_kills": 5.0,
+      "avg_deaths": 9.0,
+      "avg_assists": 25.0,
+      "avg_gold": 14754.0,
+      "avg_damage_dealt": 25253.0,
+      "avg_damage_taken": 28541.0,
+      "avg_vision_score": 24.0,
+      "max_kills": {
+        "kills": 5,
+        "match_id": 7598142384
+      },
+      "max_deaths": {
+        "deaths": 9,
+        "match_id": 7598142384
+      },
+      "max_assists": {
+        "assists": 25,
+        "match_id": 7598142384
+      }
+    },
+    "SN Bin": {
+      "avg_kda": 2.5217391304347827,
+      "avg_kills": 7.0,
+      "avg_deaths": 7.666666666666667,
+      "avg_assists": 12.333333333333334,
+      "avg_gold": 12805.0,
+      "avg_damage_dealt": 24139.666666666668,
+      "avg_damage_taken": 31939.333333333332,
+      "avg_vision_score": 13.666666666666666,
+      "max_kills": {
+        "kills": 11,
+        "match_id": 7603605646
+      },
+      "max_deaths": {
+        "deaths": 8,
+        "match_id": 7603544325
+      },
+      "max_assists": {
+        "assists": 22,
+        "match_id": 7603544325
+      }
+    }
+  }
+}

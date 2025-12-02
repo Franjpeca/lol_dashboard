@@ -3,10 +3,13 @@
 import os
 import json
 import argparse
+import sys
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
+
+sys.stdout.reconfigure(encoding='utf-8')
 
 load_dotenv()
 
@@ -19,6 +22,7 @@ client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
 RESULTS_ROOT = Path("data/results")
+RUNTIME_ROOT = Path("data/runtime")
 
 
 def run():
@@ -55,9 +59,14 @@ def extract_pool_from_l1(l1_name):
 # Logic helpers
 # ================================
 
-def get_sorted_matches_for_puuid(coll_matches, puuid):
+def get_sorted_matches_for_puuid(coll_matches, puuid, start_ts=None, end_ts=None):
+    query = {"friends_present": puuid}
+
+    if start_ts is not None and end_ts is not None:
+        query["data.info.gameStartTimestamp"] = {"$gte": start_ts, "$lte": end_ts}
+
     cursor = coll_matches.find(
-        {"friends_present": puuid},
+        query,
         {
             "data.info.participants": 1,
             "data.info.gameStartTimestamp": 1,
@@ -92,7 +101,14 @@ def safe_norm(value, mean_value):
 # Main compute
 # ================================
 
-def compute_metrics(l1_name, dataset_folder):
+def compute_metrics(l1_name, dataset_folder, start_date=None, end_date=None):
+    start_ts = end_ts = None
+    if start_date and end_date:
+        start_ts = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
+        end_ts = int(datetime.strptime(end_date, "%Y-%m-%d").replace(
+            hour=23, minute=59, second=59
+        ).timestamp() * 1000)
+
     coll_matches = db[l1_name]
     coll_users = db["L0_users_index"]
 
@@ -111,7 +127,7 @@ def compute_metrics(l1_name, dataset_folder):
         lost_by_surrender = 0
 
         for puuid in puuids:
-            matches = get_sorted_matches_for_puuid(coll_matches, puuid)
+            matches = get_sorted_matches_for_puuid(coll_matches, puuid, start_ts, end_ts)
 
             for _, info, match_id in matches:
                 p = extract_player(info, puuid)
@@ -229,9 +245,24 @@ def compute_metrics(l1_name, dataset_folder):
             "lost_surrender_rate": s["lost_surrender_rate"],
         }
 
-    out_path = dataset_folder / "metrics_06_ego_index.json"
+    if start_date and end_date:
+        filename = f"metrics_06_ego_index_{start_date}_to_{end_date}.json"
+    else:
+        filename = "metrics_06_ego_index.json"
+
+    out_path = dataset_folder / filename
+
+    # Estructura de salida estandarizada
+    output_data = {
+        "source_L1": l1_name,
+        "generated_at": now_utc(),
+        "start_date": start_date,
+        "end_date": end_date,
+        "ego": results
+    }
+
     with out_path.open("w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
+        json.dump(output_data, f, ensure_ascii=False, indent=2)
 
     log(f"Guardado en {out_path}")
     log("Proceso completado.")
@@ -245,10 +276,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--queue", type=int, default=DEFAULT_QUEUE)
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
+    parser.add_argument("--start", type=str, default=None)
+    parser.add_argument("--end", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
     min_friends = args.min
+    start_date = args.start
+    end_date = args.end
 
     print("[06] Starting ... using collection: L1_q" + str(queue) + "_min" + str(min_friends))
     
@@ -258,10 +293,14 @@ def main():
 
     pool_id = extract_pool_from_l1(l1_name)
 
-    dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+    if start_date and end_date:
+        dataset_folder = RUNTIME_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+    else:
+        dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
+
     dataset_folder.mkdir(parents=True, exist_ok=True)
 
-    compute_metrics(l1_name, dataset_folder)
+    compute_metrics(l1_name, dataset_folder, start_date, end_date)
     
     print("[06] Ended")
 
