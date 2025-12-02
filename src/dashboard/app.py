@@ -510,14 +510,17 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
     def update_rol_graphs(selected_role, min_friends, min_games, start_date, end_date):
         if selected_role is None:
             selected_role = "TOP"
+        
+        output = render_stats_by_rol(pool_id, queue, min_friends, selected_role, min_games=min_games, start=start_date, end=end_date)
 
-        return html.Div(
-            normalize_output(
-                render_stats_by_rol(pool_id, queue, min_friends, selected_role, min_games=min_games, start=start_date, end=end_date),
-                f"stats-rol-{selected_role}",
-            ),
-            style={"display": "flex", "flexDirection": "column", "gap": "32px"},
-        )
+        # Si la función de renderizado falla y devuelve None, no mostramos nada.
+        if output is None:
+            return html.Div("No hay datos disponibles para mostrar para este rol.", style={"padding": "20px"})
+        else:
+            return html.Div(
+                normalize_output(output, f"stats-rol-{selected_role}"),
+                style={"display": "flex", "flexDirection": "column", "gap": "32px"},
+            )
 
     @app.callback(
         Output("freq-player-graph-container", "children"),

@@ -19,4 +19,6 @@ postgres/
 # Ignorar archivos de bases de datos
 *.db
 
+data/runtime
+
 LICENSE

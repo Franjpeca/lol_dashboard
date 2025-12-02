@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
+import plotly.graph_objects as go
 
 pio.templates.default = "plotly_dark"
 
@@ -32,6 +33,61 @@ def load_json(path: Path):
         return {}
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+# Función para crear el gráfico 3D (poliedro)
+def make_polyhedron(df: pd.DataFrame, title: str):
+    """
+    Crea un gráfico de radar 2D (pentagrama/polígono) para comparar jugadores.
+    """
+    fig = go.Figure()
+
+    # Definir las categorías (los ejes del radar) y las columnas correspondientes en el DataFrame
+    categories = {
+        "Daño Medio": "avg_damage",
+        "Daño Recibido": "avg_damage_taken",
+        "Oro Medio": "avg_gold",
+        "Farm Medio": "avg_farm",
+        "Visión Media": "avg_vision",
+        "Daño a torretas": "avg_turret_damage",
+        "Asesinatos": "avg_kills",
+        "Muertes": "avg_deaths",
+    }
+
+    # Normalizar los datos para que estén en una escala comparable (0 a 1)
+    # Esto es crucial para que una métrica con valores grandes (como el daño) no domine el gráfico.
+    df_normalized = df.copy()
+    for col in categories.values():
+        min_val, max_val = df_normalized[col].min(), df_normalized[col].max()
+        if (max_val - min_val) > 0:
+            # Escalar de 0.2 a 1 en lugar de 0 a 1 para evitar que el valor mínimo sea 0 en el gráfico.
+            # Esto hace que la forma del polígono sea más representativa.
+            df_normalized[col] = 0.2 + 0.8 * (df_normalized[col] - min_val) / (max_val - min_val)
+        else:
+            df_normalized[col] = 0.5  # Si todos los valores son iguales, se asigna un valor intermedio
+
+    # Iterar sobre cada jugador para añadir su "pentagrama" al gráfico
+    for _, row in df_normalized.iterrows():
+        values = [row[col] for col in categories.values()]
+        fig.add_trace(go.Scatterpolar(
+            r=values,
+            theta=list(categories.keys()),
+            fill='toself',
+            name=row["persona"],
+            hovertemplate=(
+                f"<b>{row['persona']}</b><br>" +
+                "<br>".join([f"{cat}: {df.loc[_, col_name]:.2f}" for cat, col_name in categories.items()]) +
+                "<extra></extra>"
+            )
+        ))
+
+    fig.update_layout(
+        polar=dict(radialaxis=dict(visible=True, range=[0, 1.05])), # Aumentar el rango para que el '1' no esté en el borde
+        showlegend=True,
+        title=title,
+        height=700
+    )
+    return fig
 
 
 def make_fig(df: pd.DataFrame, title: str):
@@ -145,7 +201,8 @@ def get_chart_data(raw, selected_role: str, min_games: int = 0):
 
 def render(pool_id: str, queue: int, min_friends: int, selected_role: str = None, min_games: int = 0, start: str | None = None, end: str | None = None):
     """
-    Función que retorna las figuras de Plotly para usar en tu flujo existente."""
+    Función que retorna las figuras de Plotly para usar en tu flujo existente.
+    """
     data_file = get_data_file(pool_id, queue, min_friends, start, end)
     raw = load_json(data_file)
     if not raw:
@@ -164,7 +221,34 @@ def render(pool_id: str, queue: int, min_friends: int, selected_role: str = None
         data = get_chart_data(roles_data, role, min_games)
         if data is None:
             continue
-        for metric_name, df in data.items():
-            fig_func = make_fig_games if metric_name == "games" else make_fig
-            figures.append(fig_func(df, f"{metric_name.replace('_', ' ').title()} - {role}"))
+
+        # 1. Añadir las gráficas de barras para winrate y partidas
+        figures.append(make_fig(data["winrate"], f"Winrate - {role}"))
+        figures.append(make_fig_games(data["games"], f"Partidas Jugadas - {role}"))
+
+        # 2. Preparar el DataFrame para el gráfico de radar (todas las demás métricas)
+        radar_metrics = {
+            "avg_damage": data["damage"],
+            "avg_damage_taken": data["damage_taken"],
+            "avg_gold": data["gold"],
+            "avg_farm": data["farm"],
+            "avg_vision": data["vision"],
+            "avg_turret_damage": data["turret_damage"],
+            "avg_kills": data["kills"],
+            "avg_deaths": data["deaths"],
+        }
+
+        # Renombrar y unir los DataFrames para el radar
+        dfs_to_merge = [df.rename(columns={"value": name}) for name, df in radar_metrics.items()]
+        poly_df = dfs_to_merge[0]
+        for df_to_merge in dfs_to_merge[1:]:
+            poly_df = pd.merge(poly_df, df_to_merge, on="persona", how="outer")
+
+        # Rellenar valores nulos con 0
+        poly_df.fillna(0, inplace=True)
+
+        # 3. Crear y añadir el gráfico de radar
+        polyhedron_fig = make_polyhedron(poly_df, f"Poliedro de Estadísticas - {role}")
+        figures.append(polyhedron_fig)
+
     return figures
