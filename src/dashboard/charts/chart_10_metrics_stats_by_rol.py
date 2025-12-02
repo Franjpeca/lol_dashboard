@@ -152,13 +152,16 @@ def render(pool_id: str, queue: int, min_friends: int, selected_role: str = None
         print(f"[ERROR] No se pudieron cargar datos de {data_file}")
         return []
 
+    # Extraer el diccionario de roles del JSON
+    roles_data = raw.get("roles", {})
+
     roles = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]
     if selected_role:
         roles = [selected_role]
 
     figures = []
     for role in roles:
-        data = get_chart_data(raw, role, min_games)
+        data = get_chart_data(roles_data, role, min_games)
         if data is None:
             continue
         for metric_name, df in data.items():

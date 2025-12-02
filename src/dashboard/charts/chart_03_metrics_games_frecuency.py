@@ -68,55 +68,49 @@ def build_df_players(data):
 #   FIGURA HORIZONTAL
 # ============================================================
 
-def make_fig_horizontal(df: pd.DataFrame, x: str, title: str):
-
-    n = len(df)
-
-    tick_font_size = max(12, min(22, int(320 / n)))
-
-    base_height = max(750, min(1200, 35 * n))
-    fig_height = int(base_height * 0.75)
-
+def make_global_fig(df):
     fig = px.bar(
         df,
-        x=x,
-        y="date",
-        orientation="h",
-        text=x,
+        x="date",
+        y="games",
+        text="games",
         color="games",
         color_continuous_scale="Turbo",
         labels={"games": "Partidas", "date": "Fecha"},
-        hover_data=["games"],
-        title=title,
+        title="Frecuencia global de partidas por dia",
     )
 
-    fig.update_layout(bargap=0.18)
-
-    fig.update_traces(
-        textposition="inside",
-        insidetextanchor="middle",
-        textfont=dict(
-            color="white",
-            size=max(12, min(20, int(220 / n))),
-        ),
-        marker_line_width=0,
-    )
+    fig.update_traces(textposition="outside")
 
     fig.update_layout(
         autosize=True,
-        height=fig_height + 90,
-        margin=dict(l=170, r=50, t=60, b=40),
-        xaxis_title="",
-        yaxis=dict(
-            type="category",
-            tickmode="array",
-            tickvals=df["date"].tolist(),
-            ticktext=df["date"].tolist(),
-            tickfont=dict(size=tick_font_size),
-            automargin=True,
-        ),
+        height=450,
+        margin=dict(l=20, r=20, t=60, b=40),
+        xaxis=dict(type="category"),
+    )
+    return fig
+
+
+def make_player_fig(df, persona):
+    fig = px.bar(
+        df,
+        x="date",
+        y="games",
+        text="games",
+        color="games",
+        color_continuous_scale="Tealgrn",
+        labels={"games": "Partidas", "date": "Fecha"},
+        title=f"Partidas por dia - {persona}",
     )
 
+    fig.update_traces(textposition="outside")
+
+    fig.update_layout(
+        autosize=True,
+        height=450,
+        margin=dict(l=20, r=20, t=60, b=40),
+        xaxis=dict(type="category"),
+    )
     return fig
 
 
@@ -140,12 +134,12 @@ def render(pool_id: str, queue: int, min_friends: int, start=None, end=None):
     }
 
     if not df_global.empty:
-        result["global"] = make_fig_horizontal(df_global, "games", "Frecuencia global de partidas por día")
+        result["global"] = make_global_fig(df_global)
 
     for persona in sorted(df_players.keys()):
         df = df_players[persona]
         if not df.empty:
-            result["players"][persona] = make_fig_horizontal(df, "games", f"Frecuencia de partidas por día - {persona}")
+            result["players"][persona] = make_player_fig(df, persona)
 
     total_figs = (1 if result["global"] is not None else 0) + len(result["players"])
     print("[DEBUG] RESULTADO FREQUENCY:", total_figs, "figuras generadas")
