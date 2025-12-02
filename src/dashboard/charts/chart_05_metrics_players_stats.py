@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
+import plotly.graph_objects as go
 
 pio.templates.default = "plotly_dark"
 
@@ -55,7 +56,7 @@ def build_dataframes(raw):
         
         rows_kda.append({"persona": persona, "value": stats.get("avg_kda", 0)})
         rows_kills.append({"persona": persona, "value": stats.get("avg_kills", 0)})
-        rows_deaths.append({"persona": persona, "value": stats.get("avg_deaths", 0)})
+        rows_deaths.append({"persona": persona, "value": stats.get("avg_deaths", 0)}) # 'value' is correct here for sorting
         rows_assists.append({"persona": persona, "value": stats.get("avg_assists", 0)})
         rows_gold.append({"persona": persona, "value": stats.get("avg_gold", 0)})
         rows_damage_dealt.append({"persona": persona, "value": stats.get("avg_damage_dealt", 0)})
@@ -162,6 +163,63 @@ def make_vision_fig(df):
     return make_fig(df["vision"], "Vision score medio")
 
 
+def make_polyhedron(df: pd.DataFrame, title: str):
+    """
+    Crea un gráfico de radar 2D (pentagrama/polígono) para comparar jugadores.
+    Copiado y adaptado de chart_10.
+    """
+    fig = go.Figure()
+
+    # Definir las categorías (los ejes del radar) y las columnas correspondientes en el DataFrame
+    categories = {
+        "KDA": "kda",
+        "Asesinatos": "kills",
+        "Muertes": "deaths",
+        "Asistencias": "assists",
+        "Oro": "gold",
+        "Daño Infligido": "damage_dealt",
+        "Daño Recibido": "damage_taken",
+        "Puntuación de Visión": "vision",
+    }
+
+    # Normalizar los datos para que estén en una escala comparable
+    df_normalized = df.copy()
+    for col in categories.values():
+        min_val, max_val = df_normalized[col].min(), df_normalized[col].max()
+        if (max_val - min_val) > 0:
+            # Escalar de 0.2 a 1 para evitar que el valor mínimo sea 0 en el gráfico.
+            # Para 'deaths' y 'damage_taken', invertimos la escala (menos es mejor).
+            if col in ["deaths", "damage_taken"]:
+                 df_normalized[col] = 0.2 + 0.8 * (max_val - df_normalized[col]) / (max_val - min_val)
+            else:
+                 df_normalized[col] = 0.2 + 0.8 * (df_normalized[col] - min_val) / (max_val - min_val)
+        else:
+            df_normalized[col] = 0.5  # Si todos los valores son iguales
+
+    # Iterar sobre cada jugador para añadir su "pentagrama" al gráfico
+    for _, row in df_normalized.iterrows():
+        values = [row[col] for col in categories.values()]
+        fig.add_trace(go.Scatterpolar(
+            r=values,
+            theta=list(categories.keys()),
+            fill='toself',
+            name=row["persona"],
+            hovertemplate=(
+                f"<b>{row['persona']}</b><br>" +
+                "<br>".join([f"{cat}: {df.loc[_, col_name]:.2f}" for cat, col_name in categories.items()]) +
+                "<extra></extra>"
+            )
+        ))
+
+    fig.update_layout(
+        polar=dict(radialaxis=dict(visible=True, range=[0, 1.05])),
+        showlegend=True,
+        title=title,
+        height=700
+    )
+    return fig
+
+
 # ============================================================
 #   FUNCIÓN PARA USAR EN TU FLUJO (sin Dash)
 # ============================================================
@@ -180,8 +238,8 @@ def render(pool_id: str, queue: int, min_friends: int, start: str | None = None,
     
     dfs = build_dataframes(data)
     
-    # Retornar lista de figuras
-    return [
+    # 1. Crear las figuras de barras
+    figures = [
         make_kda_fig(dfs),
         make_kills_fig(dfs),
         make_deaths_fig(dfs),
@@ -191,3 +249,16 @@ def render(pool_id: str, queue: int, min_friends: int, start: str | None = None,
         make_damage_taken_fig(dfs),
         make_vision_fig(dfs),
     ]
+
+    # 2. Preparar el DataFrame para el gráfico de radar
+    # Renombrar la columna 'value' en cada DataFrame antes de unir
+    dfs_to_merge = [df.rename(columns={"value": name}) for name, df in dfs.items()]
+    poly_df = dfs_to_merge[0]
+    for df_to_merge in dfs_to_merge[1:]:
+        poly_df = pd.merge(poly_df, df_to_merge, on="persona", how="outer")
+    poly_df.fillna(0, inplace=True)
+
+    # 3. Crear y añadir el gráfico de radar
+    figures.append(make_polyhedron(poly_df, "Poliedro de Estadísticas Globales"))
+
+    return figures
