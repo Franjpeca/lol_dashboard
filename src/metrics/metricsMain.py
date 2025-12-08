@@ -14,6 +14,7 @@ from metrics_08_first_metrics import main as run_first_metrics
 from metrics_09_number_skills import main as run_number_skill
 from metrics_10_stats_by_rol import main as run_stats_by_rol
 from metrics_11_stats_record import main as run_record_stats
+from metrics_12_botlane_synergy import main as run_duo_stats
 
 def main():
     print("[INIT] Inicio del orquestador de metricas")
@@ -72,6 +73,8 @@ def main():
     print("[INFO] Ejecutando estadisticas de records...")
     run_record_stats()
 
+    print("[INFO] Ejecutando estadisticas de duos...")
+    run_duo_stats()
 
 
     print("[DONE] Orquestador de metricas finalizado")

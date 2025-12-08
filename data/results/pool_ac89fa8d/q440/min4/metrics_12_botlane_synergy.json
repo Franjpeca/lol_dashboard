@@ -1,0 +1,2136 @@
+{
+  "source_L1": "L1_q440_min4_pool_ac89fa8d",
+  "generated_at": "2025-12-07 00:07:27",
+  "start_date": null,
+  "end_date": null,
+  "botlane_synergy": [
+    {
+      "duo": [
+        "Dexus",
+        "Nikken"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 31.5,
+      "avg_damage": 42759.0,
+      "avg_vision": 66.0,
+      "avg_gold": 23245.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 1.0,
+      "damage_norm": 0.6234517661334478,
+      "vision_norm": 0.5739130434782609,
+      "economy_norm": 0.7362487981167734,
+      "botlane_score": 0.8557065373861931
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "gokusito"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 14.5,
+      "avg_damage": 55644.0,
+      "avg_vision": 115.0,
+      "avg_gold": 27352.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.4603174603174603,
+      "damage_norm": 0.8141231484084822,
+      "vision_norm": 1.0,
+      "economy_norm": 0.8724180232750903,
+      "botlane_score": 0.8421299240726975
+    },
+    {
+      "duo": [
+        "Frieren",
+        "Morocha"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 8.071428571428571,
+      "avg_damage": 68205.0,
+      "avg_vision": 60.0,
+      "avg_gold": 31200.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.25623582766439906,
+      "damage_norm": 1.0,
+      "vision_norm": 0.5217391304347826,
+      "economy_norm": 1.0,
+      "botlane_score": 0.8034210785763581
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "Nikken"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 18.333333333333332,
+      "avg_damage": 51465.0,
+      "avg_vision": 70.0,
+      "avg_gold": 23521.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.582010582010582,
+      "damage_norm": 0.7522825813516433,
+      "vision_norm": 0.6086956521739131,
+      "economy_norm": 0.7453996883392461,
+      "botlane_score": 0.802268166723761
+    },
+    {
+      "duo": [
+        "Nikken",
+        "SN Bin"
+      ],
+      "games": 2,
+      "wins": 2,
+      "winrate": 1.0,
+      "avg_kda": 9.996428571428572,
+      "avg_damage": 45209.5,
+      "avg_vision": 86.0,
+      "avg_gold": 27476.5,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.31734693877551023,
+      "damage_norm": 0.659714103911094,
+      "vision_norm": 0.7478260869565218,
+      "economy_norm": 0.8765458704950101,
+      "botlane_score": 0.757849404282474
+    },
+    {
+      "duo": [
+        "Dexus",
+        "En Vlc No F0II0"
+      ],
+      "games": 2,
+      "wins": 2,
+      "winrate": 1.0,
+      "avg_kda": 10.232142857142858,
+      "avg_damage": 48265.5,
+      "avg_vision": 60.0,
+      "avg_gold": 22740.5,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.32482993197278914,
+      "damage_norm": 0.7049365908519171,
+      "vision_norm": 0.5217391304347826,
+      "economy_norm": 0.7195218991412752,
+      "botlane_score": 0.7300794075225472
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "DETOXED"
+      ],
+      "games": 2,
+      "wins": 2,
+      "winrate": 1.0,
+      "avg_kda": 24.0,
+      "avg_damage": 18920.0,
+      "avg_vision": 69.0,
+      "avg_gold": 16151.5,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.7619047619047619,
+      "damage_norm": 0.2706838125397695,
+      "vision_norm": 0.6,
+      "economy_norm": 0.5010609727794171,
+      "botlane_score": 0.716623812166848
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Däzzler"
+      ],
+      "games": 3,
+      "wins": 2,
+      "winrate": 0.6666666666666666,
+      "avg_kda": 15.496753246753245,
+      "avg_damage": 54122.666666666664,
+      "avg_vision": 109.33333333333333,
+      "avg_gold": 27128.666666666668,
+      "winrate_norm": 0.6666666666666666,
+      "kda_norm": 0.4919604205318491,
+      "damage_norm": 0.7916105578327932,
+      "vision_norm": 0.9507246376811593,
+      "economy_norm": 0.8650133174187417,
+      "botlane_score": 0.7049546578495852
+    },
+    {
+      "duo": [
+        "Dexus",
+        "ñoki"
+      ],
+      "games": 2,
+      "wins": 2,
+      "winrate": 1.0,
+      "avg_kda": 6.55,
+      "avg_damage": 36955.0,
+      "avg_vision": 74.5,
+      "avg_gold": 26099.5,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.20793650793650792,
+      "damage_norm": 0.537564555987984,
+      "vision_norm": 0.6478260869565218,
+      "economy_norm": 0.8308908855807168,
+      "botlane_score": 0.6969719100386225
+    },
+    {
+      "duo": [
+        "Dexus",
+        "TheChosenUndead"
+      ],
+      "games": 10,
+      "wins": 8,
+      "winrate": 0.8,
+      "avg_kda": 8.90016317016317,
+      "avg_damage": 51958.6,
+      "avg_vision": 90.8,
+      "avg_gold": 25579.0,
+      "winrate_norm": 0.8,
+      "kda_norm": 0.28254486254486255,
+      "damage_norm": 0.7595868416769019,
+      "vision_norm": 0.7895652173913044,
+      "economy_norm": 0.8136335002155101,
+      "botlane_score": 0.6887462126050345
+    },
+    {
+      "duo": [
+        "DETOXED",
+        "Frieren"
+      ],
+      "games": 13,
+      "wins": 10,
+      "winrate": 0.7692307692307693,
+      "avg_kda": 16.97179487179487,
+      "avg_damage": 38897.769230769234,
+      "avg_vision": 89.0,
+      "avg_gold": 23452.076923076922,
+      "winrate_norm": 0.7692307692307693,
+      "kda_norm": 0.5387871387871387,
+      "damage_norm": 0.566313527246981,
+      "vision_norm": 0.7739130434782608,
+      "economy_norm": 0.743114516198963,
+      "botlane_score": 0.680415196866854
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "Kyoraku"
+      ],
+      "games": 15,
+      "wins": 12,
+      "winrate": 0.8,
+      "avg_kda": 8.438544973544975,
+      "avg_damage": 42819.26666666667,
+      "avg_vision": 72.6,
+      "avg_gold": 23070.533333333333,
+      "winrate_norm": 0.8,
+      "kda_norm": 0.2678903166204754,
+      "damage_norm": 0.6243435883017397,
+      "vision_norm": 0.6313043478260869,
+      "economy_norm": 0.7304642861089928,
+      "botlane_score": 0.634623644377951
+    },
+    {
+      "duo": [
+        "Frieren",
+        "ñoki"
+      ],
+      "games": 3,
+      "wins": 3,
+      "winrate": 1.0,
+      "avg_kda": 6.581746031746032,
+      "avg_damage": 25640.0,
+      "avg_vision": 65.33333333333333,
+      "avg_gold": 19453.666666666668,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.208944318468128,
+      "damage_norm": 0.3701259304201133,
+      "vision_norm": 0.5681159420289855,
+      "economy_norm": 0.6105456273554148,
+      "botlane_score": 0.6336802067160883
+    },
+    {
+      "duo": [
+        "SN Bin",
+        "ñoki"
+      ],
+      "games": 3,
+      "wins": 2,
+      "winrate": 0.6666666666666666,
+      "avg_kda": 9.666666666666666,
+      "avg_damage": 48585.0,
+      "avg_vision": 71.66666666666667,
+      "avg_gold": 27789.0,
+      "winrate_norm": 0.6666666666666666,
+      "kda_norm": 0.30687830687830686,
+      "damage_norm": 0.7096645308314959,
+      "vision_norm": 0.6231884057971014,
+      "economy_norm": 0.8869069327940055,
+      "botlane_score": 0.6209847680677378
+    },
+    {
+      "duo": [
+        "Kayki マ",
+        "Morocha"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 4.2727272727272725,
+      "avg_damage": 28586.0,
+      "avg_vision": 43.0,
+      "avg_gold": 18135.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.13564213564213565,
+      "damage_norm": 0.4137206445980141,
+      "vision_norm": 0.3739130434782609,
+      "economy_norm": 0.5668247074036007,
+      "botlane_score": 0.6039463311362161
+    },
+    {
+      "duo": [
+        "Kyoraku",
+        "maibad"
+      ],
+      "games": 5,
+      "wins": 3,
+      "winrate": 0.6,
+      "avg_kda": 10.412323232323232,
+      "avg_damage": 46534.6,
+      "avg_vision": 82.4,
+      "avg_gold": 23901.0,
+      "winrate_norm": 0.6,
+      "kda_norm": 0.3305499438832772,
+      "damage_norm": 0.6793228465306244,
+      "vision_norm": 0.7165217391304348,
+      "economy_norm": 0.7579987400948245,
+      "botlane_score": 0.5894266060053062
+    },
+    {
+      "duo": [
+        "Frieren",
+        "Joseph Joestar"
+      ],
+      "games": 30,
+      "wins": 21,
+      "winrate": 0.7,
+      "avg_kda": 8.827235449735449,
+      "avg_damage": 39025.86666666667,
+      "avg_vision": 75.36666666666666,
+      "avg_gold": 21373.033333333333,
+      "winrate_norm": 0.7,
+      "kda_norm": 0.2802296968169984,
+      "damage_norm": 0.568209104675654,
+      "vision_norm": 0.6553623188405796,
+      "economy_norm": 0.6741829957008498,
+      "botlane_score": 0.5826422917526733
+    },
+    {
+      "duo": [
+        "En Vlc No F0II0",
+        "Frieren"
+      ],
+      "games": 18,
+      "wins": 12,
+      "winrate": 0.6666666666666666,
+      "avg_kda": 8.94887566137566,
+      "avg_damage": 41355.333333333336,
+      "avg_vision": 74.77777777777777,
+      "avg_gold": 22361.88888888889,
+      "winrate_norm": 0.6666666666666666,
+      "kda_norm": 0.28409129083732254,
+      "damage_norm": 0.6026803991496121,
+      "vision_norm": 0.6502415458937197,
+      "economy_norm": 0.7069688965514701,
+      "botlane_score": 0.5797420489085725
+    },
+    {
+      "duo": [
+        "Frieren",
+        "Kyoraku"
+      ],
+      "games": 43,
+      "wins": 24,
+      "winrate": 0.5581395348837209,
+      "avg_kda": 11.836367831135272,
+      "avg_damage": 44350.32558139535,
+      "avg_vision": 88.55813953488372,
+      "avg_gold": 22881.627906976744,
+      "winrate_norm": 0.5581395348837209,
+      "kda_norm": 0.37575770892492927,
+      "damage_norm": 0.6470000973910554,
+      "vision_norm": 0.7700707785642062,
+      "economy_norm": 0.7242010512574764,
+      "botlane_score": 0.5772345581988536
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "Däzzler"
+      ],
+      "games": 13,
+      "wins": 7,
+      "winrate": 0.5384615384615384,
+      "avg_kda": 10.289418914418913,
+      "avg_damage": 47785.692307692305,
+      "avg_vision": 85.07692307692308,
+      "avg_gold": 25035.30769230769,
+      "winrate_norm": 0.5384615384615384,
+      "kda_norm": 0.3266482195053623,
+      "damage_norm": 0.697836428188471,
+      "vision_norm": 0.7397993311036789,
+      "economy_norm": 0.7956071646267594,
+      "botlane_score": 0.5738221944964259
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "FUSHROHDAH"
+      ],
+      "games": 4,
+      "wins": 3,
+      "winrate": 0.75,
+      "avg_kda": 4.4574404761904765,
+      "avg_damage": 32046.5,
+      "avg_vision": 96.0,
+      "avg_gold": 21517.0,
+      "winrate_norm": 0.75,
+      "kda_norm": 0.14150604686318974,
+      "damage_norm": 0.46492889592612874,
+      "vision_norm": 0.8347826086956521,
+      "economy_norm": 0.6789562680282484,
+      "botlane_score": 0.5726608762302539
+    },
+    {
+      "duo": [
+        "FUSHROHDAH",
+        "Joseph Joestar"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 7.0,
+      "avg_damage": 15452.0,
+      "avg_vision": 50.0,
+      "avg_gold": 12828.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.2222222222222222,
+      "damage_norm": 0.21936457670509196,
+      "vision_norm": 0.43478260869565216,
+      "economy_norm": 0.39086900301714134,
+      "botlane_score": 0.5708825209567422
+    },
+    {
+      "duo": [
+        "Banshee",
+        "Frieren"
+      ],
+      "games": 83,
+      "wins": 52,
+      "winrate": 0.6265060240963856,
+      "avg_kda": 10.337402390113233,
+      "avg_damage": 38344.44578313253,
+      "avg_vision": 84.66265060240964,
+      "avg_gold": 21388.4578313253,
+      "winrate_norm": 0.6265060240963856,
+      "kda_norm": 0.32817150444803916,
+      "damage_norm": 0.5581254832728965,
+      "vision_norm": 0.7361969617600839,
+      "economy_norm": 0.6746944010916515,
+      "botlane_score": 0.5689509434679149
+    },
+    {
+      "duo": [
+        "Kayki マ",
+        "SN Bin"
+      ],
+      "games": 4,
+      "wins": 2,
+      "winrate": 0.5,
+      "avg_kda": 4.907873376623376,
+      "avg_damage": 53806.0,
+      "avg_vision": 103.25,
+      "avg_gold": 27848.75,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.15580550401978974,
+      "damage_norm": 0.7869245453334714,
+      "vision_norm": 0.8978260869565218,
+      "economy_norm": 0.8888879679055735,
+      "botlane_score": 0.5672174153568618
+    },
+    {
+      "duo": [
+        "FUSHROHDAH",
+        "Kyoraku"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 7.925000000000001,
+      "avg_damage": 51230.5,
+      "avg_vision": 85.0,
+      "avg_gold": 26822.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.25158730158730164,
+      "damage_norm": 0.7488124657797771,
+      "vision_norm": 0.7391304347826086,
+      "economy_norm": 0.8548456616159942,
+      "botlane_score": 0.559477563113276
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "En Vlc No F0II0"
+      ],
+      "games": 7,
+      "wins": 4,
+      "winrate": 0.5714285714285714,
+      "avg_kda": 6.992006802721088,
+      "avg_damage": 50433.0,
+      "avg_vision": 66.85714285714286,
+      "avg_gold": 23984.714285714286,
+      "winrate_norm": 0.5714285714285714,
+      "kda_norm": 0.22196846992765357,
+      "damage_norm": 0.7370111132485905,
+      "vision_norm": 0.5813664596273292,
+      "economy_norm": 0.7607743206695496,
+      "botlane_score": 0.5545814232363653
+    },
+    {
+      "duo": [
+        "Frieren",
+        "TheChosenUndead"
+      ],
+      "games": 111,
+      "wins": 65,
+      "winrate": 0.5855855855855856,
+      "avg_kda": 8.134227409227409,
+      "avg_damage": 41778.55855855856,
+      "avg_vision": 88.84684684684684,
+      "avg_gold": 22044.324324324323,
+      "winrate_norm": 0.5855855855855856,
+      "kda_norm": 0.2582294415627749,
+      "damage_norm": 0.6089432581878237,
+      "vision_norm": 0.772581276929103,
+      "economy_norm": 0.6964399165917683,
+      "botlane_score": 0.5545708935364411
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "maibad"
+      ],
+      "games": 7,
+      "wins": 3,
+      "winrate": 0.42857142857142855,
+      "avg_kda": 14.048870573870575,
+      "avg_damage": 45094.857142857145,
+      "avg_vision": 89.71428571428571,
+      "avg_gold": 24676.85714285714,
+      "winrate_norm": 0.42857142857142855,
+      "kda_norm": 0.44599589123398653,
+      "damage_norm": 0.6580176264536328,
+      "vision_norm": 0.7801242236024845,
+      "economy_norm": 0.7837225935100673,
+      "botlane_score": 0.5486159566773505
+    },
+    {
+      "duo": [
+        "Kyoraku",
+        "SN Bin"
+      ],
+      "games": 21,
+      "wins": 13,
+      "winrate": 0.6190476190476191,
+      "avg_kda": 9.817979110836253,
+      "avg_damage": 36549.42857142857,
+      "avg_vision": 72.33333333333333,
+      "avg_gold": 20383.14285714286,
+      "winrate_norm": 0.6190476190476191,
+      "kda_norm": 0.31168187653448426,
+      "damage_norm": 0.5315629366711836,
+      "vision_norm": 0.6289855072463768,
+      "economy_norm": 0.6413627816432764,
+      "botlane_score": 0.5433028391491465
+    },
+    {
+      "duo": [
+        "SN Bin",
+        "maibad"
+      ],
+      "games": 8,
+      "wins": 4,
+      "winrate": 0.5,
+      "avg_kda": 8.148164682539683,
+      "avg_damage": 48921.625,
+      "avg_vision": 77.75,
+      "avg_gold": 25453.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.2586718946837995,
+      "damage_norm": 0.7146458854343933,
+      "vision_norm": 0.6760869565217391,
+      "economy_norm": 0.8094559198965552,
+      "botlane_score": 0.543217843665468
+    },
+    {
+      "duo": [
+        "En Vlc No F0II0",
+        "SN Bin"
+      ],
+      "games": 46,
+      "wins": 26,
+      "winrate": 0.5652173913043478,
+      "avg_kda": 8.005269307986701,
+      "avg_damage": 45702.45652173913,
+      "avg_vision": 64.1304347826087,
+      "avg_gold": 23702.304347826088,
+      "winrate_norm": 0.5652173913043478,
+      "kda_norm": 0.2541355335868794,
+      "damage_norm": 0.6670088420873836,
+      "vision_norm": 0.5576559546313801,
+      "economy_norm": 0.7514109063965415,
+      "botlane_score": 0.5412225177593839
+    },
+    {
+      "duo": [
+        "Frieren",
+        "Nikken"
+      ],
+      "games": 4,
+      "wins": 2,
+      "winrate": 0.5,
+      "avg_kda": 10.840178571428572,
+      "avg_damage": 42032.25,
+      "avg_vision": 84.0,
+      "avg_gold": 23499.25,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.3441326530612245,
+      "damage_norm": 0.6126973674475044,
+      "vision_norm": 0.7304347826086957,
+      "economy_norm": 0.7446785584032359,
+      "botlane_score": 0.5388773382029389
+    },
+    {
+      "duo": [
+        "SN Bin",
+        "TheChosenUndead"
+      ],
+      "games": 63,
+      "wins": 34,
+      "winrate": 0.5396825396825397,
+      "avg_kda": 7.004225580416056,
+      "avg_damage": 42919.36507936508,
+      "avg_vision": 83.65079365079364,
+      "avg_gold": 23748.126984126986,
+      "winrate_norm": 0.5396825396825397,
+      "kda_norm": 0.22235636763225572,
+      "damage_norm": 0.6258248380272146,
+      "vision_norm": 0.7273982056590752,
+      "economy_norm": 0.7529301742026785,
+      "botlane_score": 0.5335420949910853
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "Kyoraku"
+      ],
+      "games": 43,
+      "wins": 24,
+      "winrate": 0.5581395348837209,
+      "avg_kda": 9.805530386925732,
+      "avg_damage": 42288.88372093023,
+      "avg_vision": 61.13953488372093,
+      "avg_gold": 21484.720930232557,
+      "winrate_norm": 0.5581395348837209,
+      "kda_norm": 0.3112866789500232,
+      "damage_norm": 0.6164950163654828,
+      "vision_norm": 0.5316481294236602,
+      "economy_norm": 0.6778860425792433,
+      "botlane_score": 0.52976557021688
+    },
+    {
+      "duo": [
+        "Kayki マ",
+        "Kyoraku"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 10.654761904761905,
+      "avg_damage": 36451.5,
+      "avg_vision": 91.5,
+      "avg_gold": 24094.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.3382464096749811,
+      "damage_norm": 0.5301137961140625,
+      "vision_norm": 0.7956521739130434,
+      "economy_norm": 0.764397732170684,
+      "botlane_score": 0.5296770317661815
+    },
+    {
+      "duo": [
+        "FUSHROHDAH",
+        "SN Bin"
+      ],
+      "games": 5,
+      "wins": 3,
+      "winrate": 0.6,
+      "avg_kda": 5.5029797979797985,
+      "avg_damage": 41870.2,
+      "avg_vision": 75.6,
+      "avg_gold": 21026.0,
+      "winrate_norm": 0.6,
+      "kda_norm": 0.17469777136443804,
+      "damage_norm": 0.6102993622090356,
+      "vision_norm": 0.657391304347826,
+      "economy_norm": 0.6626769669440669,
+      "botlane_score": 0.529006253843884
+    },
+    {
+      "duo": [
+        "Morocha",
+        "SN Bin"
+      ],
+      "games": 3,
+      "wins": 2,
+      "winrate": 0.6666666666666666,
+      "avg_kda": 14.912698412698413,
+      "avg_damage": 31509.333333333332,
+      "avg_vision": 22.666666666666668,
+      "avg_gold": 17462.0,
+      "winrate_norm": 0.6666666666666666,
+      "kda_norm": 0.47341899722852104,
+      "damage_norm": 0.45697993893385813,
+      "vision_norm": 0.19710144927536233,
+      "economy_norm": 0.5445111236364842,
+      "botlane_score": 0.5269077111903272
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "Nikken"
+      ],
+      "games": 69,
+      "wins": 36,
+      "winrate": 0.5217391304347826,
+      "avg_kda": 9.565644299339953,
+      "avg_damage": 40159.14492753623,
+      "avg_vision": 85.10144927536231,
+      "avg_gold": 20943.36231884058,
+      "winrate_norm": 0.5217391304347826,
+      "kda_norm": 0.3036712475980937,
+      "damage_norm": 0.5849792818197942,
+      "vision_norm": 0.7400126023944549,
+      "economy_norm": 0.6599370816233076,
+      "botlane_score": 0.526420726459267
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "maibad"
+      ],
+      "games": 3,
+      "wins": 2,
+      "winrate": 0.6666666666666666,
+      "avg_kda": 7.8578042328042335,
+      "avg_damage": 33390.0,
+      "avg_vision": 58.0,
+      "avg_gold": 19503.333333333332,
+      "winrate_norm": 0.6666666666666666,
+      "kda_norm": 0.24945410262870582,
+      "damage_norm": 0.4848099205350933,
+      "vision_norm": 0.5043478260869565,
+      "economy_norm": 0.6121923455234685,
+      "botlane_score": 0.5251734884604691
+    },
+    {
+      "duo": [
+        "Banshee",
+        "Kayki マ"
+      ],
+      "games": 5,
+      "wins": 3,
+      "winrate": 0.6,
+      "avg_kda": 4.762301587301588,
+      "avg_damage": 40819.0,
+      "avg_vision": 67.4,
+      "avg_gold": 23324.4,
+      "winrate_norm": 0.6,
+      "kda_norm": 0.1511841773746536,
+      "damage_norm": 0.5947437737691819,
+      "vision_norm": 0.5860869565217391,
+      "economy_norm": 0.7388813368257021,
+      "botlane_score": 0.5216824195635112
+    },
+    {
+      "duo": [
+        "Banshee",
+        "maibad"
+      ],
+      "games": 11,
+      "wins": 7,
+      "winrate": 0.6363636363636364,
+      "avg_kda": 8.2991341991342,
+      "avg_damage": 30901.636363636364,
+      "avg_vision": 76.0,
+      "avg_gold": 18730.0,
+      "winrate_norm": 0.6363636363636364,
+      "kda_norm": 0.26346457775029203,
+      "damage_norm": 0.4479872791576478,
+      "vision_norm": 0.6608695652173913,
+      "economy_norm": 0.5865521700208879,
+      "botlane_score": 0.5215779994508705
+    },
+    {
+      "duo": [
+        "Banshee",
+        "En Vlc No F0II0"
+      ],
+      "games": 8,
+      "wins": 6,
+      "winrate": 0.75,
+      "avg_kda": 4.788095238095238,
+      "avg_damage": 26785.75,
+      "avg_vision": 60.0,
+      "avg_gold": 18752.25,
+      "winrate_norm": 0.75,
+      "kda_norm": 0.15200302343159486,
+      "damage_norm": 0.38708066353936993,
+      "vision_norm": 0.5217391304347826,
+      "economy_norm": 0.5872898776565764,
+      "botlane_score": 0.5187196382033289
+    },
+    {
+      "duo": [
+        "Frieren",
+        "SN Bin"
+      ],
+      "games": 26,
+      "wins": 14,
+      "winrate": 0.5384615384615384,
+      "avg_kda": 9.057677045177046,
+      "avg_damage": 38773.307692307695,
+      "avg_vision": 72.96153846153847,
+      "avg_gold": 20699.423076923078,
+      "winrate_norm": 0.5384615384615384,
+      "kda_norm": 0.2875453030214935,
+      "damage_norm": 0.5644717535893529,
+      "vision_norm": 0.6344481605351171,
+      "economy_norm": 0.6518491786387414,
+      "botlane_score": 0.5144177606241706
+    },
+    {
+      "duo": [
+        "Frieren",
+        "maibad"
+      ],
+      "games": 11,
+      "wins": 5,
+      "winrate": 0.45454545454545453,
+      "avg_kda": 8.712193362193362,
+      "avg_damage": 43532.09090909091,
+      "avg_vision": 83.0,
+      "avg_gold": 23503.090909090908,
+      "winrate_norm": 0.45454545454545453,
+      "kda_norm": 0.2765775670537575,
+      "damage_norm": 0.6348919145432752,
+      "vision_norm": 0.7217391304347827,
+      "economy_norm": 0.7448059052780381,
+      "botlane_score": 0.5107665817088705
+    },
+    {
+      "duo": [
+        "Banshee",
+        "SN Bin"
+      ],
+      "games": 39,
+      "wins": 20,
+      "winrate": 0.5128205128205128,
+      "avg_kda": 7.42853492661185,
+      "avg_damage": 40801.4358974359,
+      "avg_vision": 77.71794871794872,
+      "avg_gold": 22426.82051282051,
+      "winrate_norm": 0.5128205128205128,
+      "kda_norm": 0.2358265056067254,
+      "damage_norm": 0.594483861335009,
+      "vision_norm": 0.6758082497212932,
+      "economy_norm": 0.7091217304738077,
+      "botlane_score": 0.509683276536062
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "TheChosenUndead"
+      ],
+      "games": 74,
+      "wins": 38,
+      "winrate": 0.5135135135135135,
+      "avg_kda": 7.66446917770447,
+      "avg_damage": 38637.81081081081,
+      "avg_vision": 79.29729729729729,
+      "avg_gold": 22390.027027027027,
+      "winrate_norm": 0.5135135135135135,
+      "kda_norm": 0.24331648183188795,
+      "damage_norm": 0.5624666796515206,
+      "vision_norm": 0.6895417156286721,
+      "economy_norm": 0.7079018277585964,
+      "botlane_score": 0.506306392040814
+    },
+    {
+      "duo": [
+        "Kyoraku",
+        "TheChosenUndead"
+      ],
+      "games": 62,
+      "wins": 33,
+      "winrate": 0.532258064516129,
+      "avg_kda": 7.3025935086418965,
+      "avg_damage": 37633.82258064516,
+      "avg_vision": 78.48387096774194,
+      "avg_gold": 21478.370967741936,
+      "winrate_norm": 0.532258064516129,
+      "kda_norm": 0.231828365353711,
+      "damage_norm": 0.547609727875537,
+      "vision_norm": 0.682468443197756,
+      "economy_norm": 0.6776755070369661,
+      "botlane_score": 0.5048052394757734
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "SN Bin"
+      ],
+      "games": 16,
+      "wins": 8,
+      "winrate": 0.5,
+      "avg_kda": 10.352935606060605,
+      "avg_damage": 39657.0625,
+      "avg_vision": 62.0,
+      "avg_gold": 21863.75,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.32866462241462235,
+      "damage_norm": 0.577549499089927,
+      "vision_norm": 0.5391304347826087,
+      "economy_norm": 0.6904529027552136,
+      "botlane_score": 0.5042011580546921
+    },
+    {
+      "duo": [
+        "En Vlc No F0II0",
+        "Joseph Joestar"
+      ],
+      "games": 11,
+      "wins": 7,
+      "winrate": 0.6363636363636364,
+      "avg_kda": 4.7525580480125935,
+      "avg_damage": 35425.181818181816,
+      "avg_vision": 63.27272727272727,
+      "avg_gold": 19282.727272727272,
+      "winrate_norm": 0.6363636363636364,
+      "kda_norm": 0.15087485866706646,
+      "damage_norm": 0.5149264071826481,
+      "vision_norm": 0.5501976284584981,
+      "economy_norm": 0.6048780634835473,
+      "botlane_score": 0.503213276909602
+    },
+    {
+      "duo": [
+        "Banshee",
+        "Kyoraku"
+      ],
+      "games": 44,
+      "wins": 21,
+      "winrate": 0.4772727272727273,
+      "avg_kda": 6.946348222484587,
+      "avg_damage": 42897.295454545456,
+      "avg_vision": 81.3409090909091,
+      "avg_gold": 22445.386363636364,
+      "winrate_norm": 0.4772727272727273,
+      "kda_norm": 0.22051899118998688,
+      "damage_norm": 0.6254982531711301,
+      "vision_norm": 0.7073122529644269,
+      "economy_norm": 0.7097372886720057,
+      "botlane_score": 0.5018174939449576
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "maibad"
+      ],
+      "games": 6,
+      "wins": 3,
+      "winrate": 0.5,
+      "avg_kda": 8.27037037037037,
+      "avg_damage": 41106.666666666664,
+      "avg_vision": 63.166666666666664,
+      "avg_gold": 23524.5,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.2625514403292181,
+      "damage_norm": 0.5990006461764604,
+      "vision_norm": 0.5492753623188406,
+      "economy_norm": 0.7455157322369947,
+      "botlane_score": 0.5017895267567193
+    },
+    {
+      "duo": [
+        "Banshee",
+        "Bustamantefanboy"
+      ],
+      "games": 96,
+      "wins": 48,
+      "winrate": 0.5,
+      "avg_kda": 7.431618237086983,
+      "avg_damage": 41095.427083333336,
+      "avg_vision": 73.94791666666667,
+      "avg_gold": 22013.885416666668,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.23592438847895184,
+      "damage_norm": 0.5988343235617641,
+      "vision_norm": 0.6430253623188407,
+      "economy_norm": 0.6954307024523945,
+      "botlane_score": 0.5007973488852667
+    },
+    {
+      "duo": [
+        "TheChosenUndead",
+        "gokusito"
+      ],
+      "games": 3,
+      "wins": 2,
+      "winrate": 0.6666666666666666,
+      "avg_kda": 3.619444444444444,
+      "avg_damage": 29511.0,
+      "avg_vision": 70.66666666666667,
+      "avg_gold": 20058.666666666668,
+      "winrate_norm": 0.6666666666666666,
+      "kda_norm": 0.11490299823633156,
+      "damage_norm": 0.42740873374076976,
+      "vision_norm": 0.6144927536231884,
+      "economy_norm": 0.6306046439662699,
+      "botlane_score": 0.4996387528210328
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "Frieren"
+      ],
+      "games": 21,
+      "wins": 8,
+      "winrate": 0.38095238095238093,
+      "avg_kda": 9.752984185127042,
+      "avg_damage": 42965.857142857145,
+      "avg_vision": 97.19047619047619,
+      "avg_gold": 23084.761904761905,
+      "winrate_norm": 0.38095238095238093,
+      "kda_norm": 0.3096185455595886,
+      "damage_norm": 0.6265128245239822,
+      "vision_norm": 0.8451345755693582,
+      "economy_norm": 0.7309360400769837,
+      "botlane_score": 0.49721428796230077
+    },
+    {
+      "duo": [
+        "Kyoraku",
+        "Lady Maria"
+      ],
+      "games": 11,
+      "wins": 6,
+      "winrate": 0.5454545454545454,
+      "avg_kda": 9.881818181818183,
+      "avg_damage": 36866.545454545456,
+      "avg_vision": 54.45454545454545,
+      "avg_gold": 19229.090909090908,
+      "winrate_norm": 0.5454545454545454,
+      "kda_norm": 0.3137085137085137,
+      "damage_norm": 0.5362556114439152,
+      "vision_norm": 0.4735177865612648,
+      "economy_norm": 0.603099728427138,
+      "botlane_score": 0.49583639471114427
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "Lady Maria"
+      ],
+      "games": 4,
+      "wins": 2,
+      "winrate": 0.5,
+      "avg_kda": 6.725694444444445,
+      "avg_damage": 37073.5,
+      "avg_vision": 66.75,
+      "avg_gold": 24727.5,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.2135141093474427,
+      "damage_norm": 0.5393181111916776,
+      "vision_norm": 0.5804347826086956,
+      "economy_norm": 0.7854016776632075,
+      "botlane_score": 0.4871500901350144
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Frieren"
+      ],
+      "games": 12,
+      "wins": 6,
+      "winrate": 0.5,
+      "avg_kda": 6.1487764550264545,
+      "avg_damage": 39323.5,
+      "avg_vision": 76.83333333333333,
+      "avg_gold": 20946.416666666668,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.19519925254052237,
+      "damage_norm": 0.5726134631605427,
+      "vision_norm": 0.6681159420289855,
+      "economy_norm": 0.6600383497452561,
+      "botlane_score": 0.48637797231763724
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "Frieren"
+      ],
+      "games": 42,
+      "wins": 19,
+      "winrate": 0.4523809523809524,
+      "avg_kda": 9.728107606679036,
+      "avg_damage": 37846.04761904762,
+      "avg_vision": 74.76190476190476,
+      "avg_gold": 21430.809523809523,
+      "winrate_norm": 0.4523809523809524,
+      "kda_norm": 0.30882881291044556,
+      "damage_norm": 0.5507502200311883,
+      "vision_norm": 0.650103519668737,
+      "economy_norm": 0.6760985883694016,
+      "botlane_score": 0.4854883983445216
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Joseph Joestar"
+      ],
+      "games": 13,
+      "wins": 7,
+      "winrate": 0.5384615384615384,
+      "avg_kda": 4.3158568040146985,
+      "avg_damage": 39625.38461538462,
+      "avg_vision": 61.92307692307692,
+      "avg_gold": 22201.30769230769,
+      "winrate_norm": 0.5384615384615384,
+      "kda_norm": 0.13701132711157774,
+      "damage_norm": 0.5770807318375278,
+      "vision_norm": 0.5384615384615384,
+      "economy_norm": 0.7016447628496301,
+      "botlane_score": 0.48221365730555343
+    },
+    {
+      "duo": [
+        "Banshee",
+        "Lady Maria"
+      ],
+      "games": 5,
+      "wins": 3,
+      "winrate": 0.6,
+      "avg_kda": 6.436904761904762,
+      "avg_damage": 31341.8,
+      "avg_vision": 48.2,
+      "avg_gold": 20160.4,
+      "winrate_norm": 0.6,
+      "kda_norm": 0.20434618291761147,
+      "damage_norm": 0.45450079168948015,
+      "vision_norm": 0.4191304347826087,
+      "economy_norm": 0.6339776532608336,
+      "botlane_score": 0.4770802037257626
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Kyoraku"
+      ],
+      "games": 6,
+      "wins": 3,
+      "winrate": 0.5,
+      "avg_kda": 6.009126984126984,
+      "avg_damage": 36631.166666666664,
+      "avg_vision": 71.5,
+      "avg_gold": 21668.166666666668,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.19076593600403122,
+      "damage_norm": 0.5327724916268355,
+      "vision_norm": 0.6217391304347826,
+      "economy_norm": 0.6839682592310158,
+      "botlane_score": 0.4752784244927532
+    },
+    {
+      "duo": [
+        "En Vlc No F0II0",
+        "Kyoraku"
+      ],
+      "games": 5,
+      "wins": 2,
+      "winrate": 0.4,
+      "avg_kda": 6.461587301587301,
+      "avg_damage": 44232.4,
+      "avg_vision": 79.6,
+      "avg_gold": 23829.2,
+      "winrate_norm": 0.4,
+      "kda_norm": 0.20512975560594604,
+      "damage_norm": 0.6452550423960816,
+      "vision_norm": 0.6921739130434782,
+      "economy_norm": 0.7556181824210073,
+      "botlane_score": 0.47485616914685413
+    },
+    {
+      "duo": [
+        "Banshee",
+        "TheChosenUndead"
+      ],
+      "games": 74,
+      "wins": 41,
+      "winrate": 0.5540540540540541,
+      "avg_kda": 6.0402342777342755,
+      "avg_damage": 29432.35135135135,
+      "avg_vision": 76.93243243243244,
+      "avg_gold": 19684.594594594593,
+      "winrate_norm": 0.5540540540540541,
+      "kda_norm": 0.19175346913442146,
+      "damage_norm": 0.42624489621248873,
+      "vision_norm": 0.6689776733254994,
+      "economy_norm": 0.6182021350285002,
+      "botlane_score": 0.4739392755264036
+    },
+    {
+      "duo": [
+        "Frieren",
+        "Kayki マ"
+      ],
+      "games": 22,
+      "wins": 10,
+      "winrate": 0.45454545454545453,
+      "avg_kda": 7.374269669724214,
+      "avg_damage": 38567.954545454544,
+      "avg_vision": 74.81818181818181,
+      "avg_gold": 21366.18181818182,
+      "winrate_norm": 0.45454545454545453,
+      "kda_norm": 0.23410379903886394,
+      "damage_norm": 0.5614329512327352,
+      "vision_norm": 0.650592885375494,
+      "economy_norm": 0.6739558309798024,
+      "botlane_score": 0.47338040350803123
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "En Vlc No F0II0"
+      ],
+      "games": 5,
+      "wins": 2,
+      "winrate": 0.4,
+      "avg_kda": 9.460512820512822,
+      "avg_damage": 36007.6,
+      "avg_vision": 83.4,
+      "avg_gold": 21315.6,
+      "winrate_norm": 0.4,
+      "kda_norm": 0.3003337403337404,
+      "damage_norm": 0.5235449931189605,
+      "vision_norm": 0.7252173913043479,
+      "economy_norm": 0.6722787705977918,
+      "botlane_score": 0.4645253628807542
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "Kayki マ"
+      ],
+      "games": 10,
+      "wins": 4,
+      "winrate": 0.4,
+      "avg_kda": 7.0265079365079375,
+      "avg_damage": 43581.7,
+      "avg_vision": 70.8,
+      "avg_gold": 22353.6,
+      "winrate_norm": 0.4,
+      "kda_norm": 0.223063744016125,
+      "damage_norm": 0.6356260266066857,
+      "vision_norm": 0.6156521739130435,
+      "economy_norm": 0.7066940751301349,
+      "botlane_score": 0.46397257902888006
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "SN Bin"
+      ],
+      "games": 10,
+      "wins": 3,
+      "winrate": 0.3,
+      "avg_kda": 7.361165223665223,
+      "avg_damage": 50370.2,
+      "avg_vision": 85.4,
+      "avg_gold": 23490.1,
+      "winrate_norm": 0.3,
+      "kda_norm": 0.23368778487826106,
+      "damage_norm": 0.7360818029803039,
+      "vision_norm": 0.7426086956521739,
+      "economy_norm": 0.7443751864991214,
+      "botlane_score": 0.4626523057868425
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "Kyoraku"
+      ],
+      "games": 4,
+      "wins": 1,
+      "winrate": 0.25,
+      "avg_kda": 6.948710317460318,
+      "avg_damage": 51920.0,
+      "avg_vision": 93.25,
+      "avg_gold": 25304.0,
+      "winrate_norm": 0.25,
+      "kda_norm": 0.2205939783320736,
+      "damage_norm": 0.7590156414164583,
+      "vision_norm": 0.8108695652173913,
+      "economy_norm": 0.8045157653923941,
+      "botlane_score": 0.45746045701068494
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "Joseph Joestar"
+      ],
+      "games": 7,
+      "wins": 4,
+      "winrate": 0.5714285714285714,
+      "avg_kda": 6.52012987012987,
+      "avg_damage": 26203.428571428572,
+      "avg_vision": 67.14285714285714,
+      "avg_gold": 17091.85714285714,
+      "winrate_norm": 0.5714285714285714,
+      "kda_norm": 0.2069882498453927,
+      "damage_norm": 0.37846350935123746,
+      "vision_norm": 0.5838509316770186,
+      "economy_norm": 0.5322388893888512,
+      "botlane_score": 0.4572707625173416
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "ñoki"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 2.971590909090909,
+      "avg_damage": 30077.0,
+      "avg_vision": 82.0,
+      "avg_gold": 20407.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.09433621933621934,
+      "damage_norm": 0.4357843645027154,
+      "vision_norm": 0.7130434782608696,
+      "economy_norm": 0.6421537747422168,
+      "botlane_score": 0.4415438420680956
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "SN Bin"
+      ],
+      "games": 12,
+      "wins": 4,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 5.359145715395715,
+      "avg_damage": 42112.0,
+      "avg_vision": 76.16666666666667,
+      "avg_gold": 23099.083333333332,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.17013161001256238,
+      "damage_norm": 0.613877502700623,
+      "vision_norm": 0.6623188405797101,
+      "economy_norm": 0.731410872760629,
+      "botlane_score": 0.42950812721000436
+    },
+    {
+      "duo": [
+        "DETOXED",
+        "Däzzler"
+      ],
+      "games": 3,
+      "wins": 1,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 6.33531746031746,
+      "avg_damage": 40471.0,
+      "avg_vision": 82.66666666666667,
+      "avg_gold": 19941.333333333332,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.2011211892164273,
+      "damage_norm": 0.589594092664664,
+      "vision_norm": 0.7188405797101449,
+      "economy_norm": 0.6267144104417404,
+      "botlane_score": 0.4260318887247401
+    },
+    {
+      "duo": [
+        "DETOXED",
+        "TheChosenUndead"
+      ],
+      "games": 3,
+      "wins": 1,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 4.772283272283272,
+      "avg_damage": 42138.0,
+      "avg_vision": 77.66666666666667,
+      "avg_gold": 22333.0,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.151501056262961,
+      "damage_norm": 0.614262248990041,
+      "vision_norm": 0.6753623188405797,
+      "economy_norm": 0.7060110739033851,
+      "botlane_score": 0.42462333365833027
+    },
+    {
+      "duo": [
+        "Banshee",
+        "Däzzler"
+      ],
+      "games": 13,
+      "wins": 6,
+      "winrate": 0.46153846153846156,
+      "avg_kda": 4.407844932844933,
+      "avg_damage": 26136.69230769231,
+      "avg_vision": 77.53846153846153,
+      "avg_gold": 19115.23076923077,
+      "winrate_norm": 0.46153846153846156,
+      "kda_norm": 0.1399315851696804,
+      "damage_norm": 0.3774759505111548,
+      "vision_norm": 0.6742474916387959,
+      "economy_norm": 0.5993246500192556,
+      "botlane_score": 0.4154541059173568
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Kayki マ"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 3.0019841269841265,
+      "avg_damage": 23994.5,
+      "avg_vision": 73.5,
+      "avg_gold": 19999.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.09530108339632147,
+      "damage_norm": 0.34577592968021664,
+      "vision_norm": 0.6391304347826087,
+      "economy_norm": 0.6286263718046484,
+      "botlane_score": 0.4149910832740334
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "TheChosenUndead"
+      ],
+      "games": 13,
+      "wins": 5,
+      "winrate": 0.38461538461538464,
+      "avg_kda": 4.599438595592442,
+      "avg_damage": 33265.07692307692,
+      "avg_vision": 84.15384615384616,
+      "avg_gold": 19661.923076923078,
+      "winrate_norm": 0.38461538461538464,
+      "kda_norm": 0.14601392366960134,
+      "damage_norm": 0.4829613170616766,
+      "vision_norm": 0.7317725752508362,
+      "economy_norm": 0.6174504518060766,
+      "botlane_score": 0.41456350469810077
+    },
+    {
+      "duo": [
+        "En Vlc No F0II0",
+        "FUSHROHDAH"
+      ],
+      "games": 11,
+      "wins": 5,
+      "winrate": 0.45454545454545453,
+      "avg_kda": 6.322294372294372,
+      "avg_damage": 27556.090909090908,
+      "avg_vision": 59.72727272727273,
+      "avg_gold": 17935.81818181818,
+      "winrate_norm": 0.45454545454545453,
+      "kda_norm": 0.20070775785061498,
+      "damage_norm": 0.39848011763012425,
+      "vision_norm": 0.5193675889328063,
+      "economy_norm": 0.5602207546771718,
+      "botlane_score": 0.4096145912753275
+    },
+    {
+      "duo": [
+        "TheChosenUndead",
+        "maibad"
+      ],
+      "games": 23,
+      "wins": 8,
+      "winrate": 0.34782608695652173,
+      "avg_kda": 5.368936980893502,
+      "avg_damage": 36607.260869565216,
+      "avg_vision": 73.82608695652173,
+      "avg_gold": 20747.608695652172,
+      "winrate_norm": 0.34782608695652173,
+      "kda_norm": 0.17044244383788895,
+      "damage_norm": 0.5324187352141293,
+      "vision_norm": 0.6419659735349716,
+      "economy_norm": 0.6534467920709582,
+      "botlane_score": 0.40924394715360535
+    },
+    {
+      "duo": [
+        "En Vlc No F0II0",
+        "TheChosenUndead"
+      ],
+      "games": 9,
+      "wins": 4,
+      "winrate": 0.4444444444444444,
+      "avg_kda": 4.8274691358024695,
+      "avg_damage": 28709.333333333332,
+      "avg_vision": 64.0,
+      "avg_gold": 18638.0,
+      "winrate_norm": 0.4444444444444444,
+      "kda_norm": 0.15325298843817364,
+      "damage_norm": 0.4155457231503815,
+      "vision_norm": 0.5565217391304348,
+      "economy_norm": 0.5835018732800636,
+      "botlane_score": 0.40553988133653873
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "TheChosenUndead"
+      ],
+      "games": 29,
+      "wins": 12,
+      "winrate": 0.41379310344827586,
+      "avg_kda": 4.2332935263969755,
+      "avg_damage": 26726.41379310345,
+      "avg_vision": 78.13793103448276,
+      "avg_gold": 18835.344827586207,
+      "winrate_norm": 0.41379310344827586,
+      "kda_norm": 0.13439027067926906,
+      "damage_norm": 0.38620261025353964,
+      "vision_norm": 0.6794602698650675,
+      "economy_norm": 0.5900449198496802,
+      "botlane_score": 0.3965863365373469
+    },
+    {
+      "duo": [
+        "Banshee",
+        "Joseph Joestar"
+      ],
+      "games": 17,
+      "wins": 7,
+      "winrate": 0.4117647058823529,
+      "avg_kda": 6.020687319216731,
+      "avg_damage": 26704.70588235294,
+      "avg_vision": 67.17647058823529,
+      "avg_gold": 18484.823529411766,
+      "winrate_norm": 0.4117647058823529,
+      "kda_norm": 0.1911329307687851,
+      "damage_norm": 0.3858813780184521,
+      "vision_norm": 0.5841432225063938,
+      "economy_norm": 0.5784232462256479,
+      "botlane_score": 0.3963653909835928
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "Kayki マ"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 3.5444444444444443,
+      "avg_damage": 22122.5,
+      "avg_vision": 61.5,
+      "avg_gold": 15822.5,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.11252204585537919,
+      "damage_norm": 0.31807419684212085,
+      "vision_norm": 0.5347826086956522,
+      "economy_norm": 0.4901528463910348,
+      "botlane_score": 0.3886127940481687
+    },
+    {
+      "duo": [
+        "Frieren",
+        "Lady Maria"
+      ],
+      "games": 9,
+      "wins": 3,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 5.206361231361232,
+      "avg_damage": 40371.77777777778,
+      "avg_vision": 45.55555555555556,
+      "avg_gold": 19847.777777777777,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.1652813089321026,
+      "damage_norm": 0.5881258087482099,
+      "vision_norm": 0.39613526570048313,
+      "economy_norm": 0.6236125386352501,
+      "botlane_score": 0.38598953730296914
+    },
+    {
+      "duo": [
+        "TheChosenUndead",
+        "ñoki"
+      ],
+      "games": 14,
+      "wins": 6,
+      "winrate": 0.42857142857142855,
+      "avg_kda": 4.5174744897959185,
+      "avg_damage": 22775.285714285714,
+      "avg_vision": 66.85714285714286,
+      "avg_gold": 18010.35714285714,
+      "winrate_norm": 0.42857142857142855,
+      "kda_norm": 0.1434118885649498,
+      "damage_norm": 0.3277340768942941,
+      "vision_norm": 0.5813664596273292,
+      "economy_norm": 0.5626921236980584,
+      "botlane_score": 0.380063622852959
+    },
+    {
+      "duo": [
+        "Nikken",
+        "TheChosenUndead"
+      ],
+      "games": 3,
+      "wins": 1,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 4.183333333333334,
+      "avg_damage": 30641.333333333332,
+      "avg_vision": 82.33333333333333,
+      "avg_gold": 18878.333333333332,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.1328042328042328,
+      "damage_norm": 0.4441353320409804,
+      "vision_norm": 0.7159420289855072,
+      "economy_norm": 0.5914702209254776,
+      "botlane_score": 0.37946247129347443
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "gokusito"
+      ],
+      "games": 3,
+      "wins": 1,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 3.2962962962962963,
+      "avg_damage": 33515.666666666664,
+      "avg_vision": 60.0,
+      "avg_gold": 19225.666666666668,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.10464432686654909,
+      "damage_norm": 0.4866695276006136,
+      "vision_norm": 0.5217391304347826,
+      "economy_norm": 0.6029861963020678,
+      "botlane_score": 0.3640686369004509
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "Joseph Joestar"
+      ],
+      "games": 10,
+      "wins": 3,
+      "winrate": 0.3,
+      "avg_kda": 4.793690476190476,
+      "avg_damage": 33852.4,
+      "avg_vision": 61.3,
+      "avg_gold": 19733.9,
+      "winrate_norm": 0.3,
+      "kda_norm": 0.15218065003779288,
+      "damage_norm": 0.49165248531305034,
+      "vision_norm": 0.5330434782608695,
+      "economy_norm": 0.6198368754351646,
+      "botlane_score": 0.364054662439772
+    },
+    {
+      "duo": [
+        "Banshee",
+        "Dexus"
+      ],
+      "games": 7,
+      "wins": 2,
+      "winrate": 0.2857142857142857,
+      "avg_kda": 4.878019995877139,
+      "avg_damage": 28380.14285714286,
+      "avg_vision": 84.85714285714286,
+      "avg_gold": 19458.571428571428,
+      "winrate_norm": 0.2857142857142857,
+      "kda_norm": 0.1548577776468933,
+      "damage_norm": 0.4106743841416881,
+      "vision_norm": 0.737888198757764,
+      "economy_norm": 0.6107082466951171,
+      "botlane_score": 0.36225179118871864
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "ñoki"
+      ],
+      "games": 9,
+      "wins": 3,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 3.535688077354744,
+      "avg_damage": 30128.444444444445,
+      "avg_vision": 56.55555555555556,
+      "avg_gold": 20033.444444444445,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.11224406594776964,
+      "damage_norm": 0.4365456360069912,
+      "vision_norm": 0.4917874396135266,
+      "economy_norm": 0.6297683911158266,
+      "botlane_score": 0.3552468567972209
+    },
+    {
+      "duo": [
+        "Kayki マ",
+        "TheChosenUndead"
+      ],
+      "games": 11,
+      "wins": 4,
+      "winrate": 0.36363636363636365,
+      "avg_kda": 3.1001869342778434,
+      "avg_damage": 22202.0,
+      "avg_vision": 51.09090909090909,
+      "avg_gold": 17037.727272727272,
+      "winrate_norm": 0.36363636363636365,
+      "kda_norm": 0.09841863283421726,
+      "damage_norm": 0.3192506326116874,
+      "vision_norm": 0.44426877470355736,
+      "economy_norm": 0.5304441919275644,
+      "botlane_score": 0.3264596952068386
+    },
+    {
+      "duo": [
+        "DETOXED",
+        "SN Bin"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 5.055555555555555,
+      "avg_damage": 52519.0,
+      "avg_vision": 60.0,
+      "avg_gold": 25939.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.16049382716049382,
+      "damage_norm": 0.7678796040072806,
+      "vision_norm": 0.5217391304347826,
+      "economy_norm": 0.8255694439839528,
+      "botlane_score": 0.32040554367542845
+    },
+    {
+      "duo": [
+        "DETOXED",
+        "ñoki"
+      ],
+      "games": 3,
+      "wins": 1,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 2.8444444444444446,
+      "avg_damage": 22382.666666666668,
+      "avg_vision": 59.0,
+      "avg_gold": 16404.333333333332,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.09029982363315697,
+      "damage_norm": 0.3219241260586689,
+      "vision_norm": 0.5130434782608696,
+      "economy_norm": 0.5094437629167909,
+      "botlane_score": 0.3180268473894646
+    },
+    {
+      "duo": [
+        "Kyoraku",
+        "ñoki"
+      ],
+      "games": 3,
+      "wins": 1,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 4.300757575757576,
+      "avg_damage": 23828.666666666668,
+      "avg_vision": 41.0,
+      "avg_gold": 16539.333333333332,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.13653198653198653,
+      "damage_norm": 0.3433219389239929,
+      "vision_norm": 0.3565217391304348,
+      "economy_norm": 0.5139197418299569,
+      "botlane_score": 0.31634826652056836
+    },
+    {
+      "duo": [
+        "Banshee",
+        "ñoki"
+      ],
+      "games": 4,
+      "wins": 1,
+      "winrate": 0.25,
+      "avg_kda": 3.6767857142857143,
+      "avg_damage": 26434.5,
+      "avg_vision": 55.25,
+      "avg_gold": 17915.0,
+      "winrate_norm": 0.25,
+      "kda_norm": 0.1167233560090703,
+      "damage_norm": 0.38188288914867485,
+      "vision_norm": 0.48043478260869565,
+      "economy_norm": 0.5595305195451079,
+      "botlane_score": 0.3037177792469294
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "Lady Maria"
+      ],
+      "games": 5,
+      "wins": 2,
+      "winrate": 0.4,
+      "avg_kda": 1.8823809523809523,
+      "avg_damage": 18068.6,
+      "avg_vision": 36.0,
+      "avg_gold": 14544.2,
+      "winrate_norm": 0.4,
+      "kda_norm": 0.05975812547241118,
+      "damage_norm": 0.25808485135475084,
+      "vision_norm": 0.3130434782608696,
+      "economy_norm": 0.44777029939325624,
+      "botlane_score": 0.29964997313084507
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "Morocha"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 4.857142857142858,
+      "avg_damage": 55664.0,
+      "avg_vision": 23.0,
+      "avg_gold": 24970.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.1541950113378685,
+      "damage_norm": 0.8144191070926499,
+      "vision_norm": 0.2,
+      "economy_norm": 0.7934418620072279,
+      "botlane_score": 0.2930670098868265
+    },
+    {
+      "duo": [
+        "Banshee",
+        "DETOXED"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 3.355769230769231,
+      "avg_damage": 41306.0,
+      "avg_vision": 59.0,
+      "avg_gold": 25043.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.10653235653235653,
+      "damage_norm": 0.6019503677286651,
+      "vision_norm": 0.5130434782608696,
+      "economy_norm": 0.7958622061602733,
+      "botlane_score": 0.2725871132943186
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "Morocha"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 2.173611111111111,
+      "avg_damage": 49839.0,
+      "avg_vision": 46.0,
+      "avg_gold": 20945.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.06900352733686067,
+      "damage_norm": 0.7282211403288101,
+      "vision_norm": 0.4,
+      "economy_norm": 0.6599913795961673,
+      "botlane_score": 0.2654440714927509
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "ñoki"
+      ],
+      "games": 2,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 2.7519480519480517,
+      "avg_damage": 39417.5,
+      "avg_vision": 66.5,
+      "avg_gold": 23144.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.08736343022057307,
+      "damage_norm": 0.5740044689761309,
+      "vision_norm": 0.5782608695652174,
+      "economy_norm": 0.732900102781738,
+      "botlane_score": 0.2633896770740364
+    },
+    {
+      "duo": [
+        "FUSHROHDAH",
+        "TheChosenUndead"
+      ],
+      "games": 2,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 2.880952380952381,
+      "avg_damage": 34001.5,
+      "avg_vision": 87.5,
+      "avg_gold": 20382.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.09145880574452003,
+      "damage_norm": 0.4938588573035204,
+      "vision_norm": 0.7608695652173914,
+      "economy_norm": 0.6413248897582972,
+      "botlane_score": 0.257282978107177
+    },
+    {
+      "duo": [
+        "Dexus",
+        "maibad"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 2.0,
+      "avg_damage": 4891.5,
+      "avg_vision": 9.0,
+      "avg_gold": 5385.5,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.06349206349206349,
+      "damage_norm": 0.06309099249744736,
+      "vision_norm": 0.0782608695652174,
+      "economy_norm": 0.1441099433042671,
+      "botlane_score": 0.24755369248485065
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "Lady Maria"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 2.1704545454545454,
+      "avg_damage": 36233.0,
+      "avg_vision": 63.0,
+      "avg_gold": 16583.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.0689033189033189,
+      "damage_norm": 0.5268804474895304,
+      "vision_norm": 0.5478260869565217,
+      "economy_norm": 0.51536752760187,
+      "botlane_score": 0.22547611473440904
+    },
+    {
+      "duo": [
+        "Banshee",
+        "gokusito"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 4.083333333333333,
+      "avg_damage": 29833.0,
+      "avg_vision": 29.0,
+      "avg_gold": 18477.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.12962962962962962,
+      "damage_norm": 0.4321736685558696,
+      "vision_norm": 0.25217391304347825,
+      "economy_norm": 0.5781638539836212,
+      "botlane_score": 0.1953944363398098
+    },
+    {
+      "duo": [
+        "Däzzler",
+        "Morocha"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 1.4444444444444444,
+      "avg_damage": 25555.0,
+      "avg_vision": 72.0,
+      "avg_gold": 15285.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.04585537918871252,
+      "damage_norm": 0.36886810601240066,
+      "vision_norm": 0.6260869565217392,
+      "economy_norm": 0.4723318192367627,
+      "botlane_score": 0.19278657461607285
+    },
+    {
+      "duo": [
+        "Banshee",
+        "FUSHROHDAH"
+      ],
+      "games": 2,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 3.5785714285714283,
+      "avg_damage": 16384.5,
+      "avg_vision": 79.0,
+      "avg_gold": 16809.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.11360544217687074,
+      "damage_norm": 0.23316365035441053,
+      "vision_norm": 0.6869565217391305,
+      "economy_norm": 0.5228606478565034,
+      "botlane_score": 0.19033553546581966
+    },
+    {
+      "duo": [
+        "gokusito",
+        "ñoki"
+      ],
+      "games": 6,
+      "wins": 1,
+      "winrate": 0.16666666666666666,
+      "avg_kda": 1.3285140785140785,
+      "avg_damage": 13293.833333333334,
+      "avg_vision": 36.833333333333336,
+      "avg_gold": 13397.5,
+      "winrate_norm": 0.16666666666666666,
+      "kda_norm": 0.042175050111558046,
+      "damage_norm": 0.18742816836103016,
+      "vision_norm": 0.32028985507246377,
+      "economy_norm": 0.40975100295083056,
+      "botlane_score": 0.18559139616351372
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Lady Maria"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 1.5673076923076923,
+      "avg_damage": 19987.0,
+      "avg_vision": 59.0,
+      "avg_gold": 17449.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.04975579975579975,
+      "damage_norm": 0.2864732083401157,
+      "vision_norm": 0.5130434782608696,
+      "economy_norm": 0.544080103444846,
+      "botlane_score": 0.17295815978975465
+    },
+    {
+      "duo": [
+        "Banshee",
+        "Nikken"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 0.9722222222222222,
+      "avg_damage": 17744.0,
+      "avg_vision": 69.0,
+      "avg_gold": 17236.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.030864197530864196,
+      "damage_norm": 0.2532814419107093,
+      "vision_norm": 0.6,
+      "economy_norm": 0.5370180033818507,
+      "botlane_score": 0.1705309282264998
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "Nikken"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 1.1666666666666665,
+      "avg_damage": 18107.0,
+      "avg_vision": 36.0,
+      "avg_gold": 10847.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.037037037037037035,
+      "damage_norm": 0.25865309202835285,
+      "vision_norm": 0.3130434782608696,
+      "economy_norm": 0.3251881568913498,
+      "botlane_score": 0.12296118932829991
+    },
+    {
+      "duo": [
+        "Joseph Joestar",
+        "Kayki マ"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 0.3333333333333333,
+      "avg_damage": 10467.0,
+      "avg_vision": 45.0,
+      "avg_gold": 12596.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.010582010582010581,
+      "damage_norm": 0.1455968746762952,
+      "vision_norm": 0.391304347826087,
+      "economy_norm": 0.3831769503663672,
+      "botlane_score": 0.10868390687090658
+    },
+    {
+      "duo": [
+        "Bustamantefanboy",
+        "Dexus"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 1.3333333333333333,
+      "avg_damage": 9395.0,
+      "avg_vision": 14.0,
+      "avg_gold": 8839.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.042328042328042326,
+      "damage_norm": 0.129733489204907,
+      "vision_norm": 0.12173913043478261,
+      "economy_norm": 0.25861211498292497,
+      "botlane_score": 0.07244743084836064
+    },
+    {
+      "duo": [
+        "FUSHROHDAH",
+        "Frieren"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 0.0,
+      "avg_damage": 628.0,
+      "avg_vision": 0.0,
+      "avg_gold": 1039.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.0,
+      "damage_norm": 0.0,
+      "vision_norm": 0.0,
+      "economy_norm": 0.0,
+      "botlane_score": 0.0
+    }
+  ]
+}

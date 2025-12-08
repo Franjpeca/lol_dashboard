@@ -1,6 +1,6 @@
 {
   "source_L1": "L1_q440_min5_pool_ac89fa8d",
-  "generated_at": "2025-12-02 02:38:09",
+  "generated_at": "2025-12-06 22:31:23",
   "start_date": null,
   "end_date": null,
   "streaks": {
@@ -22,7 +22,7 @@
     "Bustamantefanboy": {
       "max_win_streak": 7,
       "max_lose_streak": 5,
-      "current_streak": -1
+      "current_streak": 1
     },
     "Däzzler": {
       "max_win_streak": 5,
@@ -87,7 +87,7 @@
     "Dexus": {
       "max_win_streak": 8,
       "max_lose_streak": 5,
-      "current_streak": -1
+      "current_streak": 1
     },
     "Lady Maria": {
       "max_win_streak": 3,

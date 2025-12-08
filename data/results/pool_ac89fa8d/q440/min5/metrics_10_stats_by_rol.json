@@ -1,6 +1,6 @@
 {
   "source_L1": "L1_q440_min5_pool_ac89fa8d",
-  "generated_at": "2025-12-02 02:38:40",
+  "generated_at": "2025-12-06 22:31:54",
   "start_date": null,
   "end_date": null,
   "roles": {
@@ -76,18 +76,18 @@
         "winrate": 52.17
       },
       "Bustamantefanboy": {
-        "games": 197,
-        "avg_damage": 158735.81,
-        "avg_damage_taken": 34558.93,
-        "avg_gold": 12260.48,
-        "avg_farm": 206.19,
-        "avg_vision": 13.7,
-        "avg_turret_damage": 4327.55,
-        "avg_kills": 5.2,
-        "avg_deaths": 4.59,
-        "avg_assists": 6.35,
-        "avg_kill_participation": 38.08,
-        "winrate": 53.81
+        "games": 199,
+        "avg_damage": 158340.0,
+        "avg_damage_taken": 34426.59,
+        "avg_gold": 12248.71,
+        "avg_farm": 205.98,
+        "avg_vision": 13.76,
+        "avg_turret_damage": 4302.04,
+        "avg_kills": 5.21,
+        "avg_deaths": 4.57,
+        "avg_assists": 6.37,
+        "avg_kill_participation": 38.17,
+        "winrate": 54.27
       },
       "Morocha": {
         "games": 18,
@@ -442,18 +442,18 @@
         "winrate": 50.0
       },
       "Dexus": {
-        "games": 407,
-        "avg_damage": 288756.21,
-        "avg_damage_taken": 39342.73,
-        "avg_gold": 14111.4,
-        "avg_farm": 25.28,
-        "avg_vision": 21.68,
-        "avg_turret_damage": 3769.15,
-        "avg_kills": 9.2,
-        "avg_deaths": 5.49,
+        "games": 409,
+        "avg_damage": 288727.14,
+        "avg_damage_taken": 39306.38,
+        "avg_gold": 14114.63,
+        "avg_farm": 25.29,
+        "avg_vision": 21.65,
+        "avg_turret_damage": 3780.37,
+        "avg_kills": 9.21,
+        "avg_deaths": 5.48,
         "avg_assists": 7.69,
-        "avg_kill_participation": 58.64,
-        "winrate": 55.53
+        "avg_kill_participation": 58.68,
+        "winrate": 55.75
       },
       "Däzzler": {
         "games": 2,
@@ -696,18 +696,18 @@
         "winrate": 75.0
       },
       "Kayki マ": {
-        "games": 50,
-        "avg_damage": 110945.22,
-        "avg_damage_taken": 18299.98,
-        "avg_gold": 10160.7,
-        "avg_farm": 167.8,
-        "avg_vision": 22.74,
-        "avg_turret_damage": 2969.02,
-        "avg_kills": 3.42,
+        "games": 52,
+        "avg_damage": 110317.67,
+        "avg_damage_taken": 18281.98,
+        "avg_gold": 10072.79,
+        "avg_farm": 166.79,
+        "avg_vision": 22.94,
+        "avg_turret_damage": 2911.48,
+        "avg_kills": 3.33,
         "avg_deaths": 5.4,
-        "avg_assists": 5.26,
-        "avg_kill_participation": 26.66,
-        "winrate": 48.0
+        "avg_assists": 5.37,
+        "avg_kill_participation": 26.79,
+        "winrate": 50.0
       }
     },
     "BOTTOM": {
@@ -866,18 +866,18 @@
         "winrate": 55.56
       },
       "Frieren": {
-        "games": 311,
-        "avg_damage": 171133.97,
-        "avg_damage_taken": 21100.95,
-        "avg_gold": 13134.06,
-        "avg_farm": 206.67,
-        "avg_vision": 22.3,
-        "avg_turret_damage": 4047.31,
+        "games": 313,
+        "avg_damage": 170950.48,
+        "avg_damage_taken": 21079.37,
+        "avg_gold": 13133.58,
+        "avg_farm": 206.45,
+        "avg_vision": 22.25,
+        "avg_turret_damage": 4056.93,
         "avg_kills": 8.43,
-        "avg_deaths": 4.66,
-        "avg_assists": 8.59,
-        "avg_kill_participation": 54.57,
-        "winrate": 56.59
+        "avg_deaths": 4.65,
+        "avg_assists": 8.62,
+        "avg_kill_participation": 54.71,
+        "winrate": 56.87
       },
       "DETOXED": {
         "games": 8,
@@ -1008,18 +1008,18 @@
         "winrate": 54.9
       },
       "Banshee": {
-        "games": 253,
-        "avg_damage": 33340.69,
-        "avg_damage_taken": 20583.09,
-        "avg_gold": 8536.45,
-        "avg_farm": 30.8,
-        "avg_vision": 63.28,
-        "avg_turret_damage": 813.92,
+        "games": 255,
+        "avg_damage": 33271.02,
+        "avg_damage_taken": 20544.13,
+        "avg_gold": 8535.61,
+        "avg_farm": 30.77,
+        "avg_vision": 63.33,
+        "avg_turret_damage": 811.13,
         "avg_kills": 1.85,
-        "avg_deaths": 6.16,
-        "avg_assists": 14.94,
-        "avg_kill_participation": 56.04,
-        "winrate": 52.96
+        "avg_deaths": 6.14,
+        "avg_assists": 14.99,
+        "avg_kill_participation": 56.21,
+        "winrate": 53.33
       },
       "Joseph Joestar": {
         "games": 93,

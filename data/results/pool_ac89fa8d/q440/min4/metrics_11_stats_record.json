@@ -1,6 +1,6 @@
 {
   "source_L1": "L1_q440_min4_pool_ac89fa8d",
-  "generated_at": "2025-12-02 00:25:25",
+  "generated_at": "2025-12-07 03:47:53",
   "start_date": null,
   "end_date": null,
   "records": {
@@ -550,8 +550,8 @@
     },
     "Dexus": {
       "max_kills": {
-        "value": 25,
-        "game_id": 7386840218
+        "value": 29,
+        "game_id": 7631288321
       },
       "max_deaths": {
         "value": 15,

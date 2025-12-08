@@ -1,6 +1,6 @@
 {
   "source_L1": "L1_q440_min5_pool_ac89fa8d",
-  "generated_at": "2025-12-02 02:38:10",
+  "generated_at": "2025-12-06 22:31:24",
   "start_date": null,
   "end_date": null,
   "players": {
@@ -71,14 +71,14 @@
       }
     },
     "Bustamantefanboy": {
-      "avg_kda": 2.944892123732779,
-      "avg_kills": 6.197146562905318,
-      "avg_deaths": 4.9896238651102465,
-      "avg_assists": 8.496757457846952,
-      "avg_gold": 12271.399481193255,
-      "avg_damage_dealt": 23448.83787289235,
-      "avg_damage_taken": 28434.811932555123,
-      "avg_vision_score": 17.309987029831387,
+      "avg_kda": 2.9475733194913056,
+      "avg_kills": 6.1953428201811125,
+      "avg_deaths": 4.984476067270375,
+      "avg_assists": 8.496765847347994,
+      "avg_gold": 12268.342820181113,
+      "avg_damage_dealt": 23447.783958602846,
+      "avg_damage_taken": 28416.586028460544,
+      "avg_vision_score": 17.318240620957308,
       "max_kills": {
         "kills": 27,
         "match_id": 7576641022
@@ -203,14 +203,14 @@
       }
     },
     "Banshee": {
-      "avg_kda": 2.4183257375869514,
-      "avg_kills": 4.151761517615176,
-      "avg_deaths": 5.649051490514905,
-      "avg_assists": 9.509485094850948,
-      "avg_gold": 10830.960704607047,
-      "avg_damage_dealt": 18927.719512195123,
-      "avg_damage_taken": 22618.285907859077,
-      "avg_vision_score": 33.12737127371274,
+      "avg_kda": 2.4249461335887,
+      "avg_kills": 4.145945945945946,
+      "avg_deaths": 5.644594594594595,
+      "avg_assists": 9.541891891891892,
+      "avg_gold": 10824.47027027027,
+      "avg_damage_dealt": 18908.10135135135,
+      "avg_damage_taken": 22599.359459459458,
+      "avg_vision_score": 33.225675675675674,
       "max_kills": {
         "kills": 26,
         "match_id": 7462388227
@@ -269,14 +269,14 @@
       }
     },
     "Frieren": {
-      "avg_kda": 3.7384403036576948,
-      "avg_kills": 7.277511961722488,
-      "avg_deaths": 4.62200956937799,
-      "avg_assists": 10.001594896331738,
-      "avg_gold": 12505.145135566188,
-      "avg_damage_dealt": 26445.02870813397,
-      "avg_damage_taken": 23579.767145135567,
-      "avg_vision_score": 30.515151515151516,
+      "avg_kda": 3.7456110154905335,
+      "avg_kills": 7.284578696343402,
+      "avg_deaths": 4.618441971383148,
+      "avg_assists": 10.014308426073132,
+      "avg_gold": 12506.904610492846,
+      "avg_damage_dealt": 26468.168521462638,
+      "avg_damage_taken": 23561.14785373609,
+      "avg_vision_score": 30.46422893481717,
       "max_kills": {
         "kills": 30,
         "match_id": 7441457338
@@ -357,14 +357,14 @@
       }
     },
     "Dexus": {
-      "avg_kda": 2.7036002482929855,
-      "avg_kills": 8.32972972972973,
-      "avg_deaths": 5.805405405405406,
-      "avg_assists": 7.365765765765766,
-      "avg_gold": 13458.075675675676,
-      "avg_damage_dealt": 25361.963963963964,
-      "avg_damage_taken": 36276.852252252254,
-      "avg_vision_score": 21.374774774774774,
+      "avg_kda": 2.710436667698978,
+      "avg_kills": 8.342908438061041,
+      "avg_deaths": 5.797127468581688,
+      "avg_assists": 7.36983842010772,
+      "avg_gold": 13462.793536804309,
+      "avg_damage_dealt": 25373.81867145422,
+      "avg_damage_taken": 36261.16517055655,
+      "avg_vision_score": 21.359066427289047,
       "max_kills": {
         "kills": 25,
         "match_id": 7386840218
@@ -401,14 +401,14 @@
       }
     },
     "Kayki マ": {
-      "avg_kda": 1.804753820033956,
-      "avg_kills": 2.518867924528302,
-      "avg_deaths": 5.556603773584905,
-      "avg_assists": 7.509433962264151,
-      "avg_gold": 9135.867924528302,
-      "avg_damage_dealt": 10536.764150943396,
-      "avg_damage_taken": 18357.254716981133,
-      "avg_vision_score": 36.15094339622642,
+      "avg_kda": 1.8016666666666667,
+      "avg_kills": 2.490740740740741,
+      "avg_deaths": 5.555555555555555,
+      "avg_assists": 7.518518518518518,
+      "avg_gold": 9112.518518518518,
+      "avg_damage_dealt": 10524.24074074074,
+      "avg_damage_taken": 18347.527777777777,
+      "avg_vision_score": 36.0,
       "max_kills": {
         "kills": 14,
         "match_id": 7467265781

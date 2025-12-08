@@ -119,7 +119,7 @@ def make_player_fig(df, persona):
 # ============================================================
 
 def render(pool_id: str, queue: int, min_friends: int, start=None, end=None):
-    print("[INFO] Loading chart_03_metrics_games_frecuency.py")
+    # print("[INFO] Loading chart_03_metrics_games_frecuency.py") # Comentado para reducir logs
 
     # Llamada a get_paths con las fechas
     data_path = get_paths(pool_id, queue, min_friends, start, end)
@@ -130,7 +130,7 @@ def render(pool_id: str, queue: int, min_friends: int, start=None, end=None):
 
     result = {
         "global": None,
-        "players": {}
+        "players": {},
     }
 
     if not df_global.empty:
@@ -140,8 +140,5 @@ def render(pool_id: str, queue: int, min_friends: int, start=None, end=None):
         df = df_players[persona]
         if not df.empty:
             result["players"][persona] = make_player_fig(df, persona)
-
-    total_figs = (1 if result["global"] is not None else 0) + len(result["players"])
-    print("[DEBUG] RESULTADO FREQUENCY:", total_figs, "figuras generadas")
 
     return result

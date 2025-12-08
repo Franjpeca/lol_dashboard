@@ -1,18 +1,18 @@
 {
   "source_L1": "L1_q440_min4_pool_ac89fa8d",
-  "generated_at": "2025-12-02 00:24:50",
+  "generated_at": "2025-12-07 03:47:19",
   "start_date": null,
   "end_date": null,
   "streaks": {
     "Bustamantefanboy": {
       "max_win_streak": 7,
       "max_lose_streak": 5,
-      "current_streak": -1
+      "current_streak": 1
     },
     "TheChosenUndead": {
       "max_win_streak": 10,
       "max_lose_streak": 7,
-      "current_streak": -1
+      "current_streak": 1
     },
     "maibad": {
       "max_win_streak": 11,
@@ -97,7 +97,7 @@
     "Kayki マ": {
       "max_win_streak": 9,
       "max_lose_streak": 8,
-      "current_streak": 1
+      "current_streak": -1
     }
   }
 }

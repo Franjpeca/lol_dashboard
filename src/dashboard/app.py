@@ -29,6 +29,7 @@ from charts.chart_08_metrics_first_metrics import render as render_first_metrics
 from charts.chart_09_metrics_number_skills import render as render_skills
 from charts.chart_10_metrics_stats_by_rol import render as render_stats_by_rol
 from charts.chart_11_metrics_stats_record import render as render_record_stats
+from charts.chart_12_botlane_synergy import render as render_botlane_synergy, get_synergy_data, make_fig_player_synergy
 
 from viewGame.render_match import render_match
 from viewGame.loader import load_match_summary
@@ -152,6 +153,8 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                 dcc.Dropdown(
                     id="min-friends-dropdown",
                     options=[
+                        {"label": "1", "value": 1},
+                        {"label": "2", "value": 2},
                         {"label": "3", "value": 3},
                         {"label": "4", "value": 4},
                         {"label": "5", "value": 5}
@@ -202,9 +205,11 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             "borderBottom": "1px solid #444"
         }),
 
+        dcc.Interval(id="log-refresh", interval=500, n_intervals=0),
         dcc.Tabs(id="tabs", value="tab-win", children=[
             dcc.Tab(label="Winrate y partidas", value="tab-win"),
             dcc.Tab(label="Estadisticas por persona", value="tab-player"),
+            dcc.Tab(label="Índices", value="tab-indices"),
             dcc.Tab(label="Estadisticas por rol", value="tab-rol"),
             dcc.Tab(label="Records de jugadores", value="tab-record"),
             dcc.Tab(label="Ver partida", value="tab-view-match"),
@@ -250,54 +255,81 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
         if selected_tab == "tab-win":
             components += normalize_output(render_winrate(pool_id, queue, min_friends, start=start_date, end=end_date), "winrate")
             components += normalize_output(render_champions(pool_id, queue, min_friends, start=start_date, end=end_date), "champions")
-
-            freq_data = render_games_freq(pool_id, queue, min_friends, start=start_date, end=end_date)
-            global_fig = freq_data.get("global")
-            player_figs = freq_data.get("players", {})
-
-            if global_fig is not None:
-                components.append(
-                    dcc.Graph(
-                        figure=global_fig,
-                        id="freq-global-graph"
-                    )
-                )
-
-            players = list(player_figs.keys())
-
-            if players:
-                first_player = players[0]
-
-                components.append(
-                    html.Div([
-                        html.Span("Selecciona jugador:", style={"fontWeight": "bold", "marginRight": "10px"}),
-                        dcc.Dropdown(
-                            id="freq-player-dropdown",
-                            options=[{"label": p, "value": p} for p in players],
-                            value=first_player,
-                            clearable=False,
-                            style={"width": "240px"}
-                        ),
-                    ], style={
-                        "display": "flex",
-                        "alignItems": "center",
-                        "backgroundColor": "#222",
-                        "padding": "16px",
-                        "borderRadius": "8px",
-                        "marginBottom": "16px"
-                    })
-                )
-
-                components.append(html.Div(id="freq-player-graph-container"))
-
+            
+            # Layout estático para la sección de frecuencia
+            components.append(dcc.Graph(id="freq-global-graph"))
+            components.append(
+                html.Div([
+                    html.Span("Selecciona jugador:", style={"fontWeight": "bold", "marginRight": "10px"}),
+                    dcc.Dropdown(
+                        id="freq-player-dropdown",
+                        clearable=False,
+                        style={"width": "240px"}
+                    ),
+                ], style={
+                    "display": "flex",
+                    "alignItems": "center",
+                    "backgroundColor": "#222",
+                    "padding": "16px",
+                    "borderRadius": "8px",
+                    "marginTop": "16px",
+                    "marginBottom": "16px"
+                })
+            )
+            components.append(html.Div(id="freq-player-graph-container"))
+            
             components += normalize_output(render_streaks(pool_id, queue, min_friends, start=start_date, end=end_date), "streaks")
 
         elif selected_tab == "tab-player":
             components += normalize_output(render_stats(pool_id, queue, min_friends, start=start_date, end=end_date), "stats-persona")
-            components += normalize_output(render_ego(pool_id, queue, min_friends, start=start_date, end=end_date), "ego-index")
-            components += normalize_output(render_troll(pool_id, queue, min_friends, start=start_date, end=end_date), "troll-index")
             components += normalize_output(render_first_metrics(pool_id, queue, min_friends, start=start_date, end=end_date), "first-metrics")
             components += normalize_output(render_skills(pool_id, queue, min_friends, start=start_date, end=end_date), "skills")
+
+        elif selected_tab == "tab-indices":
+            components.append(
+                html.Div([
+                    html.Span("Minimo de partidas (Sinergia):", style={"fontWeight": "bold", "marginRight": "10px"}),
+                    dcc.Slider(
+                        id="min-games-synergy-slider",
+                        min=0, max=50, step=1, value=0,
+                        marks={i: str(i) for i in range(0, 51, 5)},
+                    ),
+                ], style={"marginBottom": "24px", "padding": "16px",
+                          "backgroundColor": "#222", "borderRadius": "8px"})
+            )
+            # Contenedor para los gráficos de sinergia que se actualizarán con el slider
+            initial_synergy_graphs = render_botlane_synergy(pool_id, queue, min_friends, min_games=0, start=start_date, end=end_date)
+            components.append(html.Div(
+                normalize_output(initial_synergy_graphs, "botlane-synergy"),
+                id="botlane-synergy-graphs-container"))
+
+            # --- Sección de sinergia por jugador ---
+            components.append(html.Hr(style={"borderColor": "#444", "margin": "40px 0"}))
+            components.append(
+                html.Div([
+                    html.Span("Ver sinergia por jugador:", style={"fontWeight": "bold", "marginRight": "10px"}),
+                    dcc.Dropdown(
+                        id="synergy-player-dropdown",
+                        clearable=True,
+                        placeholder="Selecciona un jugador...",
+                        style={"width": "240px"}
+                    ),
+                ], style={
+                    "display": "flex",
+                    "alignItems": "center",
+                    "backgroundColor": "#222",
+                    "padding": "16px",
+                    "borderRadius": "8px",
+                    "marginBottom": "16px"
+                })
+            )
+            components.append(html.Div(id="synergy-player-graph-container"))
+
+            # El resto de los gráficos de la pestaña se añaden después
+            # y no se verán afectados por el callback del slider de sinergia.
+            # Se cargarán una vez al seleccionar la pestaña.
+            components += normalize_output(render_ego(pool_id, queue, min_friends, start=start_date, end=end_date), "ego-index")
+            components += normalize_output(render_troll(pool_id, queue, min_friends, start=start_date, end=end_date), "troll-index")
 
         elif selected_tab == "tab-rol":
             components.append(
@@ -436,7 +468,6 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
                 html.Div(id="pipeline-status", style={"marginTop": "15px", "color": "yellow"}),
 
                 html.Div([
-                    dcc.Interval(id="log-refresh", interval=500, n_intervals=0),
                     html.Pre(
                         id="pipeline-log",
                         style={
@@ -523,34 +554,45 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             )
 
     @app.callback(
+        Output("freq-global-graph", "figure"),
+        Output("freq-player-dropdown", "options"),
+        Output("freq-player-dropdown", "value"),
+        Input("min-friends-dropdown", "value"),
+        Input("start-date", "date"),
+        Input("end-date", "date"),
+    )
+    def update_freq_data(min_friends, start_date, end_date):
+        freq_data = render_games_freq(pool_id, queue, min_friends, start=start_date, end=end_date)
+        global_fig = freq_data.get("global", go.Figure())
+        player_figs = freq_data.get("players", {})
+        
+        players = list(player_figs.keys())
+        options = [{"label": p, "value": p} for p in players]
+        value = players[0] if players else None
+        
+        return global_fig, options, value
+
+    @app.callback(
         Output("freq-player-graph-container", "children"),
         Input("freq-player-dropdown", "value"),
         Input("min-friends-dropdown", "value"),
-        State("start-date", "date"),
-        State("end-date", "date"),
+        Input("start-date", "date"),
+        Input("end-date", "date"),
     )
     def update_freq_player_graph(selected_player, min_friends, start_date, end_date):
+        if not selected_player:
+            return html.Div("Selecciona un jugador para ver su frecuencia de partidas.")
+            
         freq_data = render_games_freq(pool_id, queue, min_friends, start=start_date, end=end_date)
         player_figs = freq_data.get("players", {})
-
-        if not player_figs:
-            return html.Div("No hay datos de frecuencia por jugador", style={"color": "red"})
-
-        if not selected_player or selected_player not in player_figs:
-            selected_player = list(player_figs.keys())[0]
-
-        fig = player_figs[selected_player]
-
-        return dcc.Graph(
-            figure=fig,
-            id=f"freq-player-graph-{selected_player}"
-        )
+        fig = player_figs.get(selected_player, go.Figure())
+        return dcc.Graph(figure=fig)
 
     @app.callback(
         Output("api-key-status", "children"),
         Input("btn-save-api", "n_clicks"),
         State("input-api-key", "value"),
-        prevent_initial_call=True
+        prevent_initial_call=True  # Evita que el callback se ejecute al inicio o cuando no se haga clic
     )
     def save_api_key(_, user_key):
         if not user_key:
@@ -595,8 +637,51 @@ def create_app(pool_id: str, queue: int, min_friends_default: int) -> Dash:
             return dash.no_update
         return "".join(lines)
 
-    return app
+    @app.callback(
+        Output("botlane-synergy-graphs-container", "children"),
+        Input("min-games-synergy-slider", "value"),
+        Input("min-friends-dropdown", "value"),
+        State("start-date", "date"),
+        State("end-date", "date"),
+    )
+    def update_synergy_graphs(min_games, min_friends, start_date, end_date):
+        # Este callback se dispara cuando se cambia el slider de sinergia
+        # o el dropdown de min_friends.
+        output = render_botlane_synergy(pool_id, queue, min_friends, min_games=min_games, start=start_date, end=end_date)
 
+        if not output:
+            return html.Div("No hay datos de sinergia para los filtros seleccionados.", style={"padding": "20px"})
+        
+        # El Div exterior no es necesario, normalize_output ya devuelve una lista de componentes
+        return normalize_output(output, "botlane-synergy")
+
+    @app.callback(
+        Output("synergy-player-dropdown", "options"),
+        Output("synergy-player-dropdown", "value"),
+        Input("min-friends-dropdown", "value"),
+        Input("start-date", "date"),
+        Input("end-date", "date"),
+    )
+    def update_synergy_player_dropdown(min_friends, start_date, end_date):
+        _, players = get_synergy_data(pool_id, queue, min_friends, start=start_date, end=end_date)
+        options = [{"label": p, "value": p} for p in players]
+        return options, None # Resetea el valor al cambiar los filtros
+
+    @app.callback(
+        Output("synergy-player-graph-container", "children"),
+        Input("synergy-player-dropdown", "value"),
+        State("min-friends-dropdown", "value"),
+        State("start-date", "date"),
+        State("end-date", "date"),
+    )
+    def update_synergy_player_graph(selected_player, min_friends, start_date, end_date):
+        if not selected_player:
+            return html.Div("Selecciona un jugador para ver sus sinergias.", style={"padding": "10px"})
+        df, _ = get_synergy_data(pool_id, queue, min_friends, start=start_date, end=end_date)
+        fig = make_fig_player_synergy(df, selected_player)
+        return dcc.Graph(figure=fig) if fig else html.Div("No hay datos para este jugador.")
+
+    return app
 
 def main():
     parser = argparse.ArgumentParser(description="Villaquesitos.gg")
