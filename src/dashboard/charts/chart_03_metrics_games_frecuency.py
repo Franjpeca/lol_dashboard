@@ -27,12 +27,22 @@ def get_paths(pool_id, queue, min_friends, start_date=None, end_date=None):
 #   CARGA
 # ============================================================
 
-def load_json(path: Path):
+def load_json(path):
+    """
+    Load metrics data from JSON file path.
+    Returns empty dict if file doesn't exist or error.
+    """
     if not path.exists():
-        print(f"[WARN] No existe el archivo: {path}")
+        print(f"[WARN] Metrics file not found: {path}")
         return {}
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+    
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data
+    except Exception as e:
+        print(f"[ERROR] Failed to load {path}: {e}")
+        return {}
 
 
 def build_df_global(data):
@@ -86,7 +96,7 @@ def make_global_fig(df):
         autosize=True,
         height=450,
         margin=dict(l=20, r=20, t=60, b=40),
-        xaxis=dict(type="category"),
+        # xaxis=dict(type="category"),  <-- Removed to let Plotly handle Dates
     )
     return fig
 
@@ -109,7 +119,7 @@ def make_player_fig(df, persona):
         autosize=True,
         height=450,
         margin=dict(l=20, r=20, t=60, b=40),
-        xaxis=dict(type="category"),
+        # xaxis=dict(type="category"),
     )
     return fig
 

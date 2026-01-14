@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
+from date_utils import date_to_timestamp_ms
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -43,13 +44,24 @@ def log(msg):
 # L1 helpers
 # ============================================================
 
-def auto_select_l1(queue, min_friends):
+def auto_select_l1(queue, min_friends, pool_id=None):
     prefix = f"L1_q{queue}_min{min_friends}_"
     candidates = [c for c in db.list_collection_names() if c.startswith(prefix)]
+
+    if pool_id:
+        pool_tag = f"pool_{pool_id}"
+        candidates = [c for c in candidates if pool_tag in c]
+
     if not candidates:
         return None
     candidates.sort()
     return candidates[-1]
+
+
+
+def get_users_index_collection(pool_id: str):
+    """Returns the correct L0_users_index collection name based on pool_id."""
+    return "L0_users_index"
 
 
 def extract_pool_from_l1(l1_name):
@@ -60,14 +72,15 @@ def extract_pool_from_l1(l1_name):
 # MAIN compute
 # ============================================================
 
-def compute_metrics(l1_name, dataset_folder, start_date=None, end_date=None):
+def compute_metrics(l1_name, dataset_folder, pool_id: str, start_date=None, end_date=None):
     coll_matches = db[l1_name]
-    coll_users = db["L0_users_index"]
+    collection_name = get_users_index_collection(pool_id)
+    coll_users = db[collection_name]
 
     # --- Filtro temporal opcional ---
     if start_date and end_date:
-        ts_start = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
-        ts_end = int(datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+        ts_start = date_to_timestamp_ms(start_date, end_of_day=False)
+        ts_end = date_to_timestamp_ms(end_date, end_of_day=True)
         match_query = {
             "data.info.gameStartTimestamp": {"$gte": ts_start, "$lte": ts_end}
         }
@@ -157,6 +170,7 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
@@ -166,7 +180,7 @@ def main():
 
     print(f"[09] Starting ... using queue={queue} min={min_friends}")
 
-    l1_name = auto_select_l1(queue, min_friends)
+    l1_name = auto_select_l1(queue, min_friends, args.pool)
     if not l1_name:
         print("[09] ERROR: No L1 collection found")
         return
@@ -180,7 +194,7 @@ def main():
 
     dataset_folder.mkdir(parents=True, exist_ok=True)
 
-    compute_metrics(l1_name, dataset_folder, start, end)
+    compute_metrics(l1_name, dataset_folder, pool_id, start, end)
 
     print("[09] Ended")
 

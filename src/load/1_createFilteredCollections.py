@@ -17,7 +17,7 @@ SRC_COLLECTION = os.getenv("MONGO_COLLECTION_RAW_MATCHES", "L0_all_raw_matches")
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 coll_src = db[SRC_COLLECTION]
-coll_users = db["L0_users_index"]
+
 
 
 # ============================
@@ -27,8 +27,12 @@ def now_utc():
     return datetime.datetime.now(datetime.UTC)
 
 
-def build_pool_version(puuids: list[str]) -> str:
-    base = ",".join(sorted(puuids))
+def build_pool_version(personas: list[str]) -> str:
+    """
+    Build pool version hash from personas (people) instead of PUUIDs.
+    This ensures pool ID remains stable when account names change.
+    """
+    base = ",".join(sorted(personas))
     h = hashlib.sha1(base.encode("utf-8")).hexdigest()[:8]
     return f"pool_{h}"
 
@@ -41,30 +45,49 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--queue", type=int, default=int(os.getenv("QUEUE_FLEX", "440")))
     parser.add_argument("--min", type=int, default=int(os.getenv("MIN_FRIENDS_IN_MATCH", "5")))
+    parser.add_argument("--pool", type=str, default=None, help="Pool ID to use (if not provided, auto-calculate from users index)")
+    parser.add_argument("--users-collection", type=str, default="L0_users_index", help="Users index collection to read from")
     args = parser.parse_args()
 
     queue_id = args.queue
     min_friends = args.min
+    pool_id_arg = args.pool
+    users_collection = args.users_collection
 
     print(f"[INIT] queue={queue_id} | min_friends={min_friends}")
+    print(f"[INIT] users_collection={users_collection}")
 
     # ============================
     # LOAD FRIENDS POOL
     # ============================
+    coll_users = db[users_collection]
+    
     friend_puuids = set()
     persona_por_puuid = {}
+    personas = set()
 
-    cursor_users = coll_users.find({}, {"puuids": 1})
+    cursor_users = coll_users.find({}, {"persona": 1, "puuids": 1})
+
 
     for doc in cursor_users:
+        persona = doc.get("persona")
+        if persona:
+            personas.add(persona)
+        
         puuids = doc.get("puuids", [])
         for p in puuids:
             friend_puuids.add(p)
             persona_por_puuid[p] = doc["_id"]
 
-    pool_version = build_pool_version(list(friend_puuids))
-
-    print(f"[POOL] total_puuids={len(friend_puuids)} | version={pool_version}")
+    # Use provided pool ID or calculate from personas
+    if pool_id_arg:
+        pool_version = f"pool_{pool_id_arg}"
+        print(f"[POOL] Using specified pool: {pool_version}")
+    else:
+        pool_version = build_pool_version(sorted(list(personas)))
+        print(f"[POOL] Auto-calculated pool from {len(personas)} personas: {pool_version}")
+    
+    print(f"[POOL] total_puuids={len(friend_puuids)}")
 
     # ============================
     # CREATE DEST COLLECTION
@@ -78,8 +101,19 @@ def main():
     # ============================
     # FILTER MATCHES
     # ============================
+    
+    query = {"data.info.queueId": queue_id}
+    
+    # [SEASON LOGIC] If pool is 'season', enforce start date
+    if pool_id_arg == "season":
+        # 2026-01-08 00:00:00 UTC = 1767830400000 approx
+        # Using exact timestamp for 2026-01-08
+        TIMESTAMP_2026_01_08 = 1767830400000
+        query["data.info.gameStartTimestamp"] = {"$gte": TIMESTAMP_2026_01_08}
+        print(f"[FILTER] Pool 'season' detected. Enforcing gameStartTimestamp >= {TIMESTAMP_2026_01_08} (2026-01-08)")
+
     cursor = coll_src.find(
-        {"data.info.queueId": queue_id},
+        query,
         {"_id": 1, "data": 1}
     )
 

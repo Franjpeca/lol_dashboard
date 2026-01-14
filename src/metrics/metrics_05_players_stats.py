@@ -4,6 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 from datetime import datetime
+from date_utils import date_to_timestamp_ms
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -24,27 +25,38 @@ RESULTS_ROOT = Path("data/results")
 RUNTIME_ROOT = Path("data/runtime")
 
 
-def auto_select_l1(queue, min_friends):
+def auto_select_l1(queue, min_friends, pool_id=None):
     prefix = f"L1_q{queue}_min{min_friends}_"
     cands = [c for c in db.list_collection_names() if c.startswith(prefix)]
+
+    if pool_id:
+        pool_tag = f"pool_{pool_id}"
+        cands = [c for c in cands if pool_tag in c]
+
     if not cands:
         return None
     cands.sort()
     return cands[-1]
 
 
+
+def get_users_index_collection(pool_id: str):
+    """Returns the correct L0_users_index collection name based on pool_id."""
+    return "L0_users_index"
+
+
 def extract_pool_from_l1(l1_name):
     return "pool_" + l1_name.split("_pool_", 1)[1]
 
 
-def calculate_player_stats(l1_collection, start_date=None, end_date=None):
+def calculate_player_stats(l1_collection, pool_id: str, start_date=None, end_date=None):
 
     coll = db[l1_collection]
 
     # Filtro temporal opcional
     if start_date and end_date:
-        ts_start = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
-        ts_end = int(datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+        ts_start = date_to_timestamp_ms(start_date, end_of_day=False)
+        ts_end = date_to_timestamp_ms(end_date, end_of_day=True)
         match_query = {
             "data.info.gameStartTimestamp": {"$gte": ts_start, "$lte": ts_end}
         }
@@ -52,8 +64,9 @@ def calculate_player_stats(l1_collection, start_date=None, end_date=None):
         match_query = {}
 
     # Mapeo puuid → persona
+    collection_name = get_users_index_collection(pool_id)
     puuid_to_persona = {}
-    for row in db["L0_users_index"].find({}, {"persona": 1, "puuids": 1}):
+    for row in db[collection_name].find({}, {"persona": 1, "puuids": 1}):
         persona = row["persona"]
         for pid in row.get("puuids", []):
             puuid_to_persona[pid] = persona
@@ -145,6 +158,7 @@ def save_stats(stats, dataset_folder, l1_name, start_date, end_date):
             "avg_damage_dealt": s["damage_dealt"] / g,
             "avg_damage_taken": s["damage_taken"] / g,
             "avg_vision_score": s["vision_score"] / g,
+            "games": s["games"],
             "max_kills": s["max_kills"],
             "max_deaths": s["max_deaths"],
             "max_assists": s["max_assists"],
@@ -171,15 +185,18 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
     min_f = args.min
     start = args.start
     end = args.end
+    pool_arg = args.pool
 
-    l1_name = auto_select_l1(queue, min_f)
+    l1_name = auto_select_l1(queue, min_f, pool_arg)
     if not l1_name:
+        print(f"[05] No L1 collection found for q{queue} min{min_f} pool={pool_arg}")
         return
 
     pool_id = extract_pool_from_l1(l1_name)
@@ -191,7 +208,7 @@ def main():
 
     print(f"[05] Starting using {l1_name}")
 
-    stats = calculate_player_stats(l1_name, start, end)
+    stats = calculate_player_stats(l1_name, pool_id, start, end)
     save_stats(stats, folder, l1_name, start, end)
 
     print("[05] Ended")

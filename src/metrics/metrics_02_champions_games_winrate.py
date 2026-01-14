@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
+from date_utils import date_to_timestamp_ms
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -26,9 +27,14 @@ RESULTS_ROOT = Path("data/results")
 RUNTIME_ROOT = Path("data/runtime")
 
 
-def auto_select_l2(queue, min_friends):
+def auto_select_l2(queue, min_friends, pool_id=None):
     prefix = f"L2_players_flat_q{queue}_min{min_friends}_"
     candidates = [c for c in db.list_collection_names() if c.startswith(prefix)]
+
+    if pool_id:
+        pool_tag = f"pool_{pool_id}"
+        candidates = [c for c in candidates if pool_tag in c]
+
     if not candidates:
         return None
     candidates.sort()
@@ -46,8 +52,8 @@ def extract_pool_from_l1(l1_name):
 def compute_metrics(l2_players, l2_enemies, dataset_folder, start_date=None, end_date=None):
 
     if start_date and end_date:
-        start_ts = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
-        end_ts = int(datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+        start_ts = date_to_timestamp_ms(start_date, end_of_day=False)
+        end_ts = date_to_timestamp_ms(end_date, end_of_day=True)
 
         match_filter = {
             "gameStartTimestamp": {"$gte": start_ts, "$lte": end_ts}
@@ -58,18 +64,24 @@ def compute_metrics(l2_players, l2_enemies, dataset_folder, start_date=None, end
     champ_games = defaultdict(int)
     champ_wins = defaultdict(int)
 
+    player_champ_games = defaultdict(lambda: defaultdict(int))
+    player_champ_wins = defaultdict(lambda: defaultdict(int))
+
     enemy_games = defaultdict(int)
     enemy_wins = defaultdict(int)
 
     coll_p = db[l2_players]
-    cursor_p = coll_p.find(match_filter, {"championName": 1, "win": 1})
+    cursor_p = coll_p.find(match_filter, {"championName": 1, "win": 1, "summonerName": 1})
 
     for doc in cursor_p:
         champ = doc.get("championName", "UNKNOWN")
         win = doc.get("win", False)
+        player = doc.get("summonerName", "UNKNOWN_PLAYER")
         champ_games[champ] += 1
+        player_champ_games[player][champ] += 1
         if win:
             champ_wins[champ] += 1
+            player_champ_wins[player][champ] += 1
 
     coll_e = db[l2_enemies]
     cursor_e = coll_e.find(match_filter, {"championName": 1, "win": 1})
@@ -101,6 +113,20 @@ def compute_metrics(l2_players, l2_enemies, dataset_folder, start_date=None, end
             "winrate": round(wr, 2),
         })
 
+    player_champions = {}
+    for player, p_champ_games in player_champ_games.items():
+        player_champs_list = []
+        for champ, games in p_champ_games.items():
+            wins = player_champ_wins[player][champ]
+            wr = wins / games * 100 if games else 0
+            player_champs_list.append({
+                "champion": champ,
+                "games": games,
+                "winrate": round(wr, 2),
+            })
+        player_champs_list.sort(key=lambda x: x["games"], reverse=True)
+        player_champions[player] = player_champs_list
+
     champs.sort(key=lambda x: x["games"], reverse=True)
     enemy_champs.sort(key=lambda x: x["games"], reverse=True)
 
@@ -108,6 +134,7 @@ def compute_metrics(l2_players, l2_enemies, dataset_folder, start_date=None, end
         "start_date": start_date if start_date else None,
         "end_date": end_date if end_date else None,
         "champions": champs,
+        "player_champions": player_champions,
         "enemy_champions": enemy_champs,
     }
 
@@ -130,6 +157,7 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
@@ -139,8 +167,9 @@ def main():
 
     print(f"[02] Starting ... using L2 for queue={queue} min={min_friends}")
 
-    l2_players = auto_select_l2(queue, min_friends)
+    l2_players = auto_select_l2(queue, min_friends, args.pool)
     if not l2_players:
+        print(f"[02] No L2 collection found for q{queue} min{min_friends} pool={args.pool}")
         return
 
     l2_enemies = l2_players.replace("L2_players_flat_", "L2_enemies_flat_")

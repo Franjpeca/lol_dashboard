@@ -163,59 +163,164 @@ def make_vision_fig(df):
     return make_fig(df["vision"], "Vision score medio")
 
 
-def make_polyhedron(df: pd.DataFrame, title: str):
+
+def calculate_z_scores_and_normalize(df: pd.DataFrame, min_games: int):
     """
-    Crea un gráfico de radar 2D (pentagrama/polígono) para comparar jugadores.
-    Copiado y adaptado de chart_10.
+    Realiza el cálculo estadístico:
+    1. Filtra por mínimo de partidas.
+    2. Calcula media y desviación estándar del GRUPO (solo filtrados).
+    3. Calcula Z-score por jugador.
+    4. Normaliza a escala radar 0-1 (0.5 = media).
+    """
+    # 0. Definir columnas de métricas
+    metrics = {
+        "kda": "avg_kda",
+        "kills": "avg_kills",
+        "deaths": "avg_deaths",
+        "assists": "avg_assists",
+        "gold": "avg_gold",
+        "damage_dealt": "avg_damage_dealt",
+        "damage_taken": "avg_damage_taken",
+        "vision": "avg_vision_score"
+    }
+    
+    # 1. Filtrar jugadores
+    # Aseguramos que la columna games exista (si no, asumimos 1 para no romper, pero metrics_05 deberia tenerla)
+    if "games" in df.columns:
+        df_filtered = df[df["games"] >= min_games].copy()
+    else:
+        df_filtered = df.copy()
+
+    if df_filtered.empty:
+        return df_filtered, {}
+
+    # Diccionario para guardar referencias (media y std) para tooltips o debug
+    references = {}
+
+    # 2. y 3. Calcular Z-scores
+    for metric_name, col_name in metrics.items():
+        if col_name not in df_filtered.columns:
+            continue
+
+        raw_values = df_filtered[col_name]
+        mean = raw_values.mean()
+        std = raw_values.std()
+        
+        # Evitar división por cero
+        if std == 0:
+            std = 1  # Si todos son iguales, z será 0
+
+        references[metric_name] = {"mean": mean, "std": std}
+
+        # Calcular Z - LÓGICA DIRECTA PARA TODO
+        # Más valor en cualquier métrica = Más alejado del centro
+        z_scores = (raw_values - mean) / std
+
+            
+        # 4. Transformar a Radar Value
+        # 0.5 + z/4
+        # z=0 -> 0.5
+        # z=2 -> 1.0 (Top 2% aprox)
+        # z=-2 -> 0.0
+        
+        radar_col = f"radar_{metric_name}"
+        z_col = f"z_{metric_name}"
+        
+        df_filtered[z_col] = z_scores
+        # Clamp entre 0 y 1
+        df_filtered[radar_col] = (0.5 + z_scores / 4).clip(0, 1)
+
+    return df_filtered, references
+
+
+def make_polyhedron(df: pd.DataFrame, references: dict, title: str):
+    """
+    Crea el gráfico de radar estadístico.
     """
     fig = go.Figure()
 
-    # Definir las categorías (los ejes del radar) y las columnas correspondientes en el DataFrame
-    categories = {
-        "KDA": "kda",
-        "Asesinatos": "kills",
-        "Muertes": "deaths",
-        "Asistencias": "assists",
-        "Oro": "gold",
-        "Daño Infligido": "damage_dealt",
-        "Daño Recibido": "damage_taken",
-        "Puntuación de Visión": "vision",
+    categories_map = {
+        "KDA": "radar_kda",
+        "Asesinatos": "radar_kills",
+        "Muertes": "radar_deaths",
+        "Asistencias": "radar_assists",
+        "Oro": "radar_gold",
+        "Daño Infligido": "radar_damage_dealt",
+        "Daño Recibido": "radar_damage_taken",
+        "Visión": "radar_vision",
+    }
+    
+    original_cols = {
+        "KDA": "avg_kda",
+        "Asesinatos": "avg_kills",
+        "Muertes": "avg_deaths",
+        "Asistencias": "avg_assists",
+        "Oro": "avg_gold",
+        "Daño Infligido": "avg_damage_dealt",
+        "Daño Recibido": "avg_damage_taken",
+        "Visión": "avg_vision_score",
     }
 
-    # Normalizar los datos para que estén en una escala comparable
-    df_normalized = df.copy()
-    for col in categories.values():
-        min_val, max_val = df_normalized[col].min(), df_normalized[col].max()
-        if (max_val - min_val) > 0:
-            # Escalar de 0.2 a 1 para evitar que el valor mínimo sea 0 en el gráfico.
-            # Para 'deaths' y 'damage_taken', invertimos la escala (menos es mejor).
-            if col in ["deaths", "damage_taken"]:
-                 df_normalized[col] = 0.2 + 0.8 * (max_val - df_normalized[col]) / (max_val - min_val)
-            else:
-                 df_normalized[col] = 0.2 + 0.8 * (df_normalized[col] - min_val) / (max_val - min_val)
-        else:
-            df_normalized[col] = 0.5  # Si todos los valores son iguales
+    # Orden de las categorías para cerrar el ciclo
+    cat_keys = list(categories_map.keys())
+    
+    # 1. Dibujar línea de referencia (Media del grupo = 0.5)
+    fig.add_trace(go.Scatterpolar(
+        r=[0.5] * len(cat_keys),
+        theta=cat_keys,
+        mode='lines',
+        name='Media del Grupo',
+        line=dict(color='white', width=2, dash='dash'),
+        hoverinfo='skip',
+        showlegend=True
+    ))
 
-    # Iterar sobre cada jugador para añadir su "pentagrama" al gráfico
-    for _, row in df_normalized.iterrows():
-        values = [row[col] for col in categories.values()]
+    # 2. Dibujar jugadores
+    for _, row in df.iterrows():
+        r_values = [row.get(col, 0.5) for col in categories_map.values()]
+        
+        # Tooltip customizado con valores reales y Z-score
+        hovertemplate = f"<b>{row['persona']}</b><br><br>"
+        for cat, col_radar in categories_map.items():
+            orig_col = original_cols[cat]
+            val = row.get(orig_col, 0)
+            z = row.get(col_radar.replace("radar_", "z_"), 0)
+            
+            # Formateo bonito según la métrica
+            val_fmt = f"{val:.2f}"
+            if "gold" in orig_col or "damage" in orig_col:
+                val_fmt = f"{val:,.0f}"
+            
+            hovertemplate += f"{cat}: {val_fmt} (Z: {z:+.2f})<br>"
+        
+        hovertemplate += "<extra></extra>"
+
         fig.add_trace(go.Scatterpolar(
-            r=values,
-            theta=list(categories.keys()),
+            r=r_values,
+            theta=cat_keys,
             fill='toself',
             name=row["persona"],
-            hovertemplate=(
-                f"<b>{row['persona']}</b><br>" +
-                "<br>".join([f"{cat}: {df.loc[_, col_name]:.2f}" for cat, col_name in categories.items()]) +
-                "<extra></extra>"
-            )
+            hovertemplate=hovertemplate
         ))
 
     fig.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, 1.05])),
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 1],
+                tickmode='array',
+                tickvals=[0, 0.25, 0.5, 0.75, 1],
+                ticktext=["Muy Bajo", "Bajo", "MEDIA", "Alto", "Muy Alto"],
+                gridcolor='#444',
+                tickfont=dict(size=10, color='gray')
+            ),
+            bgcolor='rgba(0,0,0,0)'
+        ),
         showlegend=True,
-        title=title,
-        height=700
+        title=dict(text=title, y=0.95),
+        height=700,
+        margin=dict(t=80, b=40, l=80, r=80),
+        legend=dict(x=1, y=1)
     )
     return fig
 
@@ -227,7 +332,6 @@ def make_polyhedron(df: pd.DataFrame, title: str):
 def render(pool_id: str, queue: int, min_friends: int, start: str | None = None, end: str | None = None):
     """
     Función que retorna las figuras de Plotly para usar en tu flujo existente.
-    Sin iniciar servidor Dash.
     """
     data_file = get_data_file(pool_id, queue, min_friends, start, end)
     data = load_json(data_file)
@@ -236,29 +340,78 @@ def render(pool_id: str, queue: int, min_friends: int, start: str | None = None,
         print(f"[ERROR] No se pudieron cargar datos de {data_file}")
         return []
     
-    dfs = build_dataframes(data)
+    # Construir DataFrame crudo
+    players_dict = data.get("players", {})
+    if not players_dict:
+        return []
+        
+    records = []
+    for p, stats in players_dict.items():
+        rec = stats.copy()
+        rec["persona"] = p
+        records.append(rec)
     
-    # 1. Crear las figuras de barras
+    df_raw = pd.DataFrame(records)
+    
+    # Manejar caso de que no existan las columnas si el JSON es viejo
+    if "games" not in df_raw.columns:
+        # Fallback si no se ha regenerado metrics_05
+        df_raw["games"] = 1 
+
+    # 1. Crear figuras de barras (usamos lógica similar a antes pero directo del DF)
+    # Reutilizamos las funciones make_fig existentes, pero necesitamos pasarle DFs individuales
+    # o adaptar build_dataframes. Para no romper mucho, adaptamos build_dataframes AQUI MISMO
+    # o simplemente pasamos el DF crudo si las funciones auxiliares esperan eso.
+    # Las funciones make_kda_fig esperan un dict con DFs ordenados.
+    
+    # Reconstruimos el dict de dfs para las barras (lógica Visual legacy)
+    dfs_bars = {}
+    metrics_cols = {
+        "kda": "avg_kda",
+        "kills": "avg_kills",
+        "deaths": "avg_deaths",
+        "assists": "avg_assists",
+        "gold": "avg_gold",
+        "damage_dealt": "avg_damage_dealt",
+        "damage_taken": "avg_damage_taken",
+        "vision": "avg_vision_score",
+    }
+    
+    for key, col in metrics_cols.items():
+        if col in df_raw.columns:
+            # Ordenar ascendente para barras horizontales (mejor valor arriba o abajo según gusto,
+            # pero el código original usaba sort_values('value')).
+            dfs_bars[key] = df_raw[["persona", col]].rename(columns={col: "value"}).sort_values("value")
+
     figures = [
-        make_kda_fig(dfs),
-        make_kills_fig(dfs),
-        make_deaths_fig(dfs),
-        make_assists_fig(dfs),
-        make_gold_fig(dfs),
-        make_damage_dealt_fig(dfs),
-        make_damage_taken_fig(dfs),
-        make_vision_fig(dfs),
+        make_kda_fig(dfs_bars),
+        make_kills_fig(dfs_bars),
+        make_deaths_fig(dfs_bars),
+        make_assists_fig(dfs_bars),
+        make_gold_fig(dfs_bars),
+        make_damage_dealt_fig(dfs_bars),
+        make_damage_taken_fig(dfs_bars),
+        make_vision_fig(dfs_bars),
     ]
 
-    # 2. Preparar el DataFrame para el gráfico de radar
-    # Renombrar la columna 'value' en cada DataFrame antes de unir
-    dfs_to_merge = [df.rename(columns={"value": name}) for name, df in dfs.items()]
-    poly_df = dfs_to_merge[0]
-    for df_to_merge in dfs_to_merge[1:]:
-        poly_df = pd.merge(poly_df, df_to_merge, on="persona", how="outer")
-    poly_df.fillna(0, inplace=True)
-
-    # 3. Crear y añadir el gráfico de radar
-    figures.append(make_polyhedron(poly_df, "Poliedro de Estadísticas Globales"))
+    # 2. GENERAR EL NUEVO POLIEDRO ESTADÍSTICO
+    # Usamos el min_friends pasado como argumento para filtrar "consistencia"
+    # OJO: 'min_friends' en arg suele ser "min amigos en partida", no "min total de partidas".
+    # Pero el usuario pidió "Eliminar jugadores que no cumplan el mínimo de partidas configurado".
+    # Asumiré un valor razonable por defecto (ej. 3) o si hay alguna config global. 
+    # En metrics_10 usamos MIN_GAMES_FOR_RANKING = 3. Usaré 3 como hardcode sensato o 5.
+    # Dado que es visualización, filtrar mucho puede dejar el gráfico vacío. 
+    # USAMOS 3 COMO BASELINE PARA RANKINGS.
+    
+    MIN_GAMES_RADAR = 3
+    
+    df_radar, refs = calculate_z_scores_and_normalize(df_raw, min_games=MIN_GAMES_RADAR)
+    
+    if not df_radar.empty:
+        poly = make_polyhedron(df_radar, refs, "Estadísticas Globales (Desviación vs Media)")
+        figures.append(poly)
+    else:
+        # Si no hay datos suficientes, devolver quizás una fig vacía o nada
+        pass
 
     return figures

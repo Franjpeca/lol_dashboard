@@ -57,35 +57,27 @@ def run_step(name, script, *args, run_in_terminal):
     if run_in_terminal:
         print(footer, end="")
     PIPELINE_QUEUE.put(footer)
+    
+    return process.returncode == 0
 
 def main(min_friends: int, run_in_terminal: bool = True):
 
-    run_step(
-        "L0 - Descargar partidas desde API",
-        EXTRACT / "0_getAllMatchesFromAPI.py",
-        run_in_terminal=run_in_terminal
-    )
+    steps = [
+        ("L0 - Crear índice de usuarios", EXTRACT / "0_createUserIndex.py", []),
+        ("L0 - Descargar partidas desde API", EXTRACT / "0_getAllMatchesFromAPI.py", []),
+        ("L1 - Crear colecciones filtradas", LOAD / "1_createFilteredCollections.py", ["--min", str(min_friends)]),
+        ("L2 - Construir colecciones L2", LOAD / "2_createL2Collections.py", ["--min", str(min_friends)]),
+        ("L3 - Metricas", METRICS / "metricsMain.py", ["--min", str(min_friends)])
+    ]
 
-    run_step(
-        "L1 - Crear colecciones filtradas",
-        LOAD / "1_createFilteredCollections.py",
-        "--min", str(min_friends),
-        run_in_terminal=run_in_terminal
-    )
-
-    run_step(
-        "L2 - Construir colecciones L2",
-        LOAD / "2_createL2Collections.py",
-        "--min", str(min_friends),
-        run_in_terminal=run_in_terminal
-    )
-
-    run_step(
-        "L3 - Metricas",
-        METRICS / "metricsMain.py",
-        "--min", str(min_friends),
-        run_in_terminal=run_in_terminal
-    )
+    for name, script, extra_args in steps:
+        success = run_step(name, script, *extra_args, run_in_terminal=run_in_terminal)
+        if not success:
+            err_msg = f"[PIPELINE] Error en paso: {name}. Abortando.\n"
+            if run_in_terminal:
+                print(err_msg)
+            PIPELINE_QUEUE.put(err_msg)
+            return
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Ejecutar pipeline completo L0-L3")

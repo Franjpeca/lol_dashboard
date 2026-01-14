@@ -6,6 +6,7 @@ from pathlib import Path
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
+from date_utils import date_to_timestamp_ms
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -19,35 +20,69 @@ DEFAULT_QUEUE = int(os.getenv("QUEUE_FLEX", "440"))
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
-USERS_INDEX = db["L0_users_index"]
+# USERS_INDEX will be selected dynamically based on pool_id
 ACCOUNTS_COLL = db["riot_accounts"]
 
 RESULTS_ROOT = Path("data/results")
 RUNTIME_ROOT = Path("data/runtime")
 
 
-def load_puuid_to_user_mapping():
+def get_users_index_collection(pool_id: str):
+    """Returns the correct L0_users_index collection name based on pool_id."""
+    return "L0_users_index"
+
+
+def load_puuid_to_user_mapping(pool_id: str):
+    """Load user mapping from the correct collection based on pool_id."""
+    collection_name = get_users_index_collection(pool_id)
+    users_index = db[collection_name]
+    
     mapping = {}
-    cursor = USERS_INDEX.find({}, {"persona": 1, "puuids": 1})
+    riotId_mapping = {}
+    cursor = users_index.find({}, {"persona": 1, "puuids": 1, "accounts": 1})
     for doc in cursor:
         persona = doc["persona"]
-        for puuid in doc["puuids"]:
-            mapping[puuid] = persona
-    return mapping
+        
+        # 1. Prefer 'accounts' field if available
+        accounts = doc.get("accounts", [])
+        for acc in accounts:
+            pid = acc.get("puuid")
+            rid = acc.get("riotId")
+            if pid:
+                mapping[pid] = persona
+                if rid:
+                    riotId_mapping[pid] = rid
+
+        # 2. Add any puuids NOT in accounts (legacy fallback)
+        for puuid in doc.get("puuids", []):
+            if puuid not in mapping:
+                mapping[puuid] = persona
+
+    return mapping, riotId_mapping
 
 
-def resolve_riotId(puuid, riotId_l2):
+def resolve_riotId(puuid, riotId_l2, riotId_map):
     if riotId_l2 is not None:
         return riotId_l2
+    
+    # Check map from L0_users_index
+    if puuid in riotId_map:
+        return riotId_map[puuid]
+
     acc_doc = ACCOUNTS_COLL.find_one({"puuid": puuid}, {"riotId": 1})
     if acc_doc:
         return acc_doc.get("riotId")
     return None
 
 
-def auto_select_l2(queue, min_friends):
+def auto_select_l2(queue, min_friends, pool_id=None):
     prefix = f"L2_players_flat_q{queue}_min{min_friends}_"
     candidates = [c for c in db.list_collection_names() if c.startswith(prefix)]
+
+    if pool_id:
+        pool_tag = f"pool_{pool_id}"
+        candidates = [c for c in candidates if pool_tag in c]
+
     if not candidates:
         return None
     candidates.sort()
@@ -62,12 +97,12 @@ def extract_pool_from_l1(l1_name):
     return "pool_" + l1_name.split("_pool_", 1)[1]
 
 
-def compute_for_collection(coll_name, puuid_to_user, dataset_folder, start_date=None, end_date=None):
+def compute_for_collection(coll_name, puuid_to_user, riotId_map, dataset_folder, start_date=None, end_date=None):
     coll_src = db[coll_name]
 
     if start_date and end_date:
-        start_ts = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
-        end_ts = int(datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+        start_ts = date_to_timestamp_ms(start_date, end_of_day=False)
+        end_ts = date_to_timestamp_ms(end_date, end_of_day=True)
 
         pipeline = [
             {
@@ -147,7 +182,7 @@ def compute_for_collection(coll_name, puuid_to_user, dataset_folder, start_date=
                 "puuids": {}
             }
 
-        riot_id = resolve_riotId(puuid, r.get("riotId"))
+        riot_id = resolve_riotId(puuid, r.get("riotId"), riotId_map)
 
         users[persona]["total_games"] += r["games"]
         users[persona]["total_wins"] += r["wins"]
@@ -199,6 +234,7 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
@@ -208,8 +244,9 @@ def main():
 
     print(f"[01] Starting ... using collection: L2_players_flat_q{queue}_min{min_friends}")
 
-    l2_name = auto_select_l2(queue, min_friends)
+    l2_name = auto_select_l2(queue, min_friends, args.pool)
     if not l2_name:
+        print(f"[01] No L2 collection found for q{queue} min{min_friends} pool={args.pool}")
         return
 
     l1_name = l2_to_l1(l2_name)
@@ -221,9 +258,9 @@ def main():
     else:
         dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
 
-    puuid_to_user = load_puuid_to_user_mapping()
+    puuid_to_user, riotId_map = load_puuid_to_user_mapping(pool_id)
 
-    compute_for_collection(l2_name, puuid_to_user, dataset_folder, start_date, end_date)
+    compute_for_collection(l2_name, puuid_to_user, riotId_map, dataset_folder, start_date, end_date)
 
     print(f"[01] Ended")
 

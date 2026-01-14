@@ -19,20 +19,52 @@ def now_utc():
     return datetime.datetime.now(datetime.UTC)
 
 
-def auto_select_l1(queue_id: int, min_friends: int):
-    expected_prefix = f"L1_q{queue_id}_min{min_friends}_"
+import hashlib
 
-    candidates = [
-        c for c in db.list_collection_names()
-        if c.startswith(expected_prefix)
-    ]
+def build_pool_version(puuids: list[str]) -> str:
+    base = ",".join(sorted(puuids))
+    h = hashlib.sha1(base.encode("utf-8")).hexdigest()[:8]
+    return f"pool_{h}"
 
-    if not candidates:
-        print(f"no L1 found for queue={queue_id} min={min_friends}")
+def auto_select_l1(queue_id: int, min_friends: int, pool_id: str = None):
+    """
+    Select L1 collection for the given queue and min_friends.
+    If pool_id is provided, use it directly.
+    Otherwise, calculate pool from L0_users_index.
+    """
+    if pool_id:
+        # Use provided pool ID
+        l1_name = f"L1_q{queue_id}_min{min_friends}_pool_{pool_id}"
+        
+        if l1_name not in db.list_collection_names():
+            print(f"[WARN] L1 collection {l1_name} does NOT exist.")
+            return None
+        
+        print(f"[INFO] Using specified pool: {pool_id}")
+        return l1_name
+    
+    # Auto-calculate pool from L0_users_index
+    coll_users = db["L0_users_index"]
+    friend_puuids = set()
+    
+    cursor = coll_users.find({}, {"puuids": 1})
+    for doc in cursor:
+        p_list = doc.get("puuids", [])
+        for p in p_list:
+            friend_puuids.add(p)
+            
+    if not friend_puuids:
+        print("[WARN] No users found in L0_users_index")
+        return None
+        
+    pool_version = build_pool_version(list(friend_puuids))
+    l1_name = f"L1_q{queue_id}_min{min_friends}_{pool_version}"
+    
+    if l1_name not in db.list_collection_names():
+        print(f"[WARN] Expected L1 collection {l1_name} does NOT exist.")
         return None
 
-    candidates.sort()
-    return candidates[-1]
+    return l1_name
 
 
 def build_l2_from_l1(l1_name):
@@ -143,12 +175,16 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--min", type=int, help="min friends filter")
+    parser.add_argument("--pool", type=str, default="d63e5437", help="pool ID to use (default: d63e5437)")
+    parser.add_argument("--users-collection", type=str, default="L0_users_index", help="Users collection (for compatibility, not used here)")
     args = parser.parse_args()
 
-    min_value = args.min if args.min is not None else DEFAULT_MIN
 
-    print(f"[AUTO] selecting L1 for queue={DEFAULT_QUEUE} min={min_value}")
-    l1_name = auto_select_l1(DEFAULT_QUEUE, min_value)
+    min_value = args.min if args.min is not None else DEFAULT_MIN
+    pool_id = args.pool
+
+    print(f"[AUTO] selecting L1 for queue={DEFAULT_QUEUE} min={min_value} pool={pool_id}")
+    l1_name = auto_select_l1(DEFAULT_QUEUE, min_value, pool_id)
 
     if not l1_name:
         return

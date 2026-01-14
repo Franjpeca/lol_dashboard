@@ -6,6 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 from datetime import datetime
+from date_utils import date_to_timestamp_ms
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -37,13 +38,24 @@ def log(msg):
 # L1 helpers
 # ============================================================
 
-def auto_select_l1(queue, min_friends):
+def auto_select_l1(queue, min_friends, pool_id=None):
     prefix = f"L1_q{queue}_min{min_friends}_"
     candidates = [c for c in db.list_collection_names() if c.startswith(prefix)]
+
+    if pool_id:
+        pool_tag = f"pool_{pool_id}"
+        candidates = [c for c in candidates if pool_tag in c]
+
     if not candidates:
         return None
     candidates.sort()
     return candidates[-1]
+
+
+
+def get_users_index_collection(pool_id: str):
+    """Returns the correct L0_users_index collection name based on pool_id."""
+    return "L0_users_index"
 
 
 def extract_pool_from_l1(l1_name):
@@ -102,13 +114,14 @@ def get_sorted_matches_for_puuid(coll_matches, puuid, start_ts, end_ts):
 # MAIN compute
 # ============================================================
 
-def compute_troll_index(l1_name, dataset_folder, start_date, end_date):
+def compute_troll_index(l1_name, dataset_folder, pool_id: str, start_date, end_date):
     coll_matches = db[l1_name]
-    coll_users = db["L0_users_index"]
+    collection_name = get_users_index_collection(pool_id)
+    coll_users = db[collection_name]
 
     # convertir fechas a timestamps
     if start_date and end_date:
-        start_ts = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
+        start_ts = date_to_timestamp_ms(start_date, end_of_day=False)
         end_ts = int(datetime.strptime(end_date + " 23:59:59", "%Y-%m-%d %H:%M:%S").timestamp() * 1000)
     else:
         start_ts = None
@@ -226,6 +239,7 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
@@ -235,8 +249,9 @@ def main():
 
     print(f"[07] Starting ... queue={queue} min={min_friends}")
 
-    l1_name = auto_select_l1(queue, min_friends)
+    l1_name = auto_select_l1(queue, min_friends, args.pool)
     if not l1_name:
+        print(f"[07] No L1 collection found for q{queue} min{min_friends} pool={args.pool}")
         return
 
     pool_id = extract_pool_from_l1(l1_name)
@@ -249,7 +264,7 @@ def main():
 
     folder.mkdir(parents=True, exist_ok=True)
 
-    compute_troll_index(l1_name, folder, start, end)
+    compute_troll_index(l1_name, folder, pool_id, start, end)
 
     print("[07] Ended")
 

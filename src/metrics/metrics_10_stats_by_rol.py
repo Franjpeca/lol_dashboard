@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
+from date_utils import date_to_timestamp_ms
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
@@ -29,17 +30,34 @@ def now_str():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def auto_select_l1(queue, min_friends):
+def auto_select_l1(queue, min_friends, pool_id=None):
     prefix = f"L1_q{queue}_min{min_friends}_"
     cands = [c for c in db.list_collection_names() if c.startswith(prefix)]
+
+    if pool_id:
+        pool_tag = f"pool_{pool_id}"
+        cands = [c for c in cands if pool_tag in c]
+
     if not cands:
         return None
     cands.sort()
     return cands[-1]
 
 
+
+def get_users_index_collection(pool_id: str):
+    """Returns the correct L0_users_index collection name based on pool_id."""
+    return "L0_users_index"
+
+
 def extract_pool_from_l1(l1_name):
     return "pool_" + l1_name.split("_pool_", 1)[1]
+
+
+def normalize(val, min_v, max_v):
+    if max_v == min_v:
+        return 1.0 if max_v > 0 else 0.0
+    return (val - min_v) / (max_v - min_v)
 
 
 def ts_to_date(ts_ms):
@@ -59,11 +77,12 @@ def within_window(game_ts_ms, start_dt, end_dt):
     return True
 
 
-def process_stats(l1_collection, start_dt, end_dt):
+def process_stats(l1_collection, pool_id: str, start_dt, end_dt):
     coll = db[l1_collection]
 
     puuid_to_persona = {}
-    for user in db["L0_users_index"].find({}, {"persona": 1, "puuids": 1}):
+    collection_name = get_users_index_collection(pool_id)
+    for user in db[collection_name].find({}, {"persona": 1, "puuids": 1}):
         persona = user.get("persona", "Unknown")
         for p in user.get("puuids", []):
             puuid_to_persona[p] = persona
@@ -149,6 +168,28 @@ def process_stats(l1_collection, start_dt, end_dt):
                 "winrate": round((s["wins"] / g) * 100, 2),
             }
 
+    # --- Normalizacion (0 a 1) para graficos de radar (poliedros) ---
+    metrics_to_norm = [
+        "avg_damage", "avg_damage_taken", "avg_gold", "avg_farm",
+        "avg_vision", "avg_turret_damage", "avg_kills", "avg_deaths",
+        "avg_assists", "avg_kill_participation", "winrate"
+    ]
+
+    for role, personas_data in result.items():
+        if not personas_data:
+            continue
+
+        bounds = {}
+        for m in metrics_to_norm:
+            vals = [d[m] for d in personas_data.values()]
+            bounds[m] = (min(vals), max(vals))
+
+        for persona in personas_data:
+            for m in metrics_to_norm:
+                mn, mx = bounds[m]
+                val = personas_data[persona][m]
+                personas_data[persona][f"{m}_norm"] = round(normalize(val, mn, mx), 2)
+
     return result
 
 
@@ -179,6 +220,7 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
@@ -191,7 +233,7 @@ def main():
 
     print(f"[10] Starting ... using collection L1_q{queue}_min{min_friends}")
 
-    l1_name = auto_select_l1(queue, min_friends)
+    l1_name = auto_select_l1(queue, min_friends, args.pool)
     if not l1_name:
         print("[10] No L1 found")
         return
@@ -205,7 +247,7 @@ def main():
 
     dataset_folder.mkdir(parents=True, exist_ok=True)
 
-    stats = process_stats(l1_name, start_dt, end_dt)
+    stats = process_stats(l1_name, pool_id, start_dt, end_dt)
     save_stats(l1_name, start_date, end_date, stats, dataset_folder)
 
     print("[10] Ended")

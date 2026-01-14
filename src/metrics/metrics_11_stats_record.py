@@ -6,6 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from datetime import datetime
+from date_utils import date_to_timestamp_ms
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -28,13 +29,24 @@ def now_str():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def auto_select_l1(queue, min_friends):
+def auto_select_l1(queue, min_friends, pool_id=None):
     prefix = f"L1_q{queue}_min{min_friends}_"
     cands = [c for c in db.list_collection_names() if c.startswith(prefix)]
+
+    if pool_id:
+        pool_tag = f"pool_{pool_id}"
+        cands = [c for c in cands if pool_tag in c]
+
     if not cands:
         return None
     cands.sort()
     return cands[-1]
+
+
+
+def get_users_index_collection(pool_id: str):
+    """Returns the correct L0_users_index collection name based on pool_id."""
+    return "L0_users_index"
 
 
 def extract_pool_from_l1(l1_name):
@@ -64,11 +76,12 @@ def format_game_duration(seconds):
     return f"{m}m {s}s"
 
 
-def calculate_record_stats(l1_collection, start_dt, end_dt):
+def calculate_record_stats(l1_collection, pool_id: str, start_dt, end_dt):
     coll = db[l1_collection]
 
     puuid_to_persona = {}
-    for user in db["L0_users_index"].find({}, {"persona": 1, "puuids": 1}):
+    collection_name = get_users_index_collection(pool_id)
+    for user in db[collection_name].find({}, {"persona": 1, "puuids": 1}):
         persona = user.get("persona", "Unknown")
         for puuid in user.get("puuids", []):
             puuid_to_persona[puuid] = persona
@@ -186,6 +199,7 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
@@ -198,7 +212,7 @@ def main():
 
     print(f"[11] Starting ... queue={queue} min={min_friends}")
 
-    l1_name = auto_select_l1(queue, min_friends)
+    l1_name = auto_select_l1(queue, min_friends, args.pool)
     if not l1_name:
         print("[11] No L1 found")
         return
@@ -210,7 +224,7 @@ def main():
     else:
         folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
 
-    stats = calculate_record_stats(l1_name, start_dt, end_dt)
+    stats = calculate_record_stats(l1_name, pool_id, start_dt, end_dt)
     save_stats(l1_name, start, end, stats, folder)
 
     print("[11] Ended")

@@ -4,6 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 from datetime import datetime
+from date_utils import date_to_timestamp_ms
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -27,13 +28,24 @@ def now_str():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def auto_select_l1(queue, min_friends):
+def auto_select_l1(queue, min_friends, pool_id=None):
     prefix = f"L1_q{queue}_min{min_friends}_"
     cands = [c for c in db.list_collection_names() if c.startswith(prefix)]
+
+    if pool_id:
+        pool_tag = f"pool_{pool_id}"
+        cands = [c for c in cands if pool_tag in c]
+
     if not cands:
         return None
     cands.sort()
     return cands[-1]
+
+
+
+def get_users_index_collection(pool_id: str):
+    """Returns the correct L0_users_index collection name based on pool_id."""
+    return "L0_users_index"
 
 
 def extract_pool_from_l1(l1_name):
@@ -62,14 +74,14 @@ def compute_streaks(win_list):
     return max_win, max_lose, current
 
 
-def compute_metrics(l1_name, dataset_folder, start_date=None, end_date=None):
+def compute_metrics(l1_name, dataset_folder, pool_id: str, start_date=None, end_date=None):
 
     coll = db[l1_name]
 
     # Ventana temporal
     if start_date and end_date:
-        ts_start = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
-        ts_end = int(datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+        ts_start = date_to_timestamp_ms(start_date, end_of_day=False)
+        ts_end = date_to_timestamp_ms(end_date, end_of_day=True)
         query = {"data.info.gameStartTimestamp": {"$gte": ts_start, "$lte": ts_end}}
     else:
         query = {}
@@ -102,9 +114,10 @@ def compute_metrics(l1_name, dataset_folder, start_date=None, end_date=None):
                     user_stats[pid]["records"].append((ts, win))
 
     # Mapeo a personas
+    collection_name = get_users_index_collection(pool_id)
     users_index = {
         d["puuids"]: d["persona"]
-        for d in db["L0_users_index"].aggregate([
+        for d in db[collection_name].aggregate([
             {"$unwind": "$puuids"},
             {"$project": {"puuids": 1, "persona": 1}}
         ])
@@ -156,6 +169,7 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default=None)
     args = parser.parse_args()
 
     queue = args.queue
@@ -163,7 +177,7 @@ def main():
     start_date = args.start
     end_date = args.end
 
-    l1_name = auto_select_l1(queue, min_friends)
+    l1_name = auto_select_l1(queue, min_friends, args.pool)
     if not l1_name:
         print("[04] ERROR: no L1 collection found.")
         return
@@ -176,7 +190,7 @@ def main():
     else:
         dataset_folder = RESULTS_ROOT / pool_id / f"q{queue}" / f"min{min_friends}"
 
-    compute_metrics(l1_name, dataset_folder, start_date, end_date)
+    compute_metrics(l1_name, dataset_folder, pool_id, start_date, end_date)
     print("[04] Ended")
 
 

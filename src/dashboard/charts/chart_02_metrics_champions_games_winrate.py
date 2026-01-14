@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
+from typing import Dict, Any, List, Optional
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
+import plotly.graph_objs as go
 
 pio.templates.default = "plotly_dark"
 
@@ -167,3 +169,50 @@ def render(pool_id: str, queue: int, min_friends: int, start=None, end=None):
         )
 
     return figs
+
+
+def render_player_champions(pool_id: str, queue: int, min_friends: int, player: Optional[str], start: Optional[str] = None, end: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """
+    Renderiza un gráfico de barras con el winrate de campeones para un jugador específico.
+    Si el jugador no se especifica, devuelve la lista de jugadores disponibles.
+    """
+    data_path = get_data_file(pool_id, queue, min_friends, start, end)
+    if not data_path.exists():
+        return None
+
+    data = load_data(data_path)
+    player_champions_data = data.get("player_champions")
+
+    if not player_champions_data:
+        return None
+
+    players = sorted(list(player_champions_data.keys()))
+
+    # Si no se especifica un jugador, devolvemos la lista de jugadores para el dropdown
+    if player is None:
+        return {"players": players}
+
+    player_data = player_champions_data.get(player)
+    if not player_data:
+        return {"players": players} # Devuelve jugadores aunque el seleccionado no tenga datos
+
+    df = pd.DataFrame(player_data)
+    if df.empty:
+        return {"players": players}
+
+    df = df.sort_values("games", ascending=True)
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        y=df["champion"],
+        x=df["winrate"],
+        orientation="h",
+        text=df.apply(lambda row: f'{row["winrate"]}% ({row["games"]} partidas)', axis=1),
+        textposition="outside",
+        marker_color=df["games"],
+        colorscale="Viridis",
+        hovertemplate="<b>%{y}</b><br>Winrate: %{x}%<br>Partidas: %{marker.color}<extra></extra>"
+    ))
+    fig.update_layout(title=f"Winrate de campeones para {player}", xaxis_title="Winrate (%)", yaxis_title="Campeón", height=max(400, len(df) * 30))
+    
+    return {"fig": fig, "players": players}

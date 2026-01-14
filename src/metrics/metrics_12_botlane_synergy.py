@@ -6,6 +6,7 @@ from pathlib import Path
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
+from date_utils import date_to_timestamp_ms
 from collections import defaultdict
 import itertools
 
@@ -21,24 +22,38 @@ DEFAULT_QUEUE = int(os.getenv("QUEUE_FLEX", "440"))
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 
-USERS_INDEX = db["L0_users_index"]
+# USERS_INDEX will be selected dynamically based on pool_id
 
 RESULTS_ROOT = Path("data/results")
 RUNTIME_ROOT = Path("data/runtime")
 
 
-def load_puuid_to_user_mapping():
+def get_users_index_collection(pool_id: str):
+    """Returns the correct L0_users_index collection name based on pool_id."""
+    return "L0_users_index"
+
+
+def load_puuid_to_user_mapping(pool_id: str):
+    """Load user mapping from the correct collection based on pool_id."""
+    collection_name = get_users_index_collection(pool_id)
+    users_index = db[collection_name]
+    
     mapping = {}
-    cursor = USERS_INDEX.find({}, {"persona": 1, "puuids": 1})
+    cursor = users_index.find({}, {"persona": 1, "puuids": 1})
     for doc in cursor:
         for puuid in doc.get("puuids", []):
             mapping[puuid] = doc["persona"]
     return mapping
 
 
-def auto_select_l1(queue, min_friends):
+def auto_select_l1(queue, min_friends, pool_id=None):
     prefix = f"L1_q{queue}_min{min_friends}_"
     candidates = [c for c in db.list_collection_names() if c.startswith(prefix)]
+
+    if pool_id:
+        pool_tag = f"pool_{pool_id}"
+        candidates = [c for c in candidates if pool_tag in c]
+
     if not candidates:
         return None
     candidates.sort()
@@ -60,8 +75,8 @@ def compute_botlane_synergy(coll_name, puuid_to_user, dataset_folder, start_date
     
     query = {}
     if start_date and end_date:
-        start_ts = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
-        end_ts = int(datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+        start_ts = date_to_timestamp_ms(start_date, end_of_day=False)
+        end_ts = date_to_timestamp_ms(end_date, end_of_day=True)
         query["data.info.gameStartTimestamp"] = {"$gte": start_ts, "$lte": end_ts}
 
     # Usamos un cursor para no cargar todas las partidas en memoria.
@@ -156,8 +171,8 @@ def compute_botlane_synergy(coll_name, puuid_to_user, dataset_folder, start_date
         min_kda, max_kda, min_dmg, max_dmg, min_vis, max_vis, min_gold, max_gold = [0]*8
 
     # Pesos de la fórmula
-    #w = {'winrate': 0.4, 'kda': 0.2, 'damage': 0.2, 'vision': 0.1, 'economy': 0.1}
-    w = {'winrate': 0.4, 'kda': 0.2, 'damage': 0.2, 'economy': 0.1}
+    w = {'winrate': 0.4, 'kda': 0.2, 'damage': 0.2, 'vision': 0.1, 'economy': 0.1}
+    #w = {'winrate': 0.4, 'kda': 0.2, 'damage': 0.2, 'economy': 0.1}
 
     for r in final_results:
         # El winrate ya está normalizado entre 0 y 1
@@ -200,11 +215,12 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default=None)
     args = parser.parse_args()
 
     print(f"[12] Starting botlane synergy... using L1_q{args.queue}_min{args.min}")
 
-    l1_name = auto_select_l1(args.queue, args.min)
+    l1_name = auto_select_l1(args.queue, args.min, args.pool)
     if not l1_name:
         print(f"[12] No L1 collection found for q{args.queue} min{args.min}")
         return
@@ -213,7 +229,7 @@ def main():
     
     dataset_folder = RUNTIME_ROOT / pool_id / f"q{args.queue}" / f"min{args.min}" if args.start and args.end else RESULTS_ROOT / pool_id / f"q{args.queue}" / f"min{args.min}"
 
-    puuid_to_user = load_puuid_to_user_mapping()
+    puuid_to_user = load_puuid_to_user_mapping(pool_id)
     compute_botlane_synergy(l1_name, puuid_to_user, dataset_folder, args.start, args.end)
 
     print(f"[12] Ended")

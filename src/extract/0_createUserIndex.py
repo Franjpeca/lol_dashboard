@@ -1,18 +1,34 @@
 # L0_build_users_index.py
-# Construye un indice unificado de usuarios reales con:
-# - players.txt (jugadores individuales)
-# - mapa_cuentas.json (jugadores con varias cuentas)
+# Construye un índice unificado de usuarios reales desde:
+# - mapa_cuentas.json (único source of truth)
 # Los PUUID se obtienen SIEMPRE desde la API de Riot (nunca de riot_accounts)
 
+import sys
+from pathlib import Path
+
+# —————————————————————————————
+# Asegura que 'src' esté en sys.path
+# —————————————————————————————
+FILE_SELF = Path(__file__).resolve()
+BASE_DIR = FILE_SELF.parents[2]        # lol_data/
+SRC_DIR = BASE_DIR / "src"
+
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+# —————————————————————————————
+# Ahora sí los imports reales
+# —————————————————————————————
 import os
 import json
 import datetime
-from pathlib import Path
 
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from riotwatcher import RiotWatcher
+
 from utils.api_key_manager import get_api_key
+
 
 
 load_dotenv()
@@ -27,7 +43,6 @@ db = client[DB_NAME]
 
 USERS_INDEX_COLL = db["L0_users_index"]
 
-PLAYERS_PATH = Path("players.txt")
 MAP_PATH = Path("mapa_cuentas.json")
 
 riot = RiotWatcher(API_KEY)
@@ -82,31 +97,36 @@ def get_puuid_from_api(riot_id):
 def main():
     print("[BOOT] Iniciando L0_build_users_index.py")
 
-    players = load_players(PLAYERS_PATH)
-    print(f"[INFO] players.txt contiene {len(players)} jugadores")
-
+    # Load mapa_cuentas.json (single source of truth)
     mapa = load_map(MAP_PATH)
-    print(f"[INFO] mapa_cuentas.json contiene {len(mapa)} grupos")
+    if not mapa:
+        print(f"[ERROR] mapa_cuentas.json not found or empty at {MAP_PATH}")
+        return
+    
+    print(f"[INFO] mapa_cuentas.json contiene {len(mapa)} personas")
 
     USERS_INDEX_COLL.drop()
     print("[INFO] L0_users_index reiniciada")
 
     docs = []
     now = now_utc()
-    personas_usadas = set()
 
-    # =============================
-    # 1. Construir grupos del mapa
-    # =============================
+    # Process all personas from mapa_cuentas.json
     for persona, cuentas in mapa.items():
+        if not isinstance(cuentas, list):
+            print(f"[WARN] Skipping {persona}: accounts is not a list")
+            continue
+            
         riot_ids = []
         puuids = []
+        accounts = []
 
         for rid in cuentas:
             puuid = get_puuid_from_api(rid)
             if puuid:
                 riot_ids.append(rid)
                 puuids.append(puuid)
+                accounts.append({"riotId": rid, "puuid": puuid})
             else:
                 print(f"[WARN] No se pudo obtener PUUID para {rid}")
 
@@ -119,38 +139,12 @@ def main():
                 "persona": persona,
                 "riotIds": riot_ids,
                 "puuids": puuids,
+                "accounts": accounts,
                 "created_at": now,
                 "updated_at": now,
             })
 
-            personas_usadas.update(riot_ids)
-
-    # =============================
-    # 2. Jugadores individuales
-    # =============================
-    for rid in players:
-        if rid in personas_usadas:
-            continue
-
-        puuid = get_puuid_from_api(rid)
-        if not puuid:
-            print(f"[WARN] No se encontro PUUID para {rid}")
-            continue
-
-        persona = rid.split("#", 1)[0]
-
-        docs.append({
-            "_id": persona,
-            "persona": persona,
-            "riotIds": [rid],
-            "puuids": [puuid],
-            "created_at": now,
-            "updated_at": now,
-        })
-
-    # =============================
     # Insert final
-    # =============================
     if docs:
         USERS_INDEX_COLL.insert_many(docs)
         print(f"[DONE] Insertados {len(docs)} usuarios en L0_users_index")

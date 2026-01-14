@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+from date_utils import date_to_timestamp_ms
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -24,13 +25,12 @@ RUNTIME_DIR = BASE_DIR / "data" / "runtime"
 
 DEFAULT_QUEUE = 440
 DEFAULT_MIN = 5
-DEFAULT_POOL = "ac89fa8d"
 
 
 def to_date(ts_ms):
     if not ts_ms:
         return None
-    dt = datetime.datetime.utcfromtimestamp(ts_ms / 1000)
+    dt = datetime.datetime.fromtimestamp(ts_ms / 1000, datetime.timezone.utc)
     return dt.date().isoformat()
 
 
@@ -52,8 +52,15 @@ def save_json(path, data):
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
-def load_users_index():
-    coll = db["L0_users_index"]
+def get_users_index_collection(pool_id: str):
+    """Returns the correct L0_users_index collection name based on pool_id."""
+    return "L0_users_index"
+
+
+def load_users_index(pool_id: str):
+    """Load users index from the correct collection based on pool_id."""
+    collection_name = get_users_index_collection(pool_id)
+    coll = db[collection_name]
 
     users_by_persona = {}
     puuid_to_persona = {}
@@ -87,47 +94,49 @@ def main():
     parser.add_argument("--min", type=int, default=DEFAULT_MIN)
     parser.add_argument("--start", type=str, default=None)
     parser.add_argument("--end", type=str, default=None)
+    parser.add_argument("--pool", type=str, default="ac89fa8d")
     args = parser.parse_args()
 
     queue = args.queue
     min_friends = args.min
     start_date = args.start
     end_date = args.end
+    pool_id = args.pool
 
     if start_date and end_date:
-        dataset_folder = RUNTIME_DIR / f"pool_{DEFAULT_POOL}" / f"q{queue}" / f"min{min_friends}"
+        dataset_folder = RUNTIME_DIR / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}"
     else:
-        dataset_folder = RESULTS_DIR / f"pool_{DEFAULT_POOL}" / f"q{queue}" / f"min{min_friends}"
+        dataset_folder = RESULTS_DIR / f"pool_{pool_id}" / f"q{queue}" / f"min{min_friends}"
 
     dataset_folder.mkdir(parents=True, exist_ok=True)
     print(f"[03] Running for: {dataset_folder}")
 
-    users_by_persona, puuid_to_persona, personas_index = load_users_index()
+    users_by_persona, puuid_to_persona, personas_index = load_users_index(pool_id)
 
+    prefix = f"L1_q{queue}_min{min_friends}_"
     l1_collections = [
         name for name in db.list_collection_names()
-        if name.startswith(f"L1_q{queue}") 
-        and f"min{min_friends}" in name 
-        and f"pool_{DEFAULT_POOL}" in name
+        if name.startswith(prefix) and f"pool_{pool_id}" in name
     ]
 
     if not l1_collections:
         print(f"[ERROR] No L1 collections for queue={queue} min={min_friends}")
         return
 
+    print(f"[DEBUG] Found {len(l1_collections)} L1 collections:")
+    for coll_name in l1_collections:
+        print(f"  - {coll_name}")
+
     global_days = defaultdict(int)
     player_days = defaultdict(lambda: defaultdict(int))
-
-    for persona in personas_index:
-        _ = player_days[persona]
 
     min_date = None
     max_date = None
 
     # Convert date filters to timestamps
     if start_date and end_date:
-        start_ts = int(datetime.datetime.strptime(start_date, "%Y-%m-%d").timestamp() * 1000)
-        end_ts = int(datetime.datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59).timestamp() * 1000)
+        start_ts = date_to_timestamp_ms(start_date, end_of_day=False)
+        end_ts = date_to_timestamp_ms(end_date, end_of_day=True)
     else:
         start_ts = None
         end_ts = None
@@ -172,23 +181,36 @@ def main():
             for persona in personas_en_partida:
                 player_days[persona][date] += 1
 
-    if min_date is None:
-        print("[03] No matches in this window")
-        return
+    # Debug: Show which players were found (handle Unicode errors)
+    try:
+        print(f"[DEBUG] Players found in matches: {sorted(player_days.keys())}")
+    except UnicodeEncodeError:
+        print(f"[DEBUG] Players found in matches: {len(player_days)} players")
 
-    today_str = datetime.date.today().isoformat()
-    if today_str > max_date:
-        max_date = today_str
+    if start_date and end_date:
+        min_date = start_date
+        max_date = end_date
+    else:
+        if min_date is None:
+            print("[03] No matches in this window")
+            return
+            
+        today_str = datetime.date.today().isoformat()
+        if today_str > max_date:
+            max_date = today_str
 
     global_series = ensure_date_range(global_days, min_date, max_date)
 
     players_out = []
-    all_personas = set(personas_index) | set(player_days.keys())
-
-    for persona in sorted(all_personas):
+    # Only include players who actually have games in this pool
+    for persona in sorted(player_days.keys()):
         by_day = player_days.get(persona, {})
         filled = ensure_date_range(by_day, min_date, max_date)
         total = sum(x["games"] for x in filled)
+
+        # Skip players with no games
+        if total == 0:
+            continue
 
         user_info = users_by_persona.get(persona, {})
         riot_ids = user_info.get("riotIds", [])
@@ -203,6 +225,12 @@ def main():
                 "games": filled,
             }
         )
+
+    try:
+        print(f"[DEBUG] Final players in output: {[p['persona'] for p in players_out]}")
+    except UnicodeEncodeError:
+        print(f"[DEBUG] Final players in output: {len(players_out)} players")
+    print(f"[DEBUG] Total players with games: {len(players_out)}")
 
     if start_date and end_date:
         filename = f"metrics_03_games_frecuency_{start_date}_to_{end_date}.json"

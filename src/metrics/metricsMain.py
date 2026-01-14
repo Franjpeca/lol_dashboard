@@ -1,41 +1,81 @@
 import sys
 import subprocess
+import os
+import argparse
+from dotenv import load_dotenv
+from pymongo import MongoClient
 
 sys.stdout.reconfigure(encoding='utf-8')
 
-from metrics_01_players_games_winrate import main as run_winrate_players
-from metrics_02_champions_games_winrate import main as run_champions_winrate
-from metrics_03_games_frecuency import main as run_games_frecuency
-from metrics_04_win_lose_streak import main as run_win_lose_streak
-from metrics_05_players_stats import main as run_players_stats
-from metrics_06_ego_index import main as run_ego_index
-from metrics_07_troll_index import main as run_troll_index
-from metrics_08_first_metrics import main as run_first_metrics
-from metrics_09_number_skills import main as run_number_skill
-from metrics_10_stats_by_rol import main as run_stats_by_rol
-from metrics_11_stats_record import main as run_record_stats
-from metrics_12_botlane_synergy import main as run_duo_stats
+load_dotenv()
 
-def main():
-    print("[INIT] Inicio del orquestador de metricas")
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME = os.getenv("MONGO_DB", "lol_data")
 
-    print("[INFO] Ejecutando métricas por jugador...")
-    run_winrate_players()
-def run_metric_script(script_name, args):
-    cmd = [sys.executable, f"src/metrics/{script_name}.py"] + args
-    print(f"\n[RUNNING] {' '.join(cmd)}")
-    subprocess.run(cmd, check=True)
-
-    print("[INFO] Ejecutando métricas globales de campeones...")
-    run_champions_winrate()
-
-    print("[INFO] Ejecutando frecuencias de partidas...")
-    run_games_frecuency()
-def main():
-    print("[INIT] Inicio del orquestador de metricas")
+def get_available_pools(queue, min_friends):
+    """Busca en MongoDB todas las pools disponibles para la cola y min_friends dados."""
+    client = MongoClient(MONGO_URI)
+    db = client[DB_NAME]
+    prefix = f"L1_q{queue}_min{min_friends}_pool_"
     
-    # Captura todos los argumentos pasados a metricsMain.py
-    cli_args = sys.argv[1:]
+    pools = set()
+    for name in db.list_collection_names():
+        if name.startswith(prefix):
+            # Ejemplo: L1_q440_min5_pool_ac89fa8d -> ac89fa8d
+            parts = name.split("_pool_")
+            if len(parts) > 1:
+                pools.add(parts[1])
+    
+    client.close()
+    return sorted(list(pools))
+
+def check_l1_exists(queue, min_friends, pool_id):
+    """Verifica si existe al menos una colección L1 para los parámetros dados."""
+    client = MongoClient(MONGO_URI)
+    db = client[DB_NAME]
+    prefix = f"L1_q{queue}_min{min_friends}_"
+    pool_tag = f"pool_{pool_id}"
+    
+    for name in db.list_collection_names():
+        if name.startswith(prefix) and pool_tag in name:
+            client.close()
+            return True
+    client.close()
+    return False
+
+def run_metric_script(script_name, args):
+    # Construir ruta al script
+    script_path = os.path.join(os.path.dirname(__file__), f"{script_name}.py")
+    
+    cmd = [sys.executable, script_path] + args
+    print(f"   -> {script_name}...")
+    try:
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] Fallo en {script_name}: {e}")
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--queue", type=int, default=440)
+    parser.add_argument("--min", type=int, default=5)
+    parser.add_argument("--pool", type=str, default=None, help="Si no se indica, se ejecuta para TODAS las pools encontradas.")
+    parser.add_argument("--start", type=str, default=None)
+    parser.add_argument("--end", type=str, default=None)
+    args = parser.parse_args()
+    
+    queue = args.queue
+    min_friends = args.min
+    
+    # Determinar pools objetivo
+    if args.pool:
+        target_pools = [args.pool]
+    else:
+        print(f"[INIT] Buscando pools disponibles para q={queue} min={min_friends}...")
+        target_pools = get_available_pools(queue, min_friends)
+        if not target_pools:
+            print("[WARN] No se encontraron pools.")
+            return
+        print(f"[INFO] Pools encontradas: {target_pools}")
     
     scripts_to_run = [
         "metrics_01_players_games_winrate", "metrics_02_champions_games_winrate",
@@ -43,46 +83,34 @@ def main():
         "metrics_05_players_stats", "metrics_06_ego_index",
         "metrics_07_troll_index", "metrics_08_first_metrics",
         "metrics_09_number_skills", "metrics_10_stats_by_rol",
-        "metrics_11_stats_record"
+        "metrics_11_stats_record", "metrics_12_botlane_synergy",
+        "metrics_13_player_champions_stats"
     ]
     
-    for script in scripts_to_run:
-        run_metric_script(script, cli_args)
+    for pool_id in target_pools:
+        print(f"\n[POOL] Procesando pool: {pool_id}")
 
-    print("[INFO] Ejecutando rachas de victorias y derrotas...")
-    run_win_lose_streak()
+        if not check_l1_exists(queue, min_friends, pool_id):
+            print(f"[WARN] No se detecta coleccion L1 para q={queue} min={min_friends} pool={pool_id}.")
+            
+            # Diagnostico: mostrar que colecciones SI existen para esa pool
+            client = MongoClient(MONGO_URI)
+            db = client[DB_NAME]
+            found = [c for c in db.list_collection_names() if f"pool_{pool_id}" in c and c.startswith("L1_")]
+            client.close()
+            if found:
+                print(f"       Colecciones disponibles para esta pool: {found}")
+            continue
+        
+        # Argumentos para los scripts hijos
+        child_args = ["--queue", str(queue), "--min", str(min_friends), "--pool", pool_id]
+        if args.start: child_args += ["--start", args.start]
+        if args.end: child_args += ["--end", args.end]
+        
+        for script in scripts_to_run:
+            run_metric_script(script, child_args)
 
-    print("[INFO] Ejecutando estadisticas de jugadores...")
-    run_players_stats()
-
-    print("[INFO] Ejecutando indice de ego...")
-    run_ego_index()
-
-    print("[INFO] Ejecutando indice de troll...")
-    run_troll_index()
-
-    print("[INFO] Ejecutando primeras estadisticas...")
-    run_first_metrics()
-
-    print("[INFO] Ejecutando numero de habilidades usadas...")
-    run_number_skill()
-
-    print("[INFO] Ejecutando estadisticas por rol...")
-    run_stats_by_rol()
-
-    print("[INFO] Ejecutando estadisticas de records...")
-    run_record_stats()
-
-    print("[INFO] Ejecutando estadisticas de duos...")
-    run_duo_stats()
-
-
-    print("[DONE] Orquestador de metricas finalizado")
+    print("\n[DONE] Orquestador de metricas finalizado")
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        print("[ERROR] Fallo en el orquestador de metricas")
-        print(str(e))
-        sys.exit(1)
+    main()
