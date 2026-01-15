@@ -56,7 +56,7 @@ riot = RiotWatcher(API_KEY, timeout=REQUEST_TIMEOUT)
 # UTILIDADES
 # ============================
 def now_utc():
-    return datetime.datetime.now(datetime.UTC)
+    return datetime.datetime.now(datetime.timezone.utc)
 
 def log(msg):
     # Encode properly for Windows console

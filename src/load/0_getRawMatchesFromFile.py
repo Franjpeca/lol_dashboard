@@ -42,7 +42,7 @@ def iter_match_files(base: Path):
             yield f, region_dir.name
 
 def now_utc():
-    return datetime.datetime.now(datetime.UTC)
+    return datetime.datetime.now(datetime.timezone.utc)
 
 def upsert_account(puuid: str, riot_id: str = None, region: str = "unknown"):
     """Inserta o actualiza una cuenta de Riot en la colección riot_accounts."""

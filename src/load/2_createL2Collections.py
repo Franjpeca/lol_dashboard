@@ -16,7 +16,7 @@ db = client[DB_NAME]
 
 
 def now_utc():
-    return datetime.datetime.now(datetime.UTC)
+    return datetime.datetime.now(datetime.timezone.utc)
 
 
 import hashlib

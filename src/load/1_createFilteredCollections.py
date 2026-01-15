@@ -24,7 +24,7 @@ coll_src = db[SRC_COLLECTION]
 # UTILS
 # ============================
 def now_utc():
-    return datetime.datetime.now(datetime.UTC)
+    return datetime.datetime.now(datetime.timezone.utc)
 
 
 def build_pool_version(personas: list[str]) -> str:

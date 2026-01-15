@@ -49,7 +49,7 @@ riot = RiotWatcher(API_KEY)
 
 
 def now_utc():
-    return datetime.datetime.now(datetime.UTC)
+    return datetime.datetime.now(datetime.timezone.utc)
 
 
 def parse_player(line):

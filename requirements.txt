@@ -1,9 +1,18 @@
+# Core Web Framework (Python 3.7+ compatible)
+dash>=2.0.0
+plotly>=5.0.0
 
-dash
-plotly
-pandas
-pymongo
-psycopg2-binary
-python-dotenv
-requests
-riotwatcher
+# Data Processing
+pandas>=1.1.0
+numpy>=1.19.0
+
+# Database
+pymongo>=3.11.0
+psycopg2-binary>=2.8.6
+
+# Environment & Configuration
+python-dotenv>=0.19.0
+
+# League of Legends API
+riotwatcher>=3.0.0
+requests>=2.25.0
