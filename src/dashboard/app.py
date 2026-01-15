@@ -148,7 +148,7 @@ def run_metrics_script(pool_id: str, queue: int, min_friends: int, start: str | 
     print("[METRICS] Executing:", " ".join(cmd))
 
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(BASE_DIR))
     except Exception as e:
         print("[METRICS] Error:", e)
         return f"Error executing metricsMain.py: {e}"
@@ -247,7 +247,7 @@ def create_app() -> Dash:
                     html.Label("Pool:", className="control-label"),
                     dcc.Dropdown(
                         id="pool-dropdown",
-                        options=[{"label": p if p != "auto" else "Auto (crear nuevo)", "value": p} for p in available_pools],
+                        options=[], # Populated by callback
                         value=default_pool,
                         clearable=False,
                         placeholder="Seleccionar...",
@@ -386,6 +386,22 @@ def create_app() -> Dash:
         
         return reports, new_val
 
+    # Callback to refresh pool dropdown options
+    @app.callback(
+        Output("pool-dropdown", "options"),
+        Input("tabs", "value"),
+        Input("pipeline-status-store", "data"),
+    )
+    def refresh_pool_dropdown(tab, pipeline_status):
+        pools = get_available_pools(BASE_DIR)
+        options = [{"label": p if p != "auto" else "Auto (crear nuevo)", "value": p} for p in pools]
+        
+        # Always ensure 'auto' is an option for new pool creation
+        if not any(opt["value"] == "auto" for opt in options):
+            options.insert(0, {"label": "Auto (crear nuevo)", "value": "auto"})
+            
+        return options
+
     @app.callback(
         Output("tab-content", "children"),
         Output("metrics-status", "children"),
@@ -408,7 +424,7 @@ def create_app() -> Dash:
 
             return html.Div([
                 html.H3("No se ha seleccionado Pool", style={"textAlign": "center", "marginTop": "50px"}),
-                html.P("Por favor, ve a la pestaña 'Datos y Configuración' para generar datos.", style={"textAlign": "center", "color": "#888"})
+                html.P("Por favor, selecciona un Pool en el desplegable superior o ve a la pestaña 'Datos y Configuración' para generar uno nuevo.", style={"textAlign": "center", "color": "#888"})
             ]), dash.no_update, ""
         
         # Check Data Availability

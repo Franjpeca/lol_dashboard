@@ -7,10 +7,16 @@ from pymongo import MongoClient
 
 sys.stdout.reconfigure(encoding='utf-8')
 
+from pathlib import Path
+
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("MONGO_DB", "lol_data")
+
+# Setup absolute paths
+FILE_SELF = Path(__file__).resolve()
+BASE_DIR = FILE_SELF.parents[2]
 
 def get_available_pools(queue, min_friends):
     """Busca en MongoDB todas las pools disponibles para la cola y min_friends dados."""
@@ -50,7 +56,7 @@ def run_metric_script(script_name, args):
     cmd = [sys.executable, script_path] + args
     print(f"   -> {script_name}...")
     try:
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, cwd=str(BASE_DIR))
     except subprocess.CalledProcessError as e:
         print(f"[ERROR] Fallo en {script_name}: {e}")
 

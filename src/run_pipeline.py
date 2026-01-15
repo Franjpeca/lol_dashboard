@@ -3,7 +3,8 @@ import sys
 from pathlib import Path
 from queue import Queue
 
-BASE = Path(__file__).resolve().parents[0]
+BASE = Path(__file__).resolve().parents[0] # src/
+BASE_DIR = BASE.parent # lol_data/
 EXTRACT = BASE / "extract"
 LOAD = BASE / "load"
 METRICS = BASE / "metrics"
@@ -31,7 +32,8 @@ def run_step(name, script, *args, run_in_terminal, queue):
         stderr=subprocess.PIPE,
         text=True,
         encoding="utf-8",
-        errors="replace"
+        errors="replace",
+        cwd=str(BASE_DIR)
     )
 
     t_out = threading.Thread(
