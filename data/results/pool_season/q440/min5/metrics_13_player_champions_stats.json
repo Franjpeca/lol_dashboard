@@ -1,0 +1,324 @@
+{
+  "source_L1": "L1_q440_min5_pool_season",
+  "generated_at": "2026-03-04 02:17:30",
+  "start_date": null,
+  "end_date": null,
+  "player_champions": {
+    "Olaf": [
+      {
+        "champion": "Urgot",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Aurora",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Nautilus",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Aphelios",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Naafiri",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Vladimir",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Smolder",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "MissFortune",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Varus",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "DrMundo",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Volibear",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      }
+    ],
+    "Dexus": [
+      {
+        "champion": "Gwen",
+        "games": 7,
+        "wins": 5,
+        "winrate": 71.43
+      },
+      {
+        "champion": "Gnar",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "XinZhao",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      }
+    ],
+    "Manolito": [
+      {
+        "champion": "Galio",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Rell",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Nautilus",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      }
+    ],
+    "Fran": [
+      {
+        "champion": "Graves",
+        "games": 2,
+        "wins": 1,
+        "winrate": 50.0
+      },
+      {
+        "champion": "Xayah",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Sona",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Ryze",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Tristana",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Galio",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Twitch",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Smolder",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Kassadin",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Veigar",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      }
+    ],
+    "Eduardo": [
+      {
+        "champion": "Rakan",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Akali",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Ryze",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Bard",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      }
+    ],
+    "Hugo": [
+      {
+        "champion": "Sivir",
+        "games": 2,
+        "wins": 1,
+        "winrate": 50.0
+      },
+      {
+        "champion": "Jax",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "KSante",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Yone",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Viego",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Zaahen",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Katarina",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      }
+    ],
+    "Dvd": [
+      {
+        "champion": "Aphelios",
+        "games": 3,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Ambessa",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Jhin",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Zaahen",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      }
+    ],
+    "Carla": [
+      {
+        "champion": "Nami",
+        "games": 4,
+        "wins": 3,
+        "winrate": 75.0
+      },
+      {
+        "champion": "Ahri",
+        "games": 2,
+        "wins": 2,
+        "winrate": 100.0
+      },
+      {
+        "champion": "Lillia",
+        "games": 2,
+        "wins": 0,
+        "winrate": 0.0
+      }
+    ],
+    "Paellita": [
+      {
+        "champion": "Nami",
+        "games": 2,
+        "wins": 0,
+        "winrate": 0.0
+      }
+    ],
+    "Spam": [
+      {
+        "champion": "Aurora",
+        "games": 1,
+        "wins": 0,
+        "winrate": 0.0
+      },
+      {
+        "champion": "Ziggs",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      }
+    ],
+    "Ainara": [
+      {
+        "champion": "Nautilus",
+        "games": 1,
+        "wins": 1,
+        "winrate": 100.0
+      }
+    ]
+  }
+}

@@ -1,0 +1,1623 @@
+{
+  "source_L1": "L1_q440_min5_pool_ca879f16",
+  "generated_at": "2026-03-04 02:17:15",
+  "start_date": null,
+  "end_date": null,
+  "botlane_synergy": [
+    {
+      "duo": [
+        "Hugo",
+        "Nico"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 18.333333333333332,
+      "avg_damage": 51465.0,
+      "avg_vision": 70.0,
+      "avg_gold": 23521.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.5392156862745098,
+      "damage_norm": 0.950319034919369,
+      "vision_norm": 0.6402439024390244,
+      "economy_norm": 0.8385755182349705,
+      "botlane_score": 0.8457888863061752
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Morocha"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 34.0,
+      "avg_damage": 39161.0,
+      "avg_vision": 24.0,
+      "avg_gold": 20799.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 1.0,
+      "damage_norm": 0.720314797736846,
+      "vision_norm": 0.21951219512195122,
+      "economy_norm": 0.7370452913585542,
+      "botlane_score": 0.8397187081954199
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Nico"
+      ],
+      "games": 2,
+      "wins": 2,
+      "winrate": 1.0,
+      "avg_kda": 9.996428571428572,
+      "avg_damage": 45209.5,
+      "avg_vision": 86.0,
+      "avg_gold": 27476.5,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.2940126050420168,
+      "damage_norm": 0.8333821440143566,
+      "vision_norm": 0.7865853658536586,
+      "economy_norm": 0.9861151260269119,
+      "botlane_score": 0.8027489989993317
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Dexus"
+      ],
+      "games": 3,
+      "wins": 2,
+      "winrate": 0.6666666666666666,
+      "avg_kda": 15.496753246753245,
+      "avg_damage": 54122.666666666664,
+      "avg_vision": 109.33333333333333,
+      "avg_gold": 27128.666666666668,
+      "winrate_norm": 0.6666666666666666,
+      "kda_norm": 0.45578686019862485,
+      "damage_norm": 1.0,
+      "vision_norm": 1.0,
+      "economy_norm": 0.9731409903735271,
+      "botlane_score": 0.7551381377437443
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Eduardo"
+      ],
+      "games": 9,
+      "wins": 7,
+      "winrate": 0.7777777777777778,
+      "avg_kda": 8.602033152033151,
+      "avg_damage": 52919.22222222222,
+      "avg_vision": 92.77777777777777,
+      "avg_gold": 25732.777777777777,
+      "winrate_norm": 0.7777777777777778,
+      "kda_norm": 0.25300097505979857,
+      "damage_norm": 0.977503468673928,
+      "vision_norm": 0.8485772357723577,
+      "economy_norm": 0.9210745261622274,
+      "botlane_score": 0.7341771760513149
+    },
+    {
+      "duo": [
+        "Itzantete",
+        "Olaf"
+      ],
+      "games": 4,
+      "wins": 3,
+      "winrate": 0.75,
+      "avg_kda": 11.81540404040404,
+      "avg_damage": 51661.0,
+      "avg_vision": 83.0,
+      "avg_gold": 25353.0,
+      "winrate_norm": 0.75,
+      "kda_norm": 0.3475118835412953,
+      "damage_norm": 0.9539829515714963,
+      "vision_norm": 0.7591463414634146,
+      "economy_norm": 0.9069088671099134,
+      "botlane_score": 0.7269044878798913
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Manolito"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 12.5,
+      "avg_damage": 35539.0,
+      "avg_vision": 47.0,
+      "avg_gold": 19971.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.36764705882352944,
+      "damage_norm": 0.6526071134817178,
+      "vision_norm": 0.4298780487804878,
+      "economy_norm": 0.7061610048583071,
+      "botlane_score": 0.7176547398249289
+    },
+    {
+      "duo": [
+        "Olaf",
+        "Spam"
+      ],
+      "games": 15,
+      "wins": 12,
+      "winrate": 0.8,
+      "avg_kda": 8.438544973544975,
+      "avg_damage": 42819.26666666667,
+      "avg_vision": 72.6,
+      "avg_gold": 23070.533333333333,
+      "winrate_norm": 0.8,
+      "kda_norm": 0.24819249922191103,
+      "damage_norm": 0.7887004311956333,
+      "vision_norm": 0.6640243902439024,
+      "economy_norm": 0.8217731733169213,
+      "botlane_score": 0.6759583424395914
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Morocha"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 4.2727272727272725,
+      "avg_damage": 28586.0,
+      "avg_vision": 43.0,
+      "avg_gold": 18135.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.12566844919786097,
+      "damage_norm": 0.522631539592732,
+      "vision_norm": 0.3932926829268293,
+      "economy_norm": 0.6376784565316722,
+      "botlane_score": 0.6327571117039688
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Dvd"
+      ],
+      "games": 4,
+      "wins": 2,
+      "winrate": 0.5,
+      "avg_kda": 4.907873376623376,
+      "avg_damage": 53806.0,
+      "avg_vision": 103.25,
+      "avg_gold": 27848.75,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.14434921695951108,
+      "damage_norm": 0.9940804067695223,
+      "vision_norm": 0.9443597560975611,
+      "economy_norm": 1.0,
+      "botlane_score": 0.6221219003555628
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Hugo"
+      ],
+      "games": 11,
+      "wins": 6,
+      "winrate": 0.5454545454545454,
+      "avg_kda": 10.397343565525382,
+      "avg_damage": 46513.09090909091,
+      "avg_vision": 85.81818181818181,
+      "avg_gold": 25028.545454545456,
+      "winrate_norm": 0.5454545454545454,
+      "kda_norm": 0.3058042225154524,
+      "damage_norm": 0.8577507585009891,
+      "vision_norm": 0.7849223946784922,
+      "economy_norm": 0.8948067570397134,
+      "botlane_score": 0.618865729556927
+    },
+    {
+      "duo": [
+        "Lluc",
+        "Olaf"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 7.925000000000001,
+      "avg_damage": 51230.5,
+      "avg_vision": 85.0,
+      "avg_gold": 26822.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.23308823529411768,
+      "damage_norm": 0.9459354203534309,
+      "vision_norm": 0.7774390243902439,
+      "economy_norm": 0.9617023657438059,
+      "botlane_score": 0.6097188701429148
+    },
+    {
+      "duo": [
+        "Fran",
+        "Spam"
+      ],
+      "games": 29,
+      "wins": 20,
+      "winrate": 0.6896551724137931,
+      "avg_kda": 8.844266557197592,
+      "avg_damage": 36507.724137931036,
+      "avg_vision": 74.13793103448276,
+      "avg_gold": 20755.241379310344,
+      "winrate_norm": 0.6896551724137931,
+      "kda_norm": 0.26012548697639976,
+      "damage_norm": 0.6707159119525505,
+      "vision_norm": 0.6780908326324643,
+      "economy_norm": 0.7354131008051303,
+      "botlane_score": 0.6033807420950668
+    },
+    {
+      "duo": [
+        "Hugo",
+        "Manolito"
+      ],
+      "games": 7,
+      "wins": 4,
+      "winrate": 0.5714285714285714,
+      "avg_kda": 6.992006802721088,
+      "avg_damage": 50433.0,
+      "avg_vision": 66.85714285714286,
+      "avg_gold": 23984.714285714286,
+      "winrate_norm": 0.5714285714285714,
+      "kda_norm": 0.2056472589035614,
+      "damage_norm": 0.9310273921387803,
+      "vision_norm": 0.6114982578397213,
+      "economy_norm": 0.8558719975275519,
+      "botlane_score": 0.6026433843166242
+    },
+    {
+      "duo": [
+        "Carla",
+        "Fran"
+      ],
+      "games": 74,
+      "wins": 45,
+      "winrate": 0.6081081081081081,
+      "avg_kda": 10.159884522384521,
+      "avg_damage": 39358.5,
+      "avg_vision": 85.3108108108108,
+      "avg_gold": 21374.837837837837,
+      "winrate_norm": 0.6081081081081081,
+      "kda_norm": 0.29882013301130944,
+      "damage_norm": 0.7240067545674336,
+      "vision_norm": 0.7802818061964404,
+      "economy_norm": 0.7585239637757845,
+      "botlane_score": 0.6016891977562143
+    },
+    {
+      "duo": [
+        "Fran",
+        "Olaf"
+      ],
+      "games": 40,
+      "wins": 21,
+      "winrate": 0.525,
+      "avg_kda": 11.04492875180375,
+      "avg_damage": 44190.75,
+      "avg_vision": 89.475,
+      "avg_gold": 22923.1,
+      "winrate_norm": 0.525,
+      "kda_norm": 0.3248508456412868,
+      "damage_norm": 0.8143381894768326,
+      "vision_norm": 0.8183689024390244,
+      "economy_norm": 0.8162739301933065,
+      "botlane_score": 0.601302090286857
+    },
+    {
+      "duo": [
+        "Eduardo",
+        "Fran"
+      ],
+      "games": 92,
+      "wins": 55,
+      "winrate": 0.5978260869565217,
+      "avg_kda": 7.974999607880042,
+      "avg_damage": 40515.72826086957,
+      "avg_vision": 89.25,
+      "avg_gold": 21918.967391304348,
+      "winrate_norm": 0.5978260869565217,
+      "kda_norm": 0.23455881199647183,
+      "damage_norm": 0.7456393458700475,
+      "vision_norm": 0.8163109756097562,
+      "economy_norm": 0.7788199215324405,
+      "botlane_score": 0.5946831560701323
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Itzantete"
+      ],
+      "games": 8,
+      "wins": 4,
+      "winrate": 0.5,
+      "avg_kda": 8.148164682539683,
+      "avg_damage": 48921.625,
+      "avg_vision": 77.75,
+      "avg_gold": 25453.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.23965190242763773,
+      "damage_norm": 0.9027745756586327,
+      "vision_norm": 0.7111280487804879,
+      "economy_norm": 0.9106388534022137,
+      "botlane_score": 0.5906619858355243
+    },
+    {
+      "duo": [
+        "Carla",
+        "Paellita"
+      ],
+      "games": 4,
+      "wins": 3,
+      "winrate": 0.75,
+      "avg_kda": 7.087797619047619,
+      "avg_damage": 34409.75,
+      "avg_vision": 51.25,
+      "avg_gold": 21039.75,
+      "winrate_norm": 0.75,
+      "kda_norm": 0.20846463585434172,
+      "damage_norm": 0.6314975324642955,
+      "vision_norm": 0.46875,
+      "economy_norm": 0.7460252333572674,
+      "botlane_score": 0.5894699569994543
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Fran"
+      ],
+      "games": 8,
+      "wins": 5,
+      "winrate": 0.625,
+      "avg_kda": 7.607886904761905,
+      "avg_damage": 38163.125,
+      "avg_vision": 82.875,
+      "avg_gold": 21905.625,
+      "winrate_norm": 0.625,
+      "kda_norm": 0.22376137955182074,
+      "damage_norm": 0.7016610690162259,
+      "vision_norm": 0.7580030487804879,
+      "economy_norm": 0.7783222521657233,
+      "botlane_score": 0.5887170198082304
+    },
+    {
+      "duo": [
+        "Lluc",
+        "Spam"
+      ],
+      "games": 1,
+      "wins": 1,
+      "winrate": 1.0,
+      "avg_kda": 7.0,
+      "avg_damage": 15452.0,
+      "avg_vision": 50.0,
+      "avg_gold": 12828.0,
+      "winrate_norm": 1.0,
+      "kda_norm": 0.20588235294117646,
+      "damage_norm": 0.27711173699558833,
+      "vision_norm": 0.4573170731707317,
+      "economy_norm": 0.4397280839992913,
+      "botlane_score": 0.5863033337043553
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Manolito"
+      ],
+      "games": 32,
+      "wins": 19,
+      "winrate": 0.59375,
+      "avg_kda": 7.969265196608945,
+      "avg_damage": 42173.875,
+      "avg_vision": 65.40625,
+      "avg_gold": 23726.71875,
+      "winrate_norm": 0.59375,
+      "kda_norm": 0.23439015284143958,
+      "damage_norm": 0.7766358328556118,
+      "vision_norm": 0.5982278963414634,
+      "economy_norm": 0.8462487994106621,
+      "botlane_score": 0.5841528667146227
+    },
+    {
+      "duo": [
+        "Fran",
+        "Nico"
+      ],
+      "games": 4,
+      "wins": 2,
+      "winrate": 0.5,
+      "avg_kda": 10.840178571428572,
+      "avg_damage": 42032.25,
+      "avg_vision": 84.0,
+      "avg_gold": 23499.25,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.3188287815126051,
+      "damage_norm": 0.7739883726726652,
+      "vision_norm": 0.7682926829268293,
+      "economy_norm": 0.8377642462163951,
+      "botlane_score": 0.5791691237513765
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Hugo"
+      ],
+      "games": 16,
+      "wins": 9,
+      "winrate": 0.5625,
+      "avg_kda": 10.362980248917747,
+      "avg_damage": 40610.0,
+      "avg_vision": 62.6875,
+      "avg_gold": 22459.3125,
+      "winrate_norm": 0.5625,
+      "kda_norm": 0.3047935367328749,
+      "damage_norm": 0.7474016101293587,
+      "vision_norm": 0.5733612804878049,
+      "economy_norm": 0.7989747200179039,
+      "botlane_score": 0.5726726294230177
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Eduardo"
+      ],
+      "games": 57,
+      "wins": 31,
+      "winrate": 0.543859649122807,
+      "avg_kda": 6.9789586631691884,
+      "avg_damage": 41147.666666666664,
+      "avg_vision": 84.70175438596492,
+      "avg_gold": 23579.63157894737,
+      "winrate_norm": 0.543859649122807,
+      "kda_norm": 0.20526349009321143,
+      "damage_norm": 0.7574524563196331,
+      "vision_norm": 0.7747111681643133,
+      "economy_norm": 0.8407624680926666,
+      "botlane_score": 0.5716344125573898
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Olaf"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 10.654761904761905,
+      "avg_damage": 36451.5,
+      "avg_vision": 91.5,
+      "avg_gold": 24094.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.313375350140056,
+      "damage_norm": 0.6696648887116473,
+      "vision_norm": 0.836890243902439,
+      "economy_norm": 0.8599483396898516,
+      "botlane_score": 0.5662919061295697
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Carla"
+      ],
+      "games": 5,
+      "wins": 3,
+      "winrate": 0.6,
+      "avg_kda": 4.762301587301588,
+      "avg_damage": 40819.0,
+      "avg_vision": 67.4,
+      "avg_gold": 23324.4,
+      "winrate_norm": 0.6,
+      "kda_norm": 0.14006769374416433,
+      "damage_norm": 0.7513085416614741,
+      "vision_norm": 0.6164634146341464,
+      "economy_norm": 0.831242365184308,
+      "botlane_score": 0.5630458250629732
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Olaf"
+      ],
+      "games": 22,
+      "wins": 13,
+      "winrate": 0.5909090909090909,
+      "avg_kda": 9.43214121736849,
+      "avg_damage": 36221.681818181816,
+      "avg_vision": 72.5,
+      "avg_gold": 20255.409090909092,
+      "winrate_norm": 0.5909090909090909,
+      "kda_norm": 0.2774159181578968,
+      "damage_norm": 0.6653687934906,
+      "vision_norm": 0.663109756097561,
+      "economy_norm": 0.7167694249632723,
+      "botlane_score": 0.5629084967994191
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Itzantete"
+      ],
+      "games": 4,
+      "wins": 2,
+      "winrate": 0.5,
+      "avg_kda": 11.01388888888889,
+      "avg_damage": 37129.75,
+      "avg_vision": 90.75,
+      "avg_gold": 22095.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.32393790849673204,
+      "damage_norm": 0.6823437227387155,
+      "vision_norm": 0.8300304878048781,
+      "economy_norm": 0.7853859137067671,
+      "botlane_score": 0.5627979663982541
+    },
+    {
+      "duo": [
+        "Fran",
+        "Manolito"
+      ],
+      "games": 12,
+      "wins": 7,
+      "winrate": 0.5833333333333334,
+      "avg_kda": 6.7186838624338625,
+      "avg_damage": 39100.583333333336,
+      "avg_vision": 72.0,
+      "avg_gold": 21628.0,
+      "winrate_norm": 0.5833333333333334,
+      "kda_norm": 0.1976083488951136,
+      "damage_norm": 0.7191854016599787,
+      "vision_norm": 0.6585365853658537,
+      "economy_norm": 0.7679668777217243,
+      "botlane_score": 0.5593424297531097
+    },
+    {
+      "duo": [
+        "Itzantete",
+        "Spam"
+      ],
+      "games": 3,
+      "wins": 2,
+      "winrate": 0.6666666666666666,
+      "avg_kda": 7.8578042328042335,
+      "avg_damage": 33390.0,
+      "avg_vision": 58.0,
+      "avg_gold": 19503.333333333332,
+      "winrate_norm": 0.6666666666666666,
+      "kda_norm": 0.23111188920012452,
+      "damage_norm": 0.6124348844744648,
+      "vision_norm": 0.5304878048780488,
+      "economy_norm": 0.6887171022979823,
+      "botlane_score": 0.5572965121191876
+    },
+    {
+      "duo": [
+        "Manolito",
+        "Spam"
+      ],
+      "games": 6,
+      "wins": 3,
+      "winrate": 0.5,
+      "avg_kda": 6.046356421356421,
+      "avg_damage": 44639.0,
+      "avg_vision": 78.66666666666667,
+      "avg_gold": 23739.166666666668,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.17783401239283592,
+      "damage_norm": 0.8227175294733432,
+      "vision_norm": 0.7195121951219513,
+      "economy_norm": 0.8467131049960058,
+      "botlane_score": 0.5567328383850316
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Paellita"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 18.11904761904762,
+      "avg_damage": 36810.5,
+      "avg_vision": 44.5,
+      "avg_gold": 19620.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.5329131652661064,
+      "damage_norm": 0.6763758380897784,
+      "vision_norm": 0.40701219512195125,
+      "economy_norm": 0.6930687529723328,
+      "botlane_score": 0.5518658954806054
+    },
+    {
+      "duo": [
+        "Carla",
+        "Hugo"
+      ],
+      "games": 69,
+      "wins": 34,
+      "winrate": 0.4927536231884058,
+      "avg_kda": 7.732803669760193,
+      "avg_damage": 41413.65217391304,
+      "avg_vision": 81.1159420289855,
+      "avg_gold": 22887.942028985508,
+      "winrate_norm": 0.4927536231884058,
+      "kda_norm": 0.22743540205177037,
+      "damage_norm": 0.7624246437136358,
+      "vision_norm": 0.7419141039236479,
+      "economy_norm": 0.8149625426938151,
+      "botlane_score": 0.5507611230901899
+    },
+    {
+      "duo": [
+        "Eduardo",
+        "Olaf"
+      ],
+      "games": 54,
+      "wins": 29,
+      "winrate": 0.5370370370370371,
+      "avg_kda": 7.382151747429526,
+      "avg_damage": 38049.833333333336,
+      "avg_vision": 79.74074074074075,
+      "avg_gold": 21582.35185185185,
+      "winrate_norm": 0.5370370370370371,
+      "kda_norm": 0.21712211021851546,
+      "damage_norm": 0.6995432566486379,
+      "vision_norm": 0.7293360433604337,
+      "economy_norm": 0.7662642080531095,
+      "botlane_score": 0.5477079133295999
+    },
+    {
+      "duo": [
+        "Carla",
+        "Manolito"
+      ],
+      "games": 8,
+      "wins": 6,
+      "winrate": 0.75,
+      "avg_kda": 4.788095238095238,
+      "avg_damage": 26785.75,
+      "avg_vision": 60.0,
+      "avg_gold": 18752.25,
+      "winrate_norm": 0.75,
+      "kda_norm": 0.14082633053221288,
+      "damage_norm": 0.4889786520774657,
+      "vision_norm": 0.5487804878048781,
+      "economy_norm": 0.6607017969208964,
+      "botlane_score": 0.5469092249945132
+    },
+    {
+      "duo": [
+        "Hugo",
+        "Olaf"
+      ],
+      "games": 36,
+      "wins": 19,
+      "winrate": 0.5277777777777778,
+      "avg_kda": 8.660871612954944,
+      "avg_damage": 40805.13888888889,
+      "avg_vision": 63.47222222222222,
+      "avg_gold": 21211.527777777777,
+      "winrate_norm": 0.5277777777777778,
+      "kda_norm": 0.2547315180280866,
+      "damage_norm": 0.7510494296419997,
+      "vision_norm": 0.5805386178861789,
+      "economy_norm": 0.7524325209215967,
+      "botlane_score": 0.545564414525906
+    },
+    {
+      "duo": [
+        "Carla",
+        "Itzantete"
+      ],
+      "games": 9,
+      "wins": 5,
+      "winrate": 0.5555555555555556,
+      "avg_kda": 9.498941798941798,
+      "avg_damage": 33337.666666666664,
+      "avg_vision": 80.55555555555556,
+      "avg_gold": 19962.777777777777,
+      "winrate_norm": 0.5555555555555556,
+      "kda_norm": 0.279380641145347,
+      "damage_norm": 0.6114565938037436,
+      "vision_norm": 0.7367886178861789,
+      "economy_norm": 0.7058543170964958,
+      "botlane_score": 0.5446539627103077
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Nico"
+      ],
+      "games": 39,
+      "wins": 20,
+      "winrate": 0.5128205128205128,
+      "avg_kda": 9.10420548112856,
+      "avg_damage": 37376.179487179485,
+      "avg_vision": 83.25641025641026,
+      "avg_gold": 20242.923076923078,
+      "winrate_norm": 0.5128205128205128,
+      "kda_norm": 0.26777074944495766,
+      "damage_norm": 0.6869503406042874,
+      "vision_norm": 0.7614915572232647,
+      "economy_norm": 0.7163036983531393,
+      "botlane_score": 0.5438519486956945
+    },
+    {
+      "duo": [
+        "Eduardo",
+        "Hugo"
+      ],
+      "games": 48,
+      "wins": 25,
+      "winrate": 0.5208333333333334,
+      "avg_kda": 8.053451603543515,
+      "avg_damage": 36907.125,
+      "avg_vision": 80.52083333333333,
+      "avg_gold": 21780.375,
+      "winrate_norm": 0.5208333333333334,
+      "kda_norm": 0.23686622363363277,
+      "damage_norm": 0.6781820929189203,
+      "vision_norm": 0.7364710365853658,
+      "economy_norm": 0.773650444334617,
+      "botlane_score": 0.5423551447358423
+    },
+    {
+      "duo": [
+        "Hugo",
+        "Itzantete"
+      ],
+      "games": 6,
+      "wins": 3,
+      "winrate": 0.5,
+      "avg_kda": 8.27037037037037,
+      "avg_damage": 41106.666666666664,
+      "avg_vision": 63.166666666666664,
+      "avg_gold": 23524.5,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.24324618736383444,
+      "damage_norm": 0.7566860247750554,
+      "vision_norm": 0.5777439024390244,
+      "economy_norm": 0.838706067755201,
+      "botlane_score": 0.5416314394472006
+    },
+    {
+      "duo": [
+        "Carla",
+        "Olaf"
+      ],
+      "games": 44,
+      "wins": 21,
+      "winrate": 0.4772727272727273,
+      "avg_kda": 6.980222681359044,
+      "avg_damage": 42383.431818181816,
+      "avg_vision": 80.45454545454545,
+      "avg_gold": 22249.022727272728,
+      "winrate_norm": 0.4772727272727273,
+      "kda_norm": 0.2053006670987954,
+      "damage_norm": 0.7805531732418525,
+      "vision_norm": 0.7358647450110865,
+      "economy_norm": 0.7911309403210671,
+      "botlane_score": 0.540779427510436
+    },
+    {
+      "duo": [
+        "Manolito",
+        "Olaf"
+      ],
+      "games": 4,
+      "wins": 2,
+      "winrate": 0.5,
+      "avg_kda": 6.476984126984126,
+      "avg_damage": 40441.0,
+      "avg_vision": 79.5,
+      "avg_gold": 22455.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.19049953314659196,
+      "damage_norm": 0.7442424166895143,
+      "vision_norm": 0.7271341463414634,
+      "economy_norm": 0.7988138643590484,
+      "botlane_score": 0.5395431910372724
+    },
+    {
+      "duo": [
+        "Fran",
+        "Itzantete"
+      ],
+      "games": 9,
+      "wins": 4,
+      "winrate": 0.4444444444444444,
+      "avg_kda": 8.149823633156965,
+      "avg_damage": 41757.555555555555,
+      "avg_vision": 80.33333333333333,
+      "avg_gold": 23191.333333333332,
+      "winrate_norm": 0.4444444444444444,
+      "kda_norm": 0.2397006950928519,
+      "damage_norm": 0.7688533851765077,
+      "vision_norm": 0.7347560975609756,
+      "economy_norm": 0.8262789967580202,
+      "botlane_score": 0.5355921032635493
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Lluc"
+      ],
+      "games": 3,
+      "wins": 2,
+      "winrate": 0.6666666666666666,
+      "avg_kda": 4.7099206349206355,
+      "avg_damage": 24523.666666666668,
+      "avg_vision": 84.0,
+      "avg_gold": 20001.0,
+      "winrate_norm": 0.6666666666666666,
+      "kda_norm": 0.13852707749766574,
+      "damage_norm": 0.44669250517185516,
+      "vision_norm": 0.7682926829268293,
+      "economy_norm": 0.7072800007459973,
+      "botlane_score": 0.5312678515678535
+    },
+    {
+      "duo": [
+        "Carla",
+        "Dvd"
+      ],
+      "games": 35,
+      "wins": 17,
+      "winrate": 0.4857142857142857,
+      "avg_kda": 7.480367489653204,
+      "avg_damage": 39515.28571428572,
+      "avg_vision": 75.11428571428571,
+      "avg_gold": 22034.628571428573,
+      "winrate_norm": 0.4857142857142857,
+      "kda_norm": 0.2200108085192119,
+      "damage_norm": 0.7269376208398168,
+      "vision_norm": 0.687020905923345,
+      "economy_norm": 0.783134067696587,
+      "botlane_score": 0.5306908975195133
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Lluc"
+      ],
+      "games": 3,
+      "wins": 1,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 7.223148148148148,
+      "avg_damage": 47151.0,
+      "avg_vision": 97.66666666666667,
+      "avg_gold": 25323.0,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.21244553376906317,
+      "damage_norm": 0.8696754816679545,
+      "vision_norm": 0.8932926829268294,
+      "economy_norm": 0.9057898712222232,
+      "botlane_score": 0.5296657918356422
+    },
+    {
+      "duo": [
+        "Hugo",
+        "Paellita"
+      ],
+      "games": 4,
+      "wins": 2,
+      "winrate": 0.5,
+      "avg_kda": 6.725694444444445,
+      "avg_damage": 37073.5,
+      "avg_vision": 66.75,
+      "avg_gold": 24727.5,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.19781454248366015,
+      "damage_norm": 0.6812922160464595,
+      "vision_norm": 0.6105182926829269,
+      "economy_norm": 0.8835778028515745,
+      "botlane_score": 0.5252309612594741
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Hugo"
+      ],
+      "games": 9,
+      "wins": 4,
+      "winrate": 0.4444444444444444,
+      "avg_kda": 7.36278659611993,
+      "avg_damage": 43731.0,
+      "avg_vision": 69.0,
+      "avg_gold": 22181.666666666668,
+      "winrate_norm": 0.4444444444444444,
+      "kda_norm": 0.21655254694470383,
+      "damage_norm": 0.8057438747787942,
+      "vision_norm": 0.6310975609756098,
+      "economy_norm": 0.7886185684934275,
+      "botlane_score": 0.5242086750693812
+    },
+    {
+      "duo": [
+        "Carla",
+        "Eduardo"
+      ],
+      "games": 66,
+      "wins": 39,
+      "winrate": 0.5909090909090909,
+      "avg_kda": 6.2504322277049535,
+      "avg_damage": 29547.969696969696,
+      "avg_vision": 78.75757575757575,
+      "avg_gold": 19793.575757575756,
+      "winrate_norm": 0.5909090909090909,
+      "kda_norm": 0.18383624199132217,
+      "damage_norm": 0.540614074243595,
+      "vision_norm": 0.7203436807095344,
+      "economy_norm": 0.699543104936665,
+      "botlane_score": 0.5232423781752398
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Fran"
+      ],
+      "games": 23,
+      "wins": 11,
+      "winrate": 0.4782608695652174,
+      "avg_kda": 8.347032436162872,
+      "avg_damage": 38489.434782608696,
+      "avg_vision": 69.30434782608695,
+      "avg_gold": 20473.608695652172,
+      "winrate_norm": 0.4782608695652174,
+      "kda_norm": 0.24550095400479033,
+      "damage_norm": 0.7077609253746547,
+      "vision_norm": 0.633881230116649,
+      "economy_norm": 0.7249082403100429,
+      "botlane_score": 0.5178356707446452
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Dvd"
+      ],
+      "games": 10,
+      "wins": 3,
+      "winrate": 0.3,
+      "avg_kda": 7.361165223665223,
+      "avg_damage": 50370.2,
+      "avg_vision": 85.4,
+      "avg_gold": 23490.1,
+      "winrate_norm": 0.3,
+      "kda_norm": 0.21650485951956538,
+      "damage_norm": 0.9298534433339148,
+      "vision_norm": 0.7810975609756099,
+      "economy_norm": 0.8374229524706496,
+      "botlane_score": 0.511123711915322
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Fran"
+      ],
+      "games": 15,
+      "wins": 5,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 8.49370166870167,
+      "avg_damage": 42824.46666666667,
+      "avg_vision": 94.4,
+      "avg_gold": 22485.6,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.24981475496181382,
+      "damage_norm": 0.7887976371476285,
+      "vision_norm": 0.8634146341463416,
+      "economy_norm": 0.7999552401644924,
+      "botlane_score": 0.5073927991863052
+    },
+    {
+      "duo": [
+        "Olaf",
+        "Paellita"
+      ],
+      "games": 11,
+      "wins": 5,
+      "winrate": 0.45454545454545453,
+      "avg_kda": 8.855844155844155,
+      "avg_damage": 38574.09090909091,
+      "avg_vision": 60.27272727272727,
+      "avg_gold": 20310.18181818182,
+      "winrate_norm": 0.45454545454545453,
+      "kda_norm": 0.2604660045836516,
+      "damage_norm": 0.7093434406375261,
+      "vision_norm": 0.5512749445676275,
+      "economy_norm": 0.7188124401824643,
+      "botlane_score": 0.5027888093374265
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Fran"
+      ],
+      "games": 19,
+      "wins": 8,
+      "winrate": 0.42105263157894735,
+      "avg_kda": 7.152078331025699,
+      "avg_damage": 38785.26315789474,
+      "avg_vision": 76.26315789473684,
+      "avg_gold": 21453.842105263157,
+      "winrate_norm": 0.42105263157894735,
+      "kda_norm": 0.21035524503016761,
+      "damage_norm": 0.7132909789990542,
+      "vision_norm": 0.6975288831835686,
+      "economy_norm": 0.7614708121210811,
+      "botlane_score": 0.4990502669678883
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Olaf"
+      ],
+      "games": 5,
+      "wins": 1,
+      "winrate": 0.2,
+      "avg_kda": 6.238968253968254,
+      "avg_damage": 53734.8,
+      "avg_vision": 96.8,
+      "avg_gold": 25645.2,
+      "winrate_norm": 0.2,
+      "kda_norm": 0.18349906629318394,
+      "damage_norm": 0.9927494329652802,
+      "vision_norm": 0.8853658536585366,
+      "economy_norm": 0.9178078870560151,
+      "botlane_score": 0.4955670739231481
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Spam"
+      ],
+      "games": 6,
+      "wins": 3,
+      "winrate": 0.5,
+      "avg_kda": 3.4485759854180915,
+      "avg_damage": 39259.666666666664,
+      "avg_vision": 59.0,
+      "avg_gold": 21539.333333333332,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.10142870545347328,
+      "damage_norm": 0.7221592183644475,
+      "vision_norm": 0.5396341463414634,
+      "economy_norm": 0.764659623209218,
+      "botlane_score": 0.4951469617186523
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Spam"
+      ],
+      "games": 7,
+      "wins": 4,
+      "winrate": 0.5714285714285714,
+      "avg_kda": 6.52012987012987,
+      "avg_damage": 26203.428571428572,
+      "avg_vision": 67.14285714285714,
+      "avg_gold": 17091.85714285714,
+      "winrate_norm": 0.5714285714285714,
+      "kda_norm": 0.191768525592055,
+      "damage_norm": 0.4780930542252544,
+      "vision_norm": 0.6141114982578397,
+      "economy_norm": 0.5987693709511331,
+      "botlane_score": 0.4838318314557878
+    },
+    {
+      "duo": [
+        "Fran",
+        "Hugo"
+      ],
+      "games": 26,
+      "wins": 10,
+      "winrate": 0.38461538461538464,
+      "avg_kda": 9.009691697191696,
+      "avg_damage": 35771.0,
+      "avg_vision": 76.03846153846153,
+      "avg_gold": 20646.53846153846,
+      "winrate_norm": 0.38461538461538464,
+      "kda_norm": 0.26499093227034404,
+      "damage_norm": 0.6569439944168889,
+      "vision_norm": 0.6954737335834896,
+      "economy_norm": 0.7313584968729085,
+      "botlane_score": 0.4809163622292403
+    },
+    {
+      "duo": [
+        "Dvd",
+        "Spam"
+      ],
+      "games": 14,
+      "wins": 5,
+      "winrate": 0.35714285714285715,
+      "avg_kda": 5.099559963845677,
+      "avg_damage": 41501.142857142855,
+      "avg_vision": 73.64285714285714,
+      "avg_gold": 22974.85714285714,
+      "winrate_norm": 0.35714285714285715,
+      "kda_norm": 0.14998705776016696,
+      "damage_norm": 0.7640601466278792,
+      "vision_norm": 0.6735627177700348,
+      "economy_norm": 0.8182044645271642,
+      "botlane_score": 0.474843301964472
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Eduardo"
+      ],
+      "games": 14,
+      "wins": 6,
+      "winrate": 0.42857142857142855,
+      "avg_kda": 4.844933241361813,
+      "avg_damage": 33281.642857142855,
+      "avg_vision": 84.0,
+      "avg_gold": 19769.071428571428,
+      "winrate_norm": 0.42857142857142855,
+      "kda_norm": 0.14249803651064158,
+      "damage_norm": 0.6104093153923666,
+      "vision_norm": 0.7682926829268293,
+      "economy_norm": 0.6986290968237834,
+      "botlane_score": 0.4687022197842344
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Olaf"
+      ],
+      "games": 5,
+      "wins": 2,
+      "winrate": 0.4,
+      "avg_kda": 6.244285714285715,
+      "avg_damage": 36147.0,
+      "avg_vision": 68.6,
+      "avg_gold": 21474.4,
+      "winrate_norm": 0.4,
+      "kda_norm": 0.18365546218487397,
+      "damage_norm": 0.6639727324842353,
+      "vision_norm": 0.6274390243902439,
+      "economy_norm": 0.762237618776751,
+      "botlane_score": 0.4684933032505214
+    },
+    {
+      "duo": [
+        "Eduardo",
+        "Itzantete"
+      ],
+      "games": 17,
+      "wins": 6,
+      "winrate": 0.35294117647058826,
+      "avg_kda": 5.3071565689212745,
+      "avg_damage": 36672.58823529412,
+      "avg_vision": 78.3529411764706,
+      "avg_gold": 21166.470588235294,
+      "winrate_norm": 0.35294117647058826,
+      "kda_norm": 0.15609284026239043,
+      "damage_norm": 0.6737977910937063,
+      "vision_norm": 0.7166427546628408,
+      "economy_norm": 0.7507518939279663,
+      "botlane_score": 0.45389406171853536
+    },
+    {
+      "duo": [
+        "Fran",
+        "Paellita"
+      ],
+      "games": 7,
+      "wins": 3,
+      "winrate": 0.42857142857142855,
+      "avg_kda": 5.26634199134199,
+      "avg_damage": 40164.0,
+      "avg_vision": 37.142857142857146,
+      "avg_gold": 18708.0,
+      "winrate_norm": 0.42857142857142855,
+      "kda_norm": 0.15489241151005853,
+      "damage_norm": 0.7390643304005384,
+      "vision_norm": 0.33972125435540074,
+      "economy_norm": 0.6590512779865534,
+      "botlane_score": 0.4500971730448863
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Dexus"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 3.0019841269841265,
+      "avg_damage": 23994.5,
+      "avg_vision": 73.5,
+      "avg_gold": 19999.0,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.08829365079365079,
+      "damage_norm": 0.4368005533261883,
+      "vision_norm": 0.6722560975609756,
+      "economy_norm": 0.7072054010201513,
+      "botlane_score": 0.4429649906820805
+    },
+    {
+      "duo": [
+        "Eduardo",
+        "Manolito"
+      ],
+      "games": 9,
+      "wins": 4,
+      "winrate": 0.4444444444444444,
+      "avg_kda": 4.8274691358024695,
+      "avg_damage": 28709.333333333332,
+      "avg_vision": 64.0,
+      "avg_gold": 18638.0,
+      "winrate_norm": 0.4444444444444444,
+      "kda_norm": 0.14198438634713145,
+      "damage_norm": 0.5249370653772338,
+      "vision_norm": 0.5853658536585367,
+      "economy_norm": 0.6564402875819432,
+      "botlane_score": 0.4353426822466988
+    },
+    {
+      "duo": [
+        "Carla",
+        "Spam"
+      ],
+      "games": 16,
+      "wins": 7,
+      "winrate": 0.4375,
+      "avg_kda": 6.287204635642136,
+      "avg_damage": 26459.6875,
+      "avg_vision": 67.1875,
+      "avg_gold": 18467.0,
+      "winrate_norm": 0.4375,
+      "kda_norm": 0.1849177834012393,
+      "damage_norm": 0.48288341828468884,
+      "vision_norm": 0.6145198170731707,
+      "economy_norm": 0.6500620110221095,
+      "botlane_score": 0.4350184231467137
+    },
+    {
+      "duo": [
+        "Carla",
+        "Dexus"
+      ],
+      "games": 6,
+      "wins": 2,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 5.3021344396344405,
+      "avg_damage": 30433.333333333332,
+      "avg_vision": 85.5,
+      "avg_gold": 20133.666666666668,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.15594513057748355,
+      "damage_norm": 0.5571645771541088,
+      "vision_norm": 0.7820121951219513,
+      "economy_norm": 0.7122284492271158,
+      "botlane_score": 0.4253793393145585
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Manolito"
+      ],
+      "games": 4,
+      "wins": 1,
+      "winrate": 0.25,
+      "avg_kda": 6.700641025641026,
+      "avg_damage": 35408.5,
+      "avg_vision": 84.25,
+      "avg_gold": 21268.25,
+      "winrate_norm": 0.25,
+      "kda_norm": 0.19707767722473607,
+      "damage_norm": 0.6501676179556841,
+      "vision_norm": 0.770579268292683,
+      "economy_norm": 0.7545482520351737,
+      "botlane_score": 0.42196181106886976
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Carla"
+      ],
+      "games": 12,
+      "wins": 5,
+      "winrate": 0.4166666666666667,
+      "avg_kda": 4.514980158730158,
+      "avg_damage": 25755.833333333332,
+      "avg_vision": 73.0,
+      "avg_gold": 18608.083333333332,
+      "winrate_norm": 0.4166666666666667,
+      "kda_norm": 0.1327935340802988,
+      "damage_norm": 0.4697259539891827,
+      "vision_norm": 0.6676829268292683,
+      "economy_norm": 0.6553244000161632,
+      "botlane_score": 0.41947129696510616
+    },
+    {
+      "duo": [
+        "Eduardo",
+        "Spam"
+      ],
+      "games": 24,
+      "wins": 10,
+      "winrate": 0.4166666666666667,
+      "avg_kda": 4.463209475709476,
+      "avg_damage": 25223.541666666668,
+      "avg_vision": 73.83333333333333,
+      "avg_gold": 18346.625,
+      "winrate_norm": 0.4166666666666667,
+      "kda_norm": 0.13127086693263165,
+      "damage_norm": 0.4597755851050572,
+      "vision_norm": 0.6753048780487805,
+      "economy_norm": 0.6455720400227529,
+      "botlane_score": 0.41696364888135773
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Ayna"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 3.5444444444444443,
+      "avg_damage": 22122.5,
+      "avg_vision": 61.5,
+      "avg_gold": 15822.5,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.10424836601307189,
+      "damage_norm": 0.4018064106079111,
+      "vision_norm": 0.5625,
+      "economy_norm": 0.5514225235222261,
+      "botlane_score": 0.4126032076764192
+    },
+    {
+      "duo": [
+        "Hugo",
+        "Spam"
+      ],
+      "games": 9,
+      "wins": 3,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 5.24484126984127,
+      "avg_damage": 29199.88888888889,
+      "avg_vision": 60.77777777777778,
+      "avg_gold": 18647.88888888889,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.15426003734827265,
+      "damage_norm": 0.5341072422588338,
+      "vision_norm": 0.5558943089430894,
+      "economy_norm": 0.6568091417819596,
+      "botlane_score": 0.3922771343272595
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Spam"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 0.5984848484848485,
+      "avg_damage": 17423.5,
+      "avg_vision": 63.0,
+      "avg_gold": 14375.5,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.017602495543672016,
+      "damage_norm": 0.3139658782183894,
+      "vision_norm": 0.576219512195122,
+      "economy_norm": 0.49744962187263964,
+      "botlane_score": 0.3736805881591885
+    },
+    {
+      "duo": [
+        "Lluc",
+        "Manolito"
+      ],
+      "games": 6,
+      "wins": 2,
+      "winrate": 0.3333333333333333,
+      "avg_kda": 4.5773809523809526,
+      "avg_damage": 18803.166666666668,
+      "avg_vision": 48.166666666666664,
+      "avg_gold": 15181.333333333334,
+      "winrate_norm": 0.3333333333333333,
+      "kda_norm": 0.13462885154061624,
+      "damage_norm": 0.33975661125096585,
+      "vision_norm": 0.4405487804878049,
+      "economy_norm": 0.5275070947447602,
+      "botlane_score": 0.32501601341490627
+    },
+    {
+      "duo": [
+        "Ainara",
+        "Eduardo"
+      ],
+      "games": 10,
+      "wins": 3,
+      "winrate": 0.3,
+      "avg_kda": 2.987705627705627,
+      "avg_damage": 21864.9,
+      "avg_vision": 51.6,
+      "avg_gold": 17150.3,
+      "winrate_norm": 0.3,
+      "kda_norm": 0.08787369493251844,
+      "damage_norm": 0.39699097729368665,
+      "vision_norm": 0.47195121951219515,
+      "economy_norm": 0.6009492815113904,
+      "botlane_score": 0.32426298454759955
+    },
+    {
+      "duo": [
+        "Paellita",
+        "Spam"
+      ],
+      "games": 5,
+      "wins": 2,
+      "winrate": 0.4,
+      "avg_kda": 1.8823809523809523,
+      "avg_damage": 18068.6,
+      "avg_vision": 36.0,
+      "avg_gold": 14544.2,
+      "winrate_norm": 0.4,
+      "kda_norm": 0.0553641456582633,
+      "damage_norm": 0.326025024301488,
+      "vision_norm": 0.32926829268292684,
+      "economy_norm": 0.5037421087477504,
+      "botlane_score": 0.319578874135018
+    },
+    {
+      "duo": [
+        "Eduardo",
+        "Nico"
+      ],
+      "games": 2,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 3.025,
+      "avg_damage": 30049.0,
+      "avg_vision": 82.5,
+      "avg_gold": 18641.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.08897058823529412,
+      "damage_norm": 0.5499800603175394,
+      "vision_norm": 0.7545731707317074,
+      "economy_norm": 0.6565521871707122,
+      "botlane_score": 0.26890266550080866
+    },
+    {
+      "duo": [
+        "Ayna",
+        "Paellita"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 2.1704545454545454,
+      "avg_damage": 36233.0,
+      "avg_vision": 63.0,
+      "avg_gold": 16583.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.06383689839572193,
+      "damage_norm": 0.6655803693826177,
+      "vision_norm": 0.576219512195122,
+      "economy_norm": 0.5797890692751704,
+      "botlane_score": 0.2614843117026972
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Itzantete"
+      ],
+      "games": 2,
+      "wins": 1,
+      "winrate": 0.5,
+      "avg_kda": 2.0,
+      "avg_damage": 4891.5,
+      "avg_vision": 9.0,
+      "avg_gold": 5385.5,
+      "winrate_norm": 0.5,
+      "kda_norm": 0.058823529411764705,
+      "damage_norm": 0.07969953390992249,
+      "vision_norm": 0.08231707317073171,
+      "economy_norm": 0.16212385419483583,
+      "botlane_score": 0.25214870540089424
+    },
+    {
+      "duo": [
+        "Carla",
+        "Lluc"
+      ],
+      "games": 2,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 3.5785714285714283,
+      "avg_damage": 16384.5,
+      "avg_vision": 79.0,
+      "avg_gold": 16809.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.10525210084033612,
+      "damage_norm": 0.29454338127165325,
+      "vision_norm": 0.7225609756097562,
+      "economy_norm": 0.5882188382957693,
+      "botlane_score": 0.21103707781295042
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Paellita"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 1.5673076923076923,
+      "avg_damage": 19987.0,
+      "avg_vision": 59.0,
+      "avg_gold": 17449.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.046097285067873306,
+      "damage_norm": 0.36188654320679947,
+      "vision_norm": 0.5396341463414634,
+      "economy_norm": 0.6120907505664916,
+      "botlane_score": 0.19676925534573006
+    },
+    {
+      "duo": [
+        "Carla",
+        "Nico"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 0.9722222222222222,
+      "avg_damage": 17744.0,
+      "avg_vision": 69.0,
+      "avg_gold": 17236.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.028594771241830064,
+      "damage_norm": 0.31995712968270984,
+      "vision_norm": 0.6310975609756098,
+      "economy_norm": 0.6041458797638919,
+      "botlane_score": 0.19323472425885815
+    },
+    {
+      "duo": [
+        "Dexus",
+        "Hugo"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 1.3333333333333333,
+      "avg_damage": 9395.0,
+      "avg_vision": 14.0,
+      "avg_gold": 8839.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.0392156862745098,
+      "damage_norm": 0.16388549637347025,
+      "vision_norm": 0.12804878048780488,
+      "economy_norm": 0.2909389307994293,
+      "botlane_score": 0.08251900765831943
+    },
+    {
+      "duo": [
+        "Fran",
+        "Lluc"
+      ],
+      "games": 1,
+      "wins": 0,
+      "winrate": 0.0,
+      "avg_kda": 0.0,
+      "avg_damage": 628.0,
+      "avg_vision": 0.0,
+      "avg_gold": 1039.0,
+      "winrate_norm": 0.0,
+      "kda_norm": 0.0,
+      "damage_norm": 0.0,
+      "vision_norm": 0.0,
+      "economy_norm": 0.0,
+      "botlane_score": 0.0
+    }
+  ]
+}

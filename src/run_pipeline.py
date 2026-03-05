@@ -1,13 +1,57 @@
-import subprocess
+"""
+run_pipeline.py — Backward-compatibility wrapper.
+Use pipeline.py instead.
+"""
+
 import sys
 from pathlib import Path
 from queue import Queue
 
-BASE = Path(__file__).resolve().parents[0] # src/
-BASE_DIR = BASE.parent # lol_data/
-EXTRACT = BASE / "extract"
-LOAD = BASE / "load"
-METRICS = BASE / "metrics"
+FILE_SELF = Path(__file__).resolve()
+SRC_DIR = FILE_SELF.parent
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from pipeline import run_l0, run_l1_to_l3, run_full, run_season, PIPELINE_QUEUE
+
+# Re-export for any code that imported from here
+def run_l0_only(run_in_terminal: bool = True, queue: Queue = None):
+    return run_l0(run_in_terminal, queue or PIPELINE_QUEUE)
+
+def run_l1_to_l3_compat(min_friends: int, pool_id=None, run_in_terminal=True, queue=None):
+    return run_l1_to_l3(min_friends, pool_id, None, None, run_in_terminal, queue or PIPELINE_QUEUE)
+
+def main_full(min_friends: int, pool_id=None, run_in_terminal=True, queue=None):
+    return run_full(min_friends, pool_id, run_in_terminal, queue or PIPELINE_QUEUE)
+
+
+if __name__ == "__main__":
+    sys.path.insert(0, str(SRC_DIR))
+    from utils.config import MIN_FRIENDS_IN_MATCH
+    import argparse
+    parser = argparse.ArgumentParser(description="[deprecated] Use pipeline.py")
+    parser.add_argument("--mode", choices=["l0", "l1-l3", "full", "season"], default="full")
+    parser.add_argument("--min", type=int, default=MIN_FRIENDS_IN_MATCH)
+    parser.add_argument("--pool", type=str, default=None)
+    parser.add_argument("--run-in-terminal", action="store_true")
+    args = parser.parse_args()
+
+    rt = args.run_in_terminal
+    q = PIPELINE_QUEUE
+    if args.mode == "l0":
+        run_l0(rt, q)
+    elif args.mode == "l1-l3":
+        run_l1_to_l3(args.min, args.pool, None, None, rt, q)
+    elif args.mode == "season":
+        run_season(args.min, rt, q)
+    else:
+        run_full(args.min, args.pool, rt, q)
+
+
+from utils.config import BASE_DIR
+EXTRACT = SRC_DIR / "extract"
+LOAD = SRC_DIR / "load"
+METRICS = SRC_DIR / "metrics"
 
 def stream_reader(stream, run_in_terminal, queue):
     for line in iter(stream.readline, ""):
@@ -154,10 +198,12 @@ def main_full(min_friends: int, pool_id: str = None, run_in_terminal: bool = Tru
     return True
 
 if __name__ == "__main__":
+    from utils.config import MIN_FRIENDS_IN_MATCH
+
     import argparse
     parser = argparse.ArgumentParser(description="Ejecutar pipeline completo o parcial")
     parser.add_argument("--mode", choices=["l0", "l1-l3", "full"], default="full", help="Modo de ejecución")
-    parser.add_argument("--min", type=int, default=5, help="Min friends")
+    parser.add_argument("--min", type=int, default=MIN_FRIENDS_IN_MATCH, help="Min friends")
     parser.add_argument("--pool", type=str, default=None, help="Pool ID (optional)")
     parser.add_argument("--run-in-terminal", action="store_true", help="Ejecutar en el terminal principal")
     args = parser.parse_args()

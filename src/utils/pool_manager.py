@@ -1,11 +1,25 @@
 
 import os
+import hashlib
 from pathlib import Path
 from typing import List
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
 load_dotenv()
+
+
+def build_pool_version(personas: list) -> str:
+    """
+    Calcula el pool_id a partir de los nombres de persona (ej: 'Fran', 'Olaf').
+    Usar siempre PERSONAS, nunca PUUIDs, para que el hash sea estable cuando
+    un jugador cambia de nombre de cuenta en Riot.
+
+    Fuente de verdad única: esta función. Importarla en todos los scripts.
+    """
+    base = ",".join(sorted(personas))
+    h = hashlib.sha1(base.encode("utf-8")).hexdigest()[:8]
+    return f"pool_{h}"
 
 def get_available_pools(base_dir: Path) -> List[str]:
     """

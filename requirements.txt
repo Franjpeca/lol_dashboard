@@ -1,5 +1,5 @@
-# Core Web Framework (Python 3.7+ compatible)
-dash>=2.0.0
+# Core Web Framework
+streamlit>=1.30.0
 plotly>=5.0.0
 
 # Data Processing

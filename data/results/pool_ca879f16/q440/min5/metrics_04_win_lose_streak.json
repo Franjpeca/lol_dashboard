@@ -1,0 +1,88 @@
+{
+  "source_L1": "L1_q440_min5_pool_ca879f16",
+  "generated_at": "2026-03-04 02:16:41",
+  "start_date": null,
+  "end_date": null,
+  "streaks": {
+    "Nico": {
+      "max_win_streak": 7,
+      "max_lose_streak": 5,
+      "current_streak": 1
+    },
+    "Itzantete": {
+      "max_win_streak": 11,
+      "max_lose_streak": 9,
+      "current_streak": 1
+    },
+    "Eduardo": {
+      "max_win_streak": 9,
+      "max_lose_streak": 7,
+      "current_streak": -1
+    },
+    "Hugo": {
+      "max_win_streak": 3,
+      "max_lose_streak": 1,
+      "current_streak": 1
+    },
+    "Ayna": {
+      "max_win_streak": 5,
+      "max_lose_streak": 7,
+      "current_streak": 1
+    },
+    "Spam": {
+      "max_win_streak": 8,
+      "max_lose_streak": 8,
+      "current_streak": 1
+    },
+    "Dvd": {
+      "max_win_streak": 7,
+      "max_lose_streak": 8,
+      "current_streak": 1
+    },
+    "Carla": {
+      "max_win_streak": 5,
+      "max_lose_streak": 3,
+      "current_streak": -1
+    },
+    "Morocha": {
+      "max_win_streak": 7,
+      "max_lose_streak": 2,
+      "current_streak": 1
+    },
+    "Lluc": {
+      "max_win_streak": 4,
+      "max_lose_streak": 6,
+      "current_streak": -1
+    },
+    "Manolito": {
+      "max_win_streak": 11,
+      "max_lose_streak": 5,
+      "current_streak": 1
+    },
+    "Fran": {
+      "max_win_streak": 2,
+      "max_lose_streak": 1,
+      "current_streak": 1
+    },
+    "Olaf": {
+      "max_win_streak": 9,
+      "max_lose_streak": 2,
+      "current_streak": 1
+    },
+    "Dexus": {
+      "max_win_streak": 8,
+      "max_lose_streak": 5,
+      "current_streak": 1
+    },
+    "Paellita": {
+      "max_win_streak": 3,
+      "max_lose_streak": 7,
+      "current_streak": -1
+    },
+    "Ainara": {
+      "max_win_streak": 8,
+      "max_lose_streak": 6,
+      "current_streak": 1
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "source_L1": "L1_q440_min5_pool_season",
+  "generated_at": "2026-03-04 02:17:26",
+  "start_date": null,
+  "end_date": null,
+  "skills": {
+    "Fran": {
+      "avg_Q": 114.27272727272727,
+      "avg_W": 66.72727272727273,
+      "avg_E": 72.9090909090909,
+      "avg_R": 24.454545454545453,
+      "max_Q": 240,
+      "max_W": 146,
+      "max_E": 201,
+      "max_R": 177,
+      "matches": 11
+    },
+    "Olaf": {
+      "avg_Q": 174.1818181818182,
+      "avg_W": 79.18181818181819,
+      "avg_E": 75.63636363636364,
+      "avg_R": 11.636363636363637,
+      "max_Q": 383,
+      "max_W": 210,
+      "max_E": 225,
+      "max_R": 20,
+      "matches": 11
+    },
+    "Carla": {
+      "avg_Q": 78.125,
+      "avg_W": 97.875,
+      "avg_E": 85.75,
+      "avg_R": 18.125,
+      "max_Q": 126,
+      "max_W": 141,
+      "max_E": 122,
+      "max_R": 43,
+      "matches": 8
+    },
+    "Hugo": {
+      "avg_Q": 137.125,
+      "avg_W": 71.75,
+      "avg_E": 43.625,
+      "avg_R": 9.5,
+      "max_Q": 266,
+      "max_W": 107,
+      "max_E": 67,
+      "max_R": 12,
+      "matches": 8
+    },
+    "Eduardo": {
+      "avg_Q": 98.0,
+      "avg_W": 39.5,
+      "avg_E": 67.75,
+      "avg_R": 9.25,
+      "max_Q": 152,
+      "max_W": 54,
+      "max_E": 136,
+      "max_R": 16,
+      "matches": 4
+    },
+    "Dexus": {
+      "avg_Q": 142.22222222222223,
+      "avg_W": 45.0,
+      "avg_E": 133.44444444444446,
+      "avg_R": 29.22222222222222,
+      "max_Q": 177,
+      "max_W": 170,
+      "max_E": 200,
+      "max_R": 48,
+      "matches": 9
+    },
+    "Dvd": {
+      "avg_Q": 102.0,
+      "avg_W": 89.33333333333333,
+      "avg_E": 36.333333333333336,
+      "avg_R": 14.166666666666666,
+      "max_Q": 166,
+      "max_W": 147,
+      "max_E": 104,
+      "max_R": 54,
+      "matches": 6
+    },
+    "Spam": {
+      "avg_Q": 183.0,
+      "avg_W": 36.5,
+      "avg_E": 112.5,
+      "avg_R": 11.5,
+      "max_Q": 235,
+      "max_W": 44,
+      "max_E": 177,
+      "max_R": 12,
+      "matches": 2
+    },
+    "Ainara": {
+      "avg_Q": 27.0,
+      "avg_W": 12.0,
+      "avg_E": 14.0,
+      "avg_R": 4.0,
+      "max_Q": 27,
+      "max_W": 12,
+      "max_E": 14,
+      "max_R": 4,
+      "matches": 1
+    },
+    "Manolito": {
+      "avg_Q": 78.33333333333333,
+      "avg_W": 45.666666666666664,
+      "avg_E": 67.0,
+      "avg_R": 10.0,
+      "max_Q": 92,
+      "max_W": 59,
+      "max_E": 85,
+      "max_R": 15,
+      "matches": 3
+    },
+    "Paellita": {
+      "avg_Q": 27.5,
+      "avg_W": 56.5,
+      "avg_E": 68.5,
+      "avg_R": 8.5,
+      "max_Q": 30,
+      "max_W": 78,
+      "max_E": 76,
+      "max_R": 11,
+      "matches": 2
+    }
+  }
+}

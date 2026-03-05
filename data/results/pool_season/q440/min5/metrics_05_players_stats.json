@@ -1,0 +1,261 @@
+{
+  "source_L1": "L1_q440_min5_pool_season",
+  "generated_at": "2026-03-04 02:17:22",
+  "start_date": null,
+  "end_date": null,
+  "players": {
+    "Olaf": {
+      "avg_kda": 2.282051282051282,
+      "avg_kills": 8.636363636363637,
+      "avg_deaths": 7.090909090909091,
+      "avg_assists": 7.545454545454546,
+      "avg_gold": 14557.90909090909,
+      "avg_damage_dealt": 37565.454545454544,
+      "avg_damage_taken": 39229.09090909091,
+      "avg_vision_score": 30.818181818181817,
+      "games": 11,
+      "max_kills": {
+        "kills": 18,
+        "match_id": 7678571199
+      },
+      "max_deaths": {
+        "deaths": 13,
+        "match_id": 7678110356
+      },
+      "max_assists": {
+        "assists": 19,
+        "match_id": 7680478078
+      }
+    },
+    "Dexus": {
+      "avg_kda": 4.266666666666667,
+      "avg_kills": 11.222222222222221,
+      "avg_deaths": 5.0,
+      "avg_assists": 10.11111111111111,
+      "avg_gold": 16475.333333333332,
+      "avg_damage_dealt": 37188.666666666664,
+      "avg_damage_taken": 41967.88888888889,
+      "avg_vision_score": 28.555555555555557,
+      "games": 9,
+      "max_kills": {
+        "kills": 18,
+        "match_id": 7679030325
+      },
+      "max_deaths": {
+        "deaths": 9,
+        "match_id": 7682940857
+      },
+      "max_assists": {
+        "assists": 18,
+        "match_id": 7678874235
+      }
+    },
+    "Manolito": {
+      "avg_kda": 2.5,
+      "avg_kills": 3.0,
+      "avg_deaths": 10.0,
+      "avg_assists": 22.0,
+      "avg_gold": 11390.666666666666,
+      "avg_damage_dealt": 16262.0,
+      "avg_damage_taken": 35786.666666666664,
+      "avg_vision_score": 54.333333333333336,
+      "games": 3,
+      "max_kills": {
+        "kills": 4,
+        "match_id": 7679030325
+      },
+      "max_deaths": {
+        "deaths": 11,
+        "match_id": 7678874235
+      },
+      "max_assists": {
+        "assists": 31,
+        "match_id": 7678874235
+      }
+    },
+    "Fran": {
+      "avg_kda": 2.6666666666666665,
+      "avg_kills": 7.090909090909091,
+      "avg_deaths": 6.2727272727272725,
+      "avg_assists": 9.636363636363637,
+      "avg_gold": 13937.90909090909,
+      "avg_damage_dealt": 27917.545454545456,
+      "avg_damage_taken": 28950.909090909092,
+      "avg_vision_score": 34.54545454545455,
+      "games": 11,
+      "max_kills": {
+        "kills": 14,
+        "match_id": 7678874235
+      },
+      "max_deaths": {
+        "deaths": 9,
+        "match_id": 7678956194
+      },
+      "max_assists": {
+        "assists": 24,
+        "match_id": 7678110356
+      }
+    },
+    "Eduardo": {
+      "avg_kda": 1.6451612903225807,
+      "avg_kills": 4.75,
+      "avg_deaths": 7.75,
+      "avg_assists": 8.0,
+      "avg_gold": 11012.5,
+      "avg_damage_dealt": 15055.25,
+      "avg_damage_taken": 29352.25,
+      "avg_vision_score": 71.0,
+      "games": 4,
+      "max_kills": {
+        "kills": 8,
+        "match_id": 7678571199
+      },
+      "max_deaths": {
+        "deaths": 10,
+        "match_id": 7679030325
+      },
+      "max_assists": {
+        "assists": 20,
+        "match_id": 7679030325
+      }
+    },
+    "Hugo": {
+      "avg_kda": 3.0217391304347827,
+      "avg_kills": 7.375,
+      "avg_deaths": 5.75,
+      "avg_assists": 10.0,
+      "avg_gold": 13699.625,
+      "avg_damage_dealt": 26136.625,
+      "avg_damage_taken": 29148.75,
+      "avg_vision_score": 31.125,
+      "games": 8,
+      "max_kills": {
+        "kills": 12,
+        "match_id": 7678110356
+      },
+      "max_deaths": {
+        "deaths": 10,
+        "match_id": 7678110356
+      },
+      "max_assists": {
+        "assists": 19,
+        "match_id": 7678110356
+      }
+    },
+    "Dvd": {
+      "avg_kda": 1.8222222222222222,
+      "avg_kills": 5.333333333333333,
+      "avg_deaths": 7.5,
+      "avg_assists": 8.333333333333334,
+      "avg_gold": 13183.5,
+      "avg_damage_dealt": 24191.5,
+      "avg_damage_taken": 30019.0,
+      "avg_vision_score": 17.0,
+      "games": 6,
+      "max_kills": {
+        "kills": 12,
+        "match_id": 7678874235
+      },
+      "max_deaths": {
+        "deaths": 10,
+        "match_id": 7678529343
+      },
+      "max_assists": {
+        "assists": 21,
+        "match_id": 7678874235
+      }
+    },
+    "Carla": {
+      "avg_kda": 2.9347826086956523,
+      "avg_kills": 2.5,
+      "avg_deaths": 5.75,
+      "avg_assists": 14.375,
+      "avg_gold": 10564.0,
+      "avg_damage_dealt": 15506.75,
+      "avg_damage_taken": 23522.75,
+      "avg_vision_score": 56.75,
+      "games": 8,
+      "max_kills": {
+        "kills": 6,
+        "match_id": 7678874235
+      },
+      "max_deaths": {
+        "deaths": 8,
+        "match_id": 7678110356
+      },
+      "max_assists": {
+        "assists": 32,
+        "match_id": 7678110356
+      }
+    },
+    "Paellita": {
+      "avg_kda": 2.6666666666666665,
+      "avg_kills": 0.5,
+      "avg_deaths": 6.0,
+      "avg_assists": 15.5,
+      "avg_gold": 8356.0,
+      "avg_damage_dealt": 7523.5,
+      "avg_damage_taken": 19649.0,
+      "avg_vision_score": 68.5,
+      "games": 2,
+      "max_kills": {
+        "kills": 1,
+        "match_id": 7678529343
+      },
+      "max_deaths": {
+        "deaths": 7,
+        "match_id": 7678529343
+      },
+      "max_assists": {
+        "assists": 24,
+        "match_id": 7678571199
+      }
+    },
+    "Spam": {
+      "avg_kda": 0.5,
+      "avg_kills": 1.5,
+      "avg_deaths": 10.0,
+      "avg_assists": 3.5,
+      "avg_gold": 9341.0,
+      "avg_damage_dealt": 24746.5,
+      "avg_damage_taken": 27073.0,
+      "avg_vision_score": 16.0,
+      "games": 2,
+      "max_kills": {
+        "kills": 2,
+        "match_id": 7680543638
+      },
+      "max_deaths": {
+        "deaths": 11,
+        "match_id": 7680478078
+      },
+      "max_assists": {
+        "assists": 4,
+        "match_id": 7680543638
+      }
+    },
+    "Ainara": {
+      "avg_kda": 0.5,
+      "avg_kills": 2.0,
+      "avg_deaths": 10.0,
+      "avg_assists": 3.0,
+      "avg_gold": 7256.0,
+      "avg_damage_dealt": 4288.0,
+      "avg_damage_taken": 17444.0,
+      "avg_vision_score": 68.0,
+      "games": 1,
+      "max_kills": {
+        "kills": 2,
+        "match_id": 7680478078
+      },
+      "max_deaths": {
+        "deaths": 10,
+        "match_id": 7680478078
+      },
+      "max_assists": {
+        "assists": 3,
+        "match_id": 7680478078
+      }
+    }
+  }
+}

@@ -1,0 +1,324 @@
+"""
+ingest_matches.py
+Unifica la extracción/ingesta de partidas crudas hacia MongoDB.
+Soporta dos orígenes de datos:
+  --source api  (Por defecto) Descarga de la API de Riot basándose en el índice de usuarios.
+  --source file Lee archivos JSON locales (caché) y los inserta en BD.
+
+Uso:
+    python extract/ingest_matches.py --source api
+    python extract/ingest_matches.py --source file
+"""
+
+import sys
+import json
+import time
+import argparse
+import logging
+import datetime
+from pathlib import Path
+from pymongo import errors
+from riotwatcher import LolWatcher
+
+# Asegurar que src/ esté en sys.path
+FILE_SELF = Path(__file__).resolve()
+BASE_DIR = FILE_SELF.parents[2]  # lol_data/
+SRC_DIR = BASE_DIR / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from utils.api_key_manager import get_api_key
+from utils.config import (
+    MONGO_DB,
+    COLLECTION_RAW_MATCHES,
+    COLLECTION_ACCOUNTS,
+    COLLECTION_USERS_INDEX,
+    PATH_LOL_CACHE,
+    PATH_LOL_USERS,
+    PATH_LOL_PLAYERS,
+    REGIONAL_ROUTING,
+    QUEUE_FLEX,
+    SLEEP_BETWEEN_CALLS,
+    REQUEST_TIMEOUT,
+    MAX_RETRIES
+)
+from utils.db import get_mongo_client
+
+# ============================
+# LOGGING Y UTILIDADES
+# ============================
+def now_utc():
+    return datetime.datetime.now(datetime.timezone.utc)
+
+def log(msg):
+    try:
+        print(f"[{now_utc().strftime('%Y-%m-%d %H:%M:%S')}] {msg}", flush=True)
+    except UnicodeEncodeError:
+        safe_msg = msg.encode('ascii', 'replace').decode('ascii')
+        print(f"[{now_utc().strftime('%Y-%m-%d %H:%M:%S')}] {safe_msg}", flush=True)
+
+def read_json(path: Path):
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+def safe_call(fn, *args, **kwargs):
+    attempt = 0
+    while True:
+        try:
+            return fn(*args, **kwargs)
+        except Exception as e:
+            attempt += 1
+            r = getattr(e, "response", None)
+            sc = getattr(r, "status_code", None)
+            retry_after = r.headers.get("Retry-After") if r else None
+            log(f"[WARN] {fn.__name__} intento={attempt} status={sc} retry_after={retry_after}")
+            if sc == 429 and retry_after:
+                try:
+                    time.sleep(float(retry_after))
+                except:
+                    time.sleep(2)
+            else:
+                time.sleep(min(60, 2 ** attempt))
+            if attempt >= MAX_RETRIES:
+                log(f"[ERROR] {fn.__name__} abandonado tras {attempt} intentos: {e}")
+                return None
+
+# ============================
+# BD COMUNES
+# ============================
+def upsert_account(db, riot_id, puuid, region):
+    """Inserta o actualiza cuenta en MongoDB guardando historial de nombres si cambia."""
+    try:
+        coll_accounts = db[COLLECTION_ACCOUNTS]
+        existing = coll_accounts.find_one({"puuid": puuid})
+        
+        update_data = {
+            "puuid": puuid,
+            "region": region,
+            "last_updated": now_utc()
+        }
+        if riot_id:
+            update_data["riot_id"] = riot_id
+            
+        if existing:
+            old_name = existing.get("riot_id")
+            if riot_id and old_name and old_name != riot_id:
+                history = existing.get("previous_identities", [])
+                if old_name not in history:
+                    history.append(old_name)
+                update_data["previous_identities"] = history
+                log(f"[INFO] Name change detected: {old_name} -> {riot_id}")
+            else:
+                update_data["previous_identities"] = existing.get("previous_identities", [])
+        else:
+            update_data["added_at"] = now_utc()
+        
+        coll_accounts.update_one(
+            {"puuid": puuid},
+            {"$set": update_data},
+            upsert=True
+        )
+    except Exception as e:
+        log(f"[WARN] Error guardando cuenta en Mongo: {e}")
+
+def insert_match(db, match_json, region, source_info):
+    match_id = match_json.get("metadata", {}).get("matchId")
+    if not match_id:
+        return False
+        
+    coll_matches = db[COLLECTION_RAW_MATCHES]
+    doc = {
+        "_id": match_id,
+        "inserted_at": now_utc(),
+        "source": source_info,
+        "region": region,
+        "data": match_json
+    }
+    try:
+        coll_matches.insert_one(doc)
+        return True
+    except errors.DuplicateKeyError:
+        return False
+    except Exception as e:
+        log(f"[ERROR] insert {match_id}: {e}")
+        return False
+
+# ============================
+# SYNC COMUN (desde data/usuarios)
+# ============================
+def sync_accounts_from_local(db):
+    """Sincroniza la colección riot_accounts desde data/usuarios local."""
+    riotid_map = {}
+    if PATH_LOL_USERS and PATH_LOL_USERS.exists():
+        log("[SYNC] Sincronizando colección riot_accounts desde data/usuarios...")
+        for f in PATH_LOL_USERS.glob("*.json"):
+            d = read_json(f)
+            if not d:
+                continue
+            riot_id = d.get("riotId")
+            puuid = d.get("puuid")
+            region = d.get("region", REGIONAL_ROUTING)
+            if not puuid:
+                continue
+            upsert_account(db, riot_id, puuid, region)
+            if riot_id:
+                riotid_map[puuid] = (riot_id, region)
+        log("[SYNC] Sincronización inicial completada.\n")
+    return riotid_map
+
+# ============================
+# MODO: API
+# ============================
+def iter_match_ids(lol, puuid):
+    start = 0
+    batch = 100
+    while True:
+        ids = safe_call(lol.match.matchlist_by_puuid, REGIONAL_ROUTING, puuid,
+                        start=start, count=batch, queue=QUEUE_FLEX)
+        if not ids:
+            break
+        for mid in ids:
+            yield mid
+        start += len(ids)
+        if len(ids) < batch:
+            break
+
+def ingest_from_api(db):
+    riotid_map = sync_accounts_from_local(db)
+    known_puuids = set(riotid_map.keys())
+    unknown_puuids = set()
+
+    lol = LolWatcher(get_api_key(REGIONAL_ROUTING), timeout=REQUEST_TIMEOUT)
+
+    # Identificar de quién vamos a descargar
+    L0_index = db[COLLECTION_USERS_INDEX]
+    all_user_docs = list(L0_index.find({}, {"puuids": 1, "persona": 1}))
+    all_puuids = []
+    for doc in all_user_docs:
+        for p in doc.get("puuids", []):
+            all_puuids.append((doc["persona"], p))
+
+    if not all_puuids:
+        log("❌ No se encontraron usuarios en L0_users_index")
+        return
+
+    log(f"[INFO] Descargando partidas de {len(all_puuids)} PUUID registrados en la API\n")
+
+    for persona, puuid in all_puuids:
+        log(f"\n=== Persona {persona} -> PUUID {puuid} ===")
+        total_inserted = 0
+        total_skipped = 0
+
+        for match_id in iter_match_ids(lol, puuid):
+            if db[COLLECTION_RAW_MATCHES].find_one({"_id": match_id}):
+                total_skipped += 1
+                continue
+
+            match_json = safe_call(lol.match.by_id, REGIONAL_ROUTING, match_id)
+            if not match_json:
+                continue
+
+            if insert_match(db, match_json, match_id.split("_", 1)[0], "riot_api"):
+                total_inserted += 1
+                log(f"✔ Insertada {match_id}")
+            else:
+                total_skipped += 1
+
+            participants = (match_json.get("metadata") or {}).get("participants", [])
+            for pid in participants:
+                if pid in known_puuids:
+                    riot_name, reg = riotid_map.get(pid, (None, REGIONAL_ROUTING))
+                    upsert_account(db, riot_name, pid, reg)
+                else:
+                    unknown_puuids.add(pid)
+
+            time.sleep(SLEEP_BETWEEN_CALLS)
+
+        log(f"📊 {persona} ({puuid}) -> nuevas: {total_inserted}, omitidas: {total_skipped}")
+
+    if unknown_puuids:
+        log(f"⚠️  Se ignoraron {len(unknown_puuids)} PUUID desconocidos (jugadores ajenos).")
+    log("✅ Finalizado ingesta desde API.")
+
+# ============================
+# MODO: FILE
+# ============================
+def iter_match_files(base: Path):
+    for region_dir in base.iterdir():
+        if not region_dir.is_dir():
+            continue
+        for f in region_dir.glob("*.json"):
+            yield f, region_dir.name
+
+def ingest_from_file(db):
+    if not PATH_LOL_CACHE or not PATH_LOL_CACHE.exists():
+        log(f"❌ No existe la carpeta de entrada caché local (LOL_CACHE_DIR)")
+        return
+
+    riotid_map = sync_accounts_from_local(db)
+    known_puuids = set(riotid_map.keys())
+
+    total_files = 0
+    inserted = 0
+    skipped = 0
+    total_accounts = 0
+    unknown_puuids = set()
+
+    for file_path, region in iter_match_files(PATH_LOL_CACHE):
+        total_files += 1
+        data = read_json(file_path)
+        if not data:
+            skipped += 1
+            continue
+
+        match_id = data.get("metadata", {}).get("matchId")
+        participants = (data.get("metadata") or {}).get("participants", [])
+        if not match_id or not participants:
+            skipped += 1
+            continue
+
+        if insert_match(db, data, region, str(file_path)):
+            inserted += 1
+        else:
+            skipped += 1
+
+        for puuid in participants:
+            if puuid not in known_puuids:
+                unknown_puuids.add(puuid)
+                continue
+            riot_id, reg = riotid_map.get(puuid, (None, region))
+            upsert_account(db, riot_id, puuid, reg)
+            total_accounts += 1
+
+    log(f"\n📦 Total ficheros: {total_files}")
+    log(f"✅ Insertados nuevos: {inserted}")
+    log(f"⚠️  Duplicados o inválidos: {skipped}")
+    log(f"👤 Cuentas conocidas actualizadas: {total_accounts}")
+    if unknown_puuids:
+        log(f"⚠️  Se ignoraron {len(unknown_puuids)} PUUID desconocidos (jugadores ajenos).")
+    log("✅ Finalizado ingesta desde archivos.")
+
+# ============================
+# MAIN
+# ============================
+def main():
+    parser = argparse.ArgumentParser(description="Ingesta de partidas a MongoDB")
+    parser.add_argument("--source", choices=["api", "file"], default="api",
+                        help="Origen de datos a ingestar (default: api)")
+    args = parser.parse_args()
+
+    log(f"[BOOT] ingest_matches.py | source={args.source}")
+
+    with get_mongo_client() as client:
+        db = client[MONGO_DB]
+        
+        if args.source == "api":
+            ingest_from_api(db)
+        elif args.source == "file":
+            ingest_from_file(db)
+
+if __name__ == "__main__":
+    main()

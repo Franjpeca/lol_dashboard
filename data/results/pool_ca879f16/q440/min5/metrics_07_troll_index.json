@@ -1,0 +1,184 @@
+{
+  "source_L1": "L1_q440_min5_pool_ca879f16",
+  "generated_at": "2026-03-04 02:16:56",
+  "start_date": null,
+  "end_date": null,
+  "troll": {
+    "Fran": {
+      "total_matches": 590,
+      "early_surrender_own": 4,
+      "early_surrender_enemy": 1,
+      "afk_own": 113,
+      "afk_enemy": 101,
+      "pct_early_surrender_own": 0.006779661016949152,
+      "pct_early_surrender_enemy": 0.001694915254237288,
+      "pct_afk_own": 0.19152542372881357,
+      "pct_afk_enemy": 0.1711864406779661
+    },
+    "Olaf": {
+      "total_matches": 688,
+      "early_surrender_own": 2,
+      "early_surrender_enemy": 4,
+      "afk_own": 119,
+      "afk_enemy": 115,
+      "pct_early_surrender_own": 0.0029069767441860465,
+      "pct_early_surrender_enemy": 0.005813953488372093,
+      "pct_afk_own": 0.17296511627906977,
+      "pct_afk_enemy": 0.16715116279069767
+    },
+    "Carla": {
+      "total_matches": 696,
+      "early_surrender_own": 3,
+      "early_surrender_enemy": 2,
+      "afk_own": 133,
+      "afk_enemy": 119,
+      "pct_early_surrender_own": 0.004310344827586207,
+      "pct_early_surrender_enemy": 0.0028735632183908046,
+      "pct_afk_own": 0.1910919540229885,
+      "pct_afk_enemy": 0.17097701149425287
+    },
+    "Hugo": {
+      "total_matches": 708,
+      "early_surrender_own": 3,
+      "early_surrender_enemy": 3,
+      "afk_own": 121,
+      "afk_enemy": 98,
+      "pct_early_surrender_own": 0.00423728813559322,
+      "pct_early_surrender_enemy": 0.00423728813559322,
+      "pct_afk_own": 0.1709039548022599,
+      "pct_afk_enemy": 0.1384180790960452
+    },
+    "Eduardo": {
+      "total_matches": 664,
+      "early_surrender_own": 1,
+      "early_surrender_enemy": 4,
+      "afk_own": 125,
+      "afk_enemy": 105,
+      "pct_early_surrender_own": 0.0015060240963855422,
+      "pct_early_surrender_enemy": 0.006024096385542169,
+      "pct_afk_own": 0.18825301204819278,
+      "pct_afk_enemy": 0.15813253012048192
+    },
+    "Dexus": {
+      "total_matches": 550,
+      "early_surrender_own": 4,
+      "early_surrender_enemy": 0,
+      "afk_own": 87,
+      "afk_enemy": 93,
+      "pct_early_surrender_own": 0.007272727272727273,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.15818181818181817,
+      "pct_afk_enemy": 0.1690909090909091
+    },
+    "Dvd": {
+      "total_matches": 488,
+      "early_surrender_own": 4,
+      "early_surrender_enemy": 3,
+      "afk_own": 84,
+      "afk_enemy": 81,
+      "pct_early_surrender_own": 0.00819672131147541,
+      "pct_early_surrender_enemy": 0.006147540983606557,
+      "pct_afk_own": 0.1721311475409836,
+      "pct_afk_enemy": 0.16598360655737704
+    },
+    "Spam": {
+      "total_matches": 553,
+      "early_surrender_own": 2,
+      "early_surrender_enemy": 4,
+      "afk_own": 113,
+      "afk_enemy": 106,
+      "pct_early_surrender_own": 0.003616636528028933,
+      "pct_early_surrender_enemy": 0.007233273056057866,
+      "pct_afk_own": 0.20433996383363473,
+      "pct_afk_enemy": 0.19168173598553345
+    },
+    "Itzantete": {
+      "total_matches": 532,
+      "early_surrender_own": 3,
+      "early_surrender_enemy": 2,
+      "afk_own": 97,
+      "afk_enemy": 97,
+      "pct_early_surrender_own": 0.005639097744360902,
+      "pct_early_surrender_enemy": 0.0037593984962406013,
+      "pct_afk_own": 0.18233082706766918,
+      "pct_afk_enemy": 0.18233082706766918
+    },
+    "Ainara": {
+      "total_matches": 107,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 20,
+      "afk_enemy": 22,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.18691588785046728,
+      "pct_afk_enemy": 0.205607476635514
+    },
+    "Manolito": {
+      "total_matches": 161,
+      "early_surrender_own": 1,
+      "early_surrender_enemy": 1,
+      "afk_own": 19,
+      "afk_enemy": 31,
+      "pct_early_surrender_own": 0.006211180124223602,
+      "pct_early_surrender_enemy": 0.006211180124223602,
+      "pct_afk_own": 0.11801242236024845,
+      "pct_afk_enemy": 0.19254658385093168
+    },
+    "Nico": {
+      "total_matches": 143,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 3,
+      "afk_own": 18,
+      "afk_enemy": 18,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.02097902097902098,
+      "pct_afk_own": 0.1258741258741259,
+      "pct_afk_enemy": 0.1258741258741259
+    },
+    "Lluc": {
+      "total_matches": 81,
+      "early_surrender_own": 3,
+      "early_surrender_enemy": 1,
+      "afk_own": 11,
+      "afk_enemy": 10,
+      "pct_early_surrender_own": 0.037037037037037035,
+      "pct_early_surrender_enemy": 0.012345679012345678,
+      "pct_afk_own": 0.13580246913580246,
+      "pct_afk_enemy": 0.12345679012345678
+    },
+    "Ayna": {
+      "total_matches": 144,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 2,
+      "afk_own": 27,
+      "afk_enemy": 14,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.013888888888888888,
+      "pct_afk_own": 0.1875,
+      "pct_afk_enemy": 0.09722222222222222
+    },
+    "Morocha": {
+      "total_matches": 25,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 6,
+      "afk_enemy": 4,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.24,
+      "pct_afk_enemy": 0.16
+    },
+    "Paellita": {
+      "total_matches": 35,
+      "early_surrender_own": 0,
+      "early_surrender_enemy": 0,
+      "afk_own": 17,
+      "afk_enemy": 6,
+      "pct_early_surrender_own": 0.0,
+      "pct_early_surrender_enemy": 0.0,
+      "pct_afk_own": 0.4857142857142857,
+      "pct_afk_enemy": 0.17142857142857143
+    }
+  }
+}
