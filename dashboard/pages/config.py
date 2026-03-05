@@ -13,10 +13,18 @@ def render(pool_id: str, queue_id: int, min_friends: int):
 
     matches_count = _q("SELECT COUNT(*) AS n FROM matches WHERE pool_id=%s AND queue_id=%s AND min_friends=%s",
                        (pool_id, queue_id, min_friends))
-    pp_count = _q("SELECT COUNT(*) AS n FROM player_performances WHERE pool_id=%s AND queue_id=%s AND min_friends=%s",
-                  (pool_id, queue_id, min_friends))
-    friends_count = _q("SELECT COUNT(DISTINCT persona) AS n FROM player_performances WHERE is_friend=TRUE AND pool_id=%s AND queue_id=%s AND min_friends=%s",
-                       (pool_id, queue_id, min_friends))
+    pp_count = _q(
+        "SELECT COUNT(*) AS n FROM player_performances pp "
+        "JOIN matches m ON pp.match_id = m.match_id AND pp.pool_id = m.pool_id "
+        "WHERE pp.pool_id=%s AND pp.queue_id=%s AND m.min_friends=%s",
+        (pool_id, queue_id, min_friends)
+    )
+    friends_count = _q(
+        "SELECT COUNT(DISTINCT pp.persona) AS n FROM player_performances pp "
+        "JOIN matches m ON pp.match_id = m.match_id AND pp.pool_id = m.pool_id "
+        "WHERE pp.is_friend=TRUE AND pp.pool_id=%s AND pp.queue_id=%s AND m.min_friends=%s",
+        (pool_id, queue_id, min_friends)
+    )
 
     c1, c2, c3 = st.columns(3)
     c1.metric("Partidas cargadas", int(matches_count["n"].iloc[0]) if not matches_count.empty else 0)

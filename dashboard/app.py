@@ -55,17 +55,20 @@ if not pool_options:
 
 pools = list(pool_options.keys())
 
-nav_left, nav_pool_label, nav_pool, nav_friends_label, nav_friends, nav_status, nav_right = st.columns(
-    [2.2, 0.5, 1.4, 0.7, 0.8, 1.0, 0.1]
+nav_left, nav_pool_label, nav_pool, nav_friends_label, nav_friends, nav_status, nav_spacer = st.columns(
+    [1.2, 0.4, 1.1, 0.3, 0.8, 0.9, 2.5]
 )
 
 queue_id = 440  # Solo Flex
 
 with nav_left:
     st.markdown(
-        f"<div class='lol-brand-gradient'>Villaquesitos.gg</div>",
+        f"<div style='padding-top:2px; padding-bottom:10px;'><div class='lol-brand-gradient'>Villaquesitos.gg</div></div>",
         unsafe_allow_html=True,
     )
+
+with nav_spacer:
+    pass
 
 with nav_pool_label:
     st.markdown(
@@ -90,7 +93,7 @@ with nav_pool:
 with nav_friends_label:
     st.markdown(
         f"<div style='padding-top:14px; color:{MUTED}; font-size:0.9rem; "
-        f"font-weight:600; text-transform:uppercase; letter-spacing:.5px;'>Min Amigos:</div>",
+        f"font-weight:600; text-transform:uppercase; letter-spacing:.5px;'>Min:</div>",
         unsafe_allow_html=True,
     )
 
@@ -105,10 +108,13 @@ with nav_friends:
 
 with nav_status:
     st.markdown(
-        f"<div style='padding-top:11px;'>"
+        f"<div style='padding-top:11px; text-align:right;'>"
         f"<span class='lol-badge'>Activo</span></div>",
         unsafe_allow_html=True,
     )
+
+with nav_spacer:
+    pass
 
 # Thin separator line under navbar
 st.markdown(

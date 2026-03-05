@@ -89,13 +89,12 @@ def _img(url, css_class, title=""):
     return f'<img src="{url}" class="{css_class}" title="{title}" onerror="this.style.display=\'none\'">'
 
 
-def _render_player_row(p, patch, is_header=False):
+def _render_player_row(p, patch, is_header=False, max_damage: int = 1):
     champ = p.get("champ", "")
     name  = p.get("name", "")
     k, d, a = p.get("kills", 0), p.get("deaths", 0), p.get("assists", 0)
     kda   = p.get("kda", 0.0)
     dmg   = p.get("damage", 0)
-    dmg_share = p.get("damageShare", 0)
     gold  = p.get("gold", 0)
     cs    = p.get("cs", 0)
     cspm  = p.get("cspm", 0)
@@ -125,34 +124,34 @@ def _render_player_row(p, patch, is_header=False):
     # ── Nombre (resaltado si tiene alias en el mapa) ───────────────────────────
     name_cell = f'<span class="friend-name">{name}</span>'
 
-    # ── Barra de daño ─────────────────────────────────────────────────────────
-    bar_w = max(4, int(dmg_share * 1.5)) # multiplicador visual para que no queden muy pequeñas
-    dmg_cell = (
-        f'<div class="dmg-bar-wrap">'
-        f'<div style="min-width:55px; text-align:right;">{dmg:,}</div>'
-        f'<div class="dmg-bar" style="width:{bar_w}px;"></div>'
-        f'<span class="small-stat" style="min-width:35px; text-align:left;">{dmg_share}%</span>'
-        f'</div>'
-    )
+    # ── Barra de daño (escala respecto al máximo de la partida) ────────────────
+    max_w_px = 150
+    ratio = (dmg / max_damage) if max_damage and max_damage > 0 else 0
+    bar_w = max(6, int(ratio * max_w_px))
+    dmg_bar = f'<div class="dmg-bar" style="width:{bar_w}px;"></div>'
+    dmg_value = f'<div style="min-width:55px; text-align:right;">{dmg:,}</div>'
+
+    dmg_cell_left = f'<div class="dmg-bar-wrap" style="flex-direction:row; gap:8px; align-items:center;">{dmg_bar}{dmg_value}</div>'
 
     return (
         f"<tr>"
-        f"<td><div style='display:flex;align-items:center;justify-content:center;gap:8px;'>"
-        f"  {champ_img}{level_span}"
-        f"  <div style='display:flex;gap:3px;'>{spells_html}{runes_html}</div>"
+        f"<td><div style='display:flex;align-items:center;gap:8px;'>"
+        f"  {dmg_cell_left}{champ_img}{level_span}"
+        f"  <div style='display:flex;gap:3px;'>"
+        f"    {spells_html}{runes_html}"
+        f"  </div>"
         f"</div></td>"
         f"<td>{name_cell}<br><span class='small-stat'>{p.get('role','')}</span></td>"
         f"<td><b>{k}/{d}/{a}</b><br><span class='small-stat'>KDA {kda}</span></td>"
-        f"<td>{dmg_cell}</td>"
+        f"<td style='min-width:120px; text-align:center; color:#a8d8ea'>{vs}</td>"
         f"<td>{gold:,}<br><span class='small-stat'>{p.get('gpm',0)} /min</span></td>"
         f"<td>{cs}<br><span class='small-stat'>{cspm} /min</span></td>"
-        f"<td style='color:#a8d8ea'>{vs}</td>"
         f"<td>{items_html}</td>"
         f"</tr>"
     )
 
 
-def _render_team(team_key, team_data, patch):
+def _render_team(team_key, team_data, patch, max_damage: int = 1):
     win  = team_data.get("win", False)
     players = team_data.get("players", [])
     
@@ -165,23 +164,22 @@ def _render_team(team_key, team_data, patch):
     result_cls = "match-win" if win else "match-lose"
 
     header = f'<div class="match-team-header"><span class="{name_cls}">{name}</span> - <span class="{result_cls}">{result}</span></div>'
-    rows   = "".join(_render_player_row(p, patch) for p in players)
+    rows   = "".join(_render_player_row(p, patch, max_damage=max_damage) for p in players)
     table  = (
         f"<table class='match-table'>"
         # ── Definición de anchos fijos para que todo quede cuadriculado ───────
         f"<colgroup>"
-        f"  <col style='width: 15%;'>"  # Campeón
-        f"  <col style='width: 15%;'>"  # Jugador
+        f"  <col style='width: 20%;'>"  # Campeón + barra
+        f"  <col style='width: 16%;'>"  # Jugador
         f"  <col style='width: 10%;'>"  # KDA
-        f"  <col style='width: 18%;'>"  # Daño
-        f"  <col style='width: 10%;'>"  # Oro
+        f"  <col style='width: 8%;'>"   # VS (moved)
+        f"  <col style='width: 12%;'>"  # Oro
         f"  <col style='width: 8%;'>"   # CS
-        f"  <col style='width: 6%;'>"   # VS
-        f"  <col style='width: 18%;'>"  # Ítems
+        f"  <col style='width: 26%;'>"  # Ítems
         f"</colgroup>"
         f"<thead><tr>"
         f"  <th>Campeón</th><th>Jugador</th><th>KDA</th>"
-        f"  <th>Daño</th><th>Oro</th><th>CS</th><th>VS</th><th>Ítems</th>"
+        f"  <th>VS</th><th>Oro</th><th>CS</th><th>Ítems</th>"
         f"</tr></thead>"
         f"<tbody>{rows}</tbody>"
         f"</table>"
@@ -260,7 +258,13 @@ def render(pool_id: str, queue_id: int, min_friends: int):
                 continue
 
             # ── Render de los dos equipos ─────────────────────────────────
-            blue_html = _render_team("blue", detail["teams"]["blue"], patch)
-            red_html  = _render_team("red",  detail["teams"]["red"],  patch)
+            # Escalar barras según el máximo daño en la partida
+            blue_players = detail["teams"]["blue"].get("players", [])
+            red_players = detail["teams"]["red"].get("players", [])
+            all_players = blue_players + red_players
+            match_max_damage = max((p.get("damage", 0) for p in all_players), default=1) or 1
+
+            blue_html = _render_team("blue", detail["teams"]["blue"], patch, max_damage=match_max_damage)
+            red_html  = _render_team("red",  detail["teams"]["red"],  patch, max_damage=match_max_damage)
             st.markdown(blue_html + "<br>" + red_html, unsafe_allow_html=True)
 

@@ -740,12 +740,12 @@ def get_match_detail(match_id: str) -> dict:
                 for acc in doc.get("accounts", []):
                     p = acc.get("puuid")
                     riot_id = acc.get("riotId", "")
-                    if p:
-                        puuid_to_name[p] = riot_id.split("#")[0] if riot_id else "(sin nombre)"
+                    if p and riot_id:
+                        puuid_to_name[p] = riot_id
                 # Formato antiguo: puuids[] + riotIds[]
                 puuids = doc.get("puuids", [])
                 riot_ids = doc.get("riotIds", [])
-                name = riot_ids[-1].split("#")[0] if riot_ids else None
+                name = riot_ids[-1] if riot_ids else None
                 for p in puuids:
                     if p not in puuid_to_name and name:
                         puuid_to_name[p] = name

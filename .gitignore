@@ -2,7 +2,7 @@
 *.rar
 
 # Mantener .env (por si lo tienes en el repositorio)
-!.env
+.env
 
 # Ignorar entorno virtual
 .venv/
