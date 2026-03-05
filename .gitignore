@@ -22,3 +22,11 @@ postgres/
 data/runtime
 
 LICENSE
+
+.venv/
+__pycache__/
+*.pyc
+data/
+mongo/
+postgres/
+.env
