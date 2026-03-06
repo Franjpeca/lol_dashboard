@@ -87,7 +87,13 @@ def load_match_summary(match_id: str, allowed_queues=None, min_amigos: int = 1):
     def build_player(p):
         puuid = p.get("puuid")
 
-        real_name = PUUID_TO_NAME.get(puuid, p.get("summonerName") or "(Sin nombre)")
+        riot_id = ""
+        if p.get("riotIdGameName") and p.get("riotIdTagLine"):
+            riot_id = f"{p['riotIdGameName']}#{p['riotIdTagLine']}"
+        elif p.get("riotIdGameName"):
+            riot_id = p["riotIdGameName"]
+        fallback_name = riot_id or p.get("summonerName") or "(Sin nombre)"
+        real_name = PUUID_TO_NAME.get(puuid, fallback_name)
 
         farm = p.get("totalMinionsKilled", 0) + p.get("neutralMinionsKilled", 0)
         duration_minutes = max(1, info.get("gameDuration", 1) / 60)

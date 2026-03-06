@@ -118,7 +118,7 @@ PP_UPSERT = """
         champion_name, team_id, win, lane, role,
         kills, deaths, assists, gold_earned,
         damage_dealt, damage_taken, vision_score,
-        damage_mitigated, cs_total, game_ended_surrender,
+        damage_mitigated, cs_total, riot_id_name, game_ended_surrender,
         pool_id, queue_id, game_start_at, duration_s,
         friends_count,
         first_blood_kill, first_blood_assist, longest_time_spent_living,
@@ -130,7 +130,7 @@ PP_UPSERT = """
         %(champion_name)s, %(team_id)s, %(win)s, %(lane)s, %(role)s,
         %(kills)s, %(deaths)s, %(assists)s, %(gold_earned)s,
         %(damage_dealt)s, %(damage_taken)s, %(vision_score)s,
-        %(damage_mitigated)s, %(cs_total)s, %(game_ended_surrender)s,
+        %(damage_mitigated)s, %(cs_total)s, %(riot_id_name)s, %(game_ended_surrender)s,
         %(pool_id)s, %(queue_id)s, %(game_start_at)s, %(duration_s)s,
         %(friends_count)s,
         %(first_blood_kill)s, %(first_blood_assist)s, %(longest_time_spent_living)s,
@@ -142,7 +142,10 @@ PP_UPSERT = """
         persona = EXCLUDED.persona,
         is_friend = EXCLUDED.is_friend,
         win = EXCLUDED.win,
-        friends_count = EXCLUDED.friends_count
+        friends_count = EXCLUDED.friends_count,
+        riot_id_name = EXCLUDED.riot_id_name,
+        role = EXCLUDED.role,
+        lane = EXCLUDED.lane
 """
 
 
@@ -224,6 +227,15 @@ def populate(pool_id: str, l1_name: str, queue_id: int, min_friends: int,
             is_friend = puuid in friends_present
             persona = puuid_to_persona.get(puuid) if is_friend else None
 
+            # Riot ID Name (GameName#TagLine)
+            # Name resolution
+            if p.get("riotIdGameName") and p.get("riotIdTagLine"):
+                riot_id_name = f"{p['riotIdGameName']}#{p['riotIdTagLine']}"
+            elif p.get("riotIdGameName"):
+                riot_id_name = p["riotIdGameName"]
+            else:
+                riot_id_name = p.get("summonerName") or "Unknown"
+
             # Skip if we already have a row for this persona in this match
             if persona is not None and persona in personas_in_match:
                 continue
@@ -244,7 +256,8 @@ def populate(pool_id: str, l1_name: str, queue_id: int, min_friends: int,
                 "team_id": p.get("teamId"),
                 "win": p.get("win"),
                 "lane": p.get("lane"),
-                "role": p.get("role"),
+                # Uso de teamPosition prioritario sobre role (MatchV5)
+                "role": p.get("teamPosition") or p.get("role"),
                 "kills": p.get("kills"),
                 "deaths": p.get("deaths"),
                 "assists": p.get("assists"),
@@ -254,6 +267,7 @@ def populate(pool_id: str, l1_name: str, queue_id: int, min_friends: int,
                 "vision_score": p.get("visionScore"),
                 "damage_mitigated": p.get("damageSelfMitigated"),
                 "cs_total": cs,
+                "riot_id_name": riot_id_name,
                 "game_ended_surrender": surrender,
                 "pool_id": pool_id,
                 "queue_id": queue_id,
@@ -305,6 +319,19 @@ def main():
     print(f"[ETL] Arrancando populate_pg.py | queue={args.queue} min={args.min} pool={args.pool}")
 
     pg_conn = psycopg2.connect(_PG_DSN)
+    pg_conn.autocommit = True
+
+    # AUTO-FIX: Asegurar que la columna riot_id_name existe
+    with pg_conn.cursor() as cur:
+        cur.execute("""
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name='player_performances' AND column_name='riot_id_name'
+        """)
+        if not cur.fetchone():
+            print("[ETL] 🔧 Añadiendo columna 'riot_id_name' a player_performances...")
+            cur.execute("ALTER TABLE player_performances ADD COLUMN riot_id_name VARCHAR(100)")
+            print("[ETL] ✅ Columna añadida.")
 
     try:
         with get_mongo_client() as mongo_client:

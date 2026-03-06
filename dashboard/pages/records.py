@@ -64,7 +64,18 @@ def render(pool_id: str, queue_id: int, min_friends: int):
                                  key="records_stat_sel")
     st.markdown("Haz doble click para copiar el ID de la partida")
 
-    stat_col_internal = selected_stat.replace("max_", "")
+    # Mapeo explícito de clave UI -> columna real en player_performances
+    # (evita errores como gold->gold_earned o cs->cs_total)
+    stat_col_map = {
+        "max_kills": "kills",
+        "max_deaths": "deaths",
+        "max_assists": "assists",
+        "max_vision_score": "vision_score",
+        "max_cs": "cs_total",
+        "max_damage_dealt": "damage_dealt",
+        "max_gold": "gold_earned",
+    }
+    stat_col_internal = stat_col_map[selected_stat]
     
     # Importar lazy o globalmente en la función 
     from dashboard.db import get_records_by_stat

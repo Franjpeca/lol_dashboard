@@ -11,6 +11,7 @@ import sys
 import json
 import argparse
 import datetime
+import time
 from pathlib import Path
 
 # Asegurar que src/ esté en sys.path
@@ -22,7 +23,10 @@ if str(SRC_DIR) not in sys.path:
 
 from riotwatcher import RiotWatcher
 from utils.api_key_manager import get_api_key
-from utils.config import MONGO_DB, COLLECTION_USERS_INDEX, REGIONAL_ROUTING
+from utils.config import (
+    MONGO_DB, COLLECTION_USERS_INDEX, REGIONAL_ROUTING,
+    SLEEP_BETWEEN_CALLS
+)
 from utils.db import get_mongo_client
 
 # ================================
@@ -58,6 +62,11 @@ def get_puuid_from_api(riot: RiotWatcher, riot_id: str, regional: str) -> str | 
     try:
         name, tag = riot_id.split("#", 1)
         acc = riot.account.by_riot_id(regional, name, tag)
+        
+        # Rate limit
+        if SLEEP_BETWEEN_CALLS > 0:
+            time.sleep(SLEEP_BETWEEN_CALLS)
+            
         return acc["puuid"]
     except Exception as e:
         print(f"  [WARN] No se pudo obtener PUUID para {riot_id}: {e}")

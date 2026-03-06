@@ -9,7 +9,7 @@ from dashboard.db import (
     get_winrate_by_persona,
     get_community_champions, get_enemy_champions,
     get_matches_per_day, get_matches_per_day_persona,
-    get_community_overall_stats
+    get_community_overall_stats, get_top_outsider_allies
 )
 from dashboard.theme import (
     make_hbar, CHART_SCALE,
@@ -173,21 +173,24 @@ def render(pool_id: str, queue_id: int, min_friends: int):
     # ── Frecuencia de partidas ───────────────────────────────────────────────
     st.subheader("Frecuencia de partidas")
 
-    def _fill_dates(df: pd.DataFrame, day_col: str = "day", count_col: str = "matches") -> pd.DataFrame:
-        """Rellena los días sin partidas con 0 para que aparezcan en la gráfica."""
+    def _fill_dates(df: pd.DataFrame, global_min: pd.Timestamp, global_max: pd.Timestamp, day_col: str = "day") -> pd.DataFrame:
+        """Rellena los días sin partidas con 0 en el rango global para alinear los gráficos."""
         df = df.copy()
         df[day_col] = pd.to_datetime(df[day_col])
-        full_range = pd.date_range(df[day_col].min(), df[day_col].max(), freq="D")
+        full_range = pd.date_range(global_min, global_max, freq="D")
         df = df.set_index(day_col).reindex(full_range, fill_value=0).reset_index()
         df.rename(columns={"index": day_col}, inplace=True)
         df[day_col] = df[day_col].dt.strftime("%Y-%m-%d")
         return df
 
-    # Global
     global_df = get_matches_per_day(pool_id, queue_id, min_friends)
+    g_min, g_max = None, None
     if not global_df.empty:
+        g_min = pd.to_datetime(global_df["day"]).min()
+        g_max = pd.to_datetime(global_df["day"]).max()
         st.markdown("**Frecuencia global de partidas por día**")
-        fig_glob = _vbar(_fill_dates(global_df), date_col="day", count_col="matches",
+        
+        fig_glob = _vbar(_fill_dates(global_df, g_min, g_max), date_col="day", count_col="matches",
                          title="Partidas por día - Comunidad completa")
         st.plotly_chart(fig_glob, use_container_width=True, theme=None)
     else:
@@ -197,13 +200,39 @@ def render(pool_id: str, queue_id: int, min_friends: int):
 
     # Por persona
     persona_freq_df = get_matches_per_day_persona(pool_id, queue_id, min_friends)
-    if not persona_freq_df.empty:
+    if not persona_freq_df.empty and g_min is not None:
         st.markdown("**Frecuencia por jugador**")
         personas = persona_freq_df["persona"].dropna().unique().tolist()
         personas.sort()
         p_sel = st.selectbox("Seleccionar jugador", personas, key="winrate_freq_persona_sel")
         df_p = persona_freq_df[persona_freq_df["persona"] == p_sel]
-        fig_p = _vbar(_fill_dates(df_p), date_col="day", count_col="matches",
+        
+        fig_p = _vbar(_fill_dates(df_p, g_min, g_max), date_col="day", count_col="matches",
                        title=f"Partidas por día - {p_sel}")
         st.plotly_chart(fig_p, use_container_width=True, theme=None)
+
+    st.markdown("---")
+
+    # ── Aliados frecuentes (fuera de la lista) ──────────────────────────────
+    st.subheader("Top aliados frecuentes (fuera de la lista)")
+    st.info("Jugadores que no están en tu mapa de cuentas pero con los que has coincidido en tu equipo.")
+    
+    outsider_df = get_top_outsider_allies(pool_id, queue_id, min_friends)
+    if not outsider_df.empty:
+        total_outsider_games = int(outsider_df["games"].sum())
+        st.markdown(f"**Suma de partidas con otra gente: {total_outsider_games}**")
+
+        # Ordenado por nº partidas
+        df_vis = outsider_df.sort_values("games", ascending=True)
+        dynamic_height = max(500, len(df_vis) * 25)
+        
+        fig_out = make_hbar(df_vis, x="games", y="summoner",
+                            title="Veces coincidido", color_scale="Turbo",
+                            text_fmt=":.0f", height=dynamic_height,
+                            color_col="winrate", hover_col="winrate",
+                            color_range=[30, 70],
+                            show_colorbar=True, colorbar_title="Winrate %")
+        st.plotly_chart(fig_out, theme=None, use_container_width=True)
+    else:
+        st.info("No se han encontrado aliados fuera de la lista para los filtros seleccionados.")
 

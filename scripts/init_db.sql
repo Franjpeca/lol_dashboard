@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS player_performances (
     vision_score    INTEGER,
     damage_mitigated INTEGER,
     cs_total        INTEGER,                  -- totalMinionsKilled + neutralMinionsKilled
+    riot_id_name    VARCHAR(100),             -- Nombre visible (GameName#Tag)
     game_ended_surrender BOOLEAN DEFAULT FALSE,
     pool_id         VARCHAR(30),
     queue_id        INTEGER,

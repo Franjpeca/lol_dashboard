@@ -98,12 +98,42 @@ def get_community_overall_stats(pool_id: str, queue_id: int, min_friends: int) -
                SUM(CASE WHEN group_win THEN 1 ELSE 0 END) AS total_wins
         FROM group_matches
     """, (pool_id, queue_id, min_friends))
-    if df.empty or pd.isna(df.iloc[0]["total_matches"]) or df.iloc[0]["total_matches"] == 0:
-        return {"matches": 0, "winrate": 0.0}
-    row = df.iloc[0]
-    matches = int(row["total_matches"])
-    wins = int(row["total_wins"] or 0)
-    return {"matches": matches, "winrate": round((wins / matches) * 100, 2)}
+    if df.empty:
+        return {"matches": 0, "winrate": 0}
+    
+    total = int(df.iloc[0]["total_matches"])
+    wins = int(df.iloc[0]["total_wins"]) if df.iloc[0]["total_wins"] else 0
+    wr = round((wins / total * 100), 1) if total > 0 else 0
+    return {"matches": total, "winrate": wr}
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_top_outsider_allies(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
+    """
+    Busca jugadores que NO son amigos (is_friend=FALSE) pero que han jugado
+    en el MISMO equipo que los amigos en las partidas de esa pool.
+    """
+    return _q("""
+        SELECT 
+            riot_id_name as summoner,
+            COUNT(*) as games,
+            ROUND(AVG(CASE WHEN win THEN 1.0 ELSE 0.0 END) * 100, 1) as winrate
+        FROM player_performances
+        WHERE pool_id = %s 
+          AND queue_id = %s 
+          AND friends_count >= %s
+          AND is_friend = FALSE
+          AND riot_id_name IS NOT NULL
+          AND riot_id_name <> 'Unknown'
+          -- Solo aquellos que jugaron en el equipo que contenía a los amigos
+          AND (match_id, pool_id, team_id) IN (
+              SELECT match_id, pool_id, team_id 
+              FROM player_performances 
+              WHERE pool_id = %s AND is_friend = TRUE
+          )
+        GROUP BY riot_id_name
+        ORDER BY games DESC, winrate DESC
+    """, (pool_id, queue_id, min_friends, pool_id))
 
 
 def get_winrate_by_persona(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
@@ -166,11 +196,11 @@ def get_player_performance_stats(pool_id: str, queue_id: int, min_friends: int, 
       SUPPORT → role='SUPPORT'  (cubre BOTTOM+SUPPORT y NONE+SUPPORT)
     """
     _POS_FILTER = {
-        "TOP":     "p.lane = 'TOP'",
-        "JUNGLE":  "p.lane = 'JUNGLE'",
-        "MID":     "p.lane = 'MIDDLE'",
-        "ADC":     "p.lane = 'BOTTOM' AND p.role = 'CARRY'",
-        "SUPPORT": "p.role = 'SUPPORT'",
+        "TOP":     "(p.role = 'TOP' OR (p.role IS NULL AND p.lane = 'TOP'))",
+        "JUNGLE":  "(p.role = 'JUNGLE' OR (p.role IS NULL AND p.lane = 'JUNGLE'))",
+        "MID":     "(p.role = 'MIDDLE' OR p.role = 'MID' OR (p.role IS NULL AND p.lane IN ('MIDDLE', 'MID')))",
+        "ADC":     "(p.role = 'BOTTOM' OR (p.role IS NULL AND p.lane = 'BOTTOM' AND p.role = 'CARRY'))",
+        "SUPPORT": "(p.role = 'UTILITY' OR p.role = 'SUPPORT' OR (p.role IS NULL AND p.lane = 'BOTTOM' AND p.role = 'SUPPORT'))",
     }
     pos_clause = _POS_FILTER.get(position, "TRUE")
 
@@ -217,11 +247,11 @@ def get_champion_stats_by_role(
     position: 'Todos' | 'TOP' | 'JUNGLE' | 'MID' | 'ADC' | 'SUPPORT'
     """
     _POS_FILTER = {
-        "TOP":     "lane = 'TOP'",
-        "JUNGLE":  "lane = 'JUNGLE'",
-        "MID":     "lane = 'MIDDLE'",
-        "ADC":     "lane = 'BOTTOM' AND role = 'CARRY'",
-        "SUPPORT": "role = 'SUPPORT'",
+        "TOP":     "(role = 'TOP' OR (role IS NULL AND lane = 'TOP'))",
+        "JUNGLE":  "(role = 'JUNGLE' OR (role IS NULL AND lane = 'JUNGLE'))",
+        "MID":     "(role = 'MIDDLE' OR role = 'MID' OR (role IS NULL AND lane IN ('MIDDLE', 'MID')))",
+        "ADC":     "(role = 'BOTTOM' OR (role IS NULL AND lane = 'BOTTOM' AND role = 'CARRY'))",
+        "SUPPORT": "(role = 'UTILITY' OR role = 'SUPPORT' OR (role IS NULL AND lane = 'BOTTOM' AND role = 'SUPPORT'))",
     }
     pos_clause     = _POS_FILTER.get(position, "TRUE")
     persona_clause = "persona = %s" if persona != "Todos" else "TRUE"
@@ -394,11 +424,11 @@ def get_streaks(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
 
 
 _POS_FILTER_REC = {
-    "TOP":     "lane = 'TOP'",
-    "JUNGLE":  "lane = 'JUNGLE'",
-    "MID":     "lane = 'MIDDLE'",
-    "ADC":     "lane = 'BOTTOM' AND role = 'CARRY'",
-    "SUPPORT": "role = 'SUPPORT'",
+    "TOP":     "(role = 'TOP' OR (role IS NULL AND lane = 'TOP'))",
+    "JUNGLE":  "(role = 'JUNGLE' OR (role IS NULL AND lane = 'JUNGLE'))",
+    "MID":     "(role = 'MIDDLE' OR role = 'MID' OR (role IS NULL AND lane IN ('MIDDLE', 'MID')))",
+    "ADC":     "(role = 'BOTTOM' OR (role IS NULL AND lane = 'BOTTOM' AND role = 'CARRY'))",
+    "SUPPORT": "(role = 'UTILITY' OR role = 'SUPPORT' OR (role IS NULL AND lane = 'BOTTOM' AND role = 'SUPPORT'))",
 }
 
 
@@ -760,6 +790,26 @@ def get_match_detail(match_id: str) -> dict:
             if not info:
                 return {"error": "Partida corrupta o incompleta"}
 
+            # Fallback desde PostgreSQL (cuando en Mongo falte/sea 0 el daño)
+            pg_damage_by_puuid: dict[str, int] = {}
+            try:
+                pg_df = _q(
+                    "SELECT puuid, damage_dealt FROM player_performances WHERE match_id=%s",
+                    (match_id,)
+                )
+                if not pg_df.empty:
+                    for _, r in pg_df.iterrows():
+                        pu = r.get("puuid")
+                        dmg_pg = r.get("damage_dealt")
+                        if pu and dmg_pg is not None:
+                            try:
+                                pg_damage_by_puuid[pu] = int(dmg_pg)
+                            except Exception:
+                                pass
+            except Exception:
+                # Si PG no está disponible, seguimos con datos de Mongo
+                pg_damage_by_puuid = {}
+
             duration_s = info.get("gameDuration", 0)
             duration_min = max(1, duration_s / 60)
             ts = info.get("gameStartTimestamp")
@@ -768,7 +818,13 @@ def get_match_detail(match_id: str) -> dict:
             # ── Builder de jugador ────────────────────────────────────────
             def build_player(p):
                 puuid = p.get("puuid", "")
-                name = puuid_to_name.get(puuid, p.get("summonerName") or puuid[:8])
+                riot_id = ""
+                if p.get("riotIdGameName") and p.get("riotIdTagLine"):
+                    riot_id = f"{p['riotIdGameName']}#{p['riotIdTagLine']}"
+                elif p.get("riotIdGameName"):
+                    riot_id = p["riotIdGameName"]
+                fallback_name = riot_id or p.get("summonerName") or puuid[:8]
+                name = puuid_to_name.get(puuid, fallback_name)
                 farm = p.get("totalMinionsKilled", 0) + p.get("neutralMinionsKilled", 0)
 
                 items_raw = p.get("items")
@@ -781,7 +837,37 @@ def get_match_detail(match_id: str) -> dict:
                 primary = perks[0].get("selections", [{}])[0].get("perk") if len(perks) >= 1 else None
                 secondary = perks[1].get("style") if len(perks) >= 2 else None
 
-                dmg = p.get("totalDamageDealtToChampions", 0)
+                # Daño: algunos matches pueden venir sin totalDamageDealtToChampions
+                # (o a 0) según fuente/parche. Aplicamos fallback robusto.
+                dmg = p.get("totalDamageDealtToChampions")
+                if dmg is None:
+                    dmg = 0
+
+                if dmg == 0:
+                    # Fallback 1: suma de daño físico/mágico/verdadero a campeones
+                    phys = p.get("physicalDamageDealtToChampions") or 0
+                    magic = p.get("magicDamageDealtToChampions") or 0
+                    true_dmg = p.get("trueDamageDealtToChampions") or 0
+                    sum_parts = phys + magic + true_dmg
+                    if sum_parts > 0:
+                        dmg = sum_parts
+
+                if dmg == 0:
+                    # Fallback 2: estimación por challenges.damagePerMinute
+                    ch = p.get("challenges") or {}
+                    dpm_ch = ch.get("damagePerMinute")
+                    if dpm_ch:
+                        try:
+                            dmg = int(round(float(dpm_ch) * duration_min))
+                        except Exception:
+                            pass
+
+                if dmg == 0:
+                    # Fallback 3: daño desde PostgreSQL por puuid (si existe)
+                    dmg_pg = pg_damage_by_puuid.get(puuid)
+                    if isinstance(dmg_pg, int) and dmg_pg > 0:
+                        dmg = dmg_pg
+
                 gold = p.get("goldEarned", 0)
 
                 return {

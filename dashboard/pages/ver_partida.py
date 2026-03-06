@@ -50,13 +50,12 @@ div[data-testid="stExpander"]:has(.expander-lose) details {
     padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,.06);
     vertical-align: middle; text-align:center;
 }
-.match-table tr:last-child td { border-bottom: none; }
 .match-champ-icon {
     width: 40px; height: 40px; border-radius: 50%;
     border: 2px solid rgba(255,255,255,.15); object-fit: cover;
 }
 .match-item-icon {
-    width: 28px; height: 28px; border-radius: 4px;
+    width: 30px; height: 30px; border-radius: 4px;
     border: 1px solid rgba(255,255,255,.10); object-fit: cover;
     margin-right: 3px;
 }
@@ -125,27 +124,36 @@ def _render_player_row(p, patch, is_header=False, max_damage: int = 1):
     name_cell = f'<span class="friend-name">{name}</span>'
 
     # ── Barra de daño (escala respecto al máximo de la partida) ────────────────
-    max_w_px = 150
+    max_w_px = 160
     ratio = (dmg / max_damage) if max_damage and max_damage > 0 else 0
     bar_w = max(6, int(ratio * max_w_px))
-    dmg_bar = f'<div class="dmg-bar" style="width:{bar_w}px;"></div>'
+    dmg_bar = f'<div class="dmg-bar" style="width:{bar_w}px; background:#e74c3c;"></div>'
     dmg_value = f'<div style="min-width:55px; text-align:right;">{dmg:,}</div>'
 
-    dmg_cell_left = f'<div class="dmg-bar-wrap" style="flex-direction:row; gap:8px; align-items:center;">{dmg_bar}{dmg_value}</div>'
+    dmg_cell = f'<div class="dmg-bar-wrap" style="justify-content:flex-start; align-items:center; gap:8px;">{dmg_bar}{dmg_value}</div>'
 
     return (
         f"<tr>"
-        f"<td><div style='display:flex;align-items:center;gap:8px;'>"
-        f"  {dmg_cell_left}{champ_img}{level_span}"
-        f"  <div style='display:flex;gap:3px;'>"
-        f"    {spells_html}{runes_html}"
+        # Campeón + nivel + hechizos
+        f"<td style='text-align:center;'>"
+        f"  <div style='display:flex;align-items:center;justify-content:center;gap:8px;'>"
+        f"    {champ_img}{level_span}"
+        f"    <div style='display:flex;gap:3px;margin-left:6px;'>{spells_html}{runes_html}</div>"
         f"  </div>"
-        f"</div></td>"
+        f"</td>"
+        # Nombre
         f"<td>{name_cell}<br><span class='small-stat'>{p.get('role','')}</span></td>"
+        # KDA
         f"<td><b>{k}/{d}/{a}</b><br><span class='small-stat'>KDA {kda}</span></td>"
+        # Daño (columna separada, escalar por max_damage)
+        f"<td style='text-align:left; padding-left:24px;'>{dmg_cell}</td>"
+        # Vision
         f"<td style='min-width:120px; text-align:center; color:#a8d8ea'>{vs}</td>"
+        # Oro
         f"<td>{gold:,}<br><span class='small-stat'>{p.get('gpm',0)} /min</span></td>"
+        # CS
         f"<td>{cs}<br><span class='small-stat'>{cspm} /min</span></td>"
+        # Ítems
         f"<td>{items_html}</td>"
         f"</tr>"
     )
@@ -169,17 +177,18 @@ def _render_team(team_key, team_data, patch, max_damage: int = 1):
         f"<table class='match-table'>"
         # ── Definición de anchos fijos para que todo quede cuadriculado ───────
         f"<colgroup>"
-        f"  <col style='width: 20%;'>"  # Campeón + barra
-        f"  <col style='width: 16%;'>"  # Jugador
-        f"  <col style='width: 10%;'>"  # KDA
-        f"  <col style='width: 8%;'>"   # VS (moved)
-        f"  <col style='width: 12%;'>"  # Oro
-        f"  <col style='width: 8%;'>"   # CS
-        f"  <col style='width: 26%;'>"  # Ítems
+        f"  <col style='width: 12%;'>"  # Campeón
+        f"  <col style='width: 13%;'>"  # Jugador
+        f"  <col style='width: 9%;'>"   # KDA
+        f"  <col style='width: 18%;'>"  # Daño (barra)
+        f"  <col style='width: 6%;'>"   # VS
+        f"  <col style='width: 11%;'>"  # Oro
+        f"  <col style='width: 7%;'>"   # CS
+        f"  <col style='width: 24%;'>"  # Ítems
         f"</colgroup>"
         f"<thead><tr>"
         f"  <th>Campeón</th><th>Jugador</th><th>KDA</th>"
-        f"  <th>VS</th><th>Oro</th><th>CS</th><th>Ítems</th>"
+        f"  <th>Daño</th><th>VS</th><th>Oro</th><th>CS</th><th>Ítems</th>"
         f"</tr></thead>"
         f"<tbody>{rows}</tbody>"
         f"</table>"

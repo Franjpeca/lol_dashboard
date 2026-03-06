@@ -1,56 +1,76 @@
-# Comandos Diarios del Pipeline LoL
+# 🎮 Comandos y Orquestadores - LoL Dashboard
 
-Aquí tienes la lista rápida de comandos para mantener el dashboard actualizado. Todos deben ejecutarse dentro de la carpeta del proyecto en el servidor, con el entorno virtual activado:
+Esta guía detalla los comandos necesarios para operar el pipeline de datos, desde la descarga hasta la visualización en el dashboard.
+
+---
+
+## 🛠️ 0. Preparación (Entorno)
+Antes de ejecutar cualquier comando, asegúrate de estar en la carpeta raíz y activar el entorno virtual.
 
 ```bash
+# Entrar en la carpeta
 cd /home/dev/lol_dashboard
+
+# Activar entorno virtual
 source .venv/bin/activate
 ```
 
 ---
 
-## 1. Descargar partidas nuevas
-**Ejecutar:** Cuando hayas jugado partidas nuevas que quieras incorporar al dashboard.
-*(Este comando buscará en la API de Riot y solo descargará las partidas recientes que no tengas en tu base de datos).*
+## 📥 1. Descarga de Partidas (L0)
+Este paso se conecta a la API de Riot Games para bajar las partidas nuevas de todos los jugadores registrados.
 
+**Comando:**
 ```bash
-python src/pipeline.py --mode l0 --source api --run-in-terminal
+python src/pipeline.py --mode l0 --run-in-terminal
+```
+*   **¿Qué hace?**: Ejecuta `ingest_users.py` (actualiza quiénes somos) e `ingest_matches.py` (baja partidas nuevas).
+*   **Nota**: Solo baja partidas que aún no tienes en la base de datos.
+
+---
+
+## ⚙️ 2. Pipeline General (ETL)
+Procesa las partidas descargadas (datos crudos) y las convierte en estadísticas listas para el Dashboard (PostgreSQL).
+
+Existen dos orquestadores principales:
+
+### A. Orquestador Automático (Recomendado)
+Procesa **todos** los filtros de amigos (1 a 5) tanto para el pool Normal como para Season. Es el que debes lanzar para un refresco total.
+
+**Comando:**
+```bash
+python scripts/run_pipeline_all.py
+```
+
+### B. Orquestador Manual (Por Pool)
+Si solo quieres actualizar una sección específica rápidamente:
+
+*   **Actualizar Pool Normal (General):**
+    ```bash
+    python src/pipeline.py --mode l1-l2 --min 1 --run-in-terminal
+    ```
+*   **Actualizar Pool Season (2026):**
+    ```bash
+    python src/pipeline.py --mode season --min 2 --run-in-terminal
+    ```
+
+---
+
+## 🚀 3. Lanzar el Servidor (Dashboard)
+Arranca la interfaz web en el puerto configurado (`8080`).
+
+**Comando:**
+```bash
+streamlit run dashboard/app.py --server.port 8080
 ```
 
 ---
 
-## 2. Actualizar datos para el "Min Amigos" (Pool Normal)
-**Ejecutar:** Después de descargar partidas nuevas (paso 1).
-*(Esto cogerá TODAS tus partidas desde los inicios y recalculará estadísticas para el pool general, filtrando automáticamente el número real de amigos presentes en cada partida para que el desplegable del dashboard funcione).*
+## 📒 Resumen de Scripts Orquestadores
 
-```bash
-python src/pipeline.py --mode l1-l2 --min 1 --run-in-terminal
-```
-
----
-
-## 3. Actualizar datos para "Season" (Partidas en 2026)
-**Ejecutar:** Después de descargar partidas nuevas (paso 1).
-*(Esto cogerá las partidas desde el 8 de enero de 2026 y actualizará el pool exclusivo de Season. El flag `--min 2` asume que para season solo cuentan las partidas con mínimo 2 amigos).*
-
-```bash
-python src/pipeline.py --mode season --min 2 --run-in-terminal
-```
-
----
-
-## 4. [USO RARO] Ingestar el histórico desde Local (Windows)
-**Ejecutar:** SOLO si el MongoDB del servidor se borra por accidente o si has añadido miles de archivos JSON antiguos a mano desde Windows a la carpeta `/data/match_cache`.
-
-```bash
-python src/pipeline.py --mode l0 --source file --run-in-terminal
-```
-
----
-
-## 5. Levantar el dashboard
-**Ejecutar:** Para arrancar la página web si se ha caído.
-
-```bash
-streamlit run dashboard/app.py
-```
+| Script | Propósito |
+| :--- | :--- |
+| `src/pipeline.py` | **Orquestador Base**. Permite lanzar fases específicas (`l0`, `l1-l2`, `season`) mediante flags. |
+| `scripts/run_pipeline_all.py` | **Orquestador de Lazo**. Llama a `pipeline.py` iterativamente para cubrir todos los casos de "Min Amigos" (1-5) automáticamente. |
+| `src/extract/ingest_matches.py` | Script de bajo nivel para bajar partidas (usado por el pipeline). |
+| `src/load/populate_pg.py` | Script de bajo nivel que mueve datos de Mongo a Postgres (usado por el pipeline). |
