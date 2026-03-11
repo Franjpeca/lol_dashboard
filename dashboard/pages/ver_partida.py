@@ -3,7 +3,7 @@ dashboard/pages/ver_partida.py
 Sección: Ver Partida — últimas partidas del grupo con visualización de equipos.
 """
 import streamlit as st
-from dashboard.db import get_recent_matches, get_match_detail
+from dashboard.db import get_recent_matches, get_match_detail, get_champions_by_persona
 from dashboard.theme import BG, BORDER, GOLD, MUTED, GREEN, RED
 
 # ── Helpers de DDragon (reutilizados de example/viewGame/dragon.py) ───────────
@@ -214,23 +214,75 @@ def render(pool_id: str, queue_id: int, min_friends: int):
     with col_persona:
         personas_list = get_all_personas(pool_id, queue_id, min_friends)
         persona_options = ["Todos"] + personas_list
-        persona_sel     = st.selectbox("Filtrar por persona", persona_options, key="vp_persona")
+        persona_sel     = st.selectbox("Filtrar por persona (Simple)", persona_options, key="vp_persona")
         persona_filter  = "" if persona_sel == "Todos" else persona_sel
 
     with col_slider:
         limit = st.slider("Nº partidas", 5, 200, 20, step=5, key="vp_limit")
 
-    # Si se escribe ID, ignoramos los demás filtros para búsqueda puntual
+    adv_filters = []
+    # Usar session_state para persistir la búsqueda entre interacciones
+    if "vp_applied_filters" not in st.session_state:
+        st.session_state.vp_applied_filters = None
+    
+    with st.expander("Filtros Avanzados (Jugador + Campeón + Rol) - AND entre filas", expanded=True):
+        st.markdown("<small>Busca partidas donde ocurran TODAS las condiciones (AND). Ej: 'Eduardo con Akali' AND 'Olaf con Azir'.</small>", unsafe_allow_html=True)
+        current_adv_filters = []
+        for i in range(5):
+            c1, c2, c3 = st.columns([1, 1.5, 1.5])
+            with c1:
+                p_sel = st.selectbox(f"Jugador {i+1}", ["-"] + personas_list, key=f"adv_p_{i}")
+            with c2:
+                if p_sel != "-":
+                    champs_opt = get_champions_by_persona(pool_id, queue_id, min_friends, p_sel)
+                    c_sel = st.multiselect(f"Campeones de {p_sel}", champs_opt, key=f"adv_c_{i}")
+                else:
+                    st.selectbox(f"Campeón {i+1}", ["Selecciona jugador"], disabled=True, key=f"adv_c_dis_{i}")
+                    c_sel = []
+            with c3:
+                if p_sel != "-":
+                    r_sel = st.multiselect(f"Roles de {p_sel}", ["TOP", "JUNGLE", "MID", "ADC", "SUPPORT"], key=f"adv_r_{i}")
+                    current_adv_filters.append({"persona": p_sel, "champions": c_sel, "roles": r_sel})
+                else:
+                    st.selectbox(f"Rol {i+1}", ["Selecciona jugador"], disabled=True, key=f"adv_r_dis_{i}")
+
+        st.write("")
+        if st.button("🔍 Aplicar Filtros y Buscar", use_container_width=True, type="primary"):
+            st.session_state.vp_applied_filters = {
+                "limit": limit,
+                "date_filter": date_filter,
+                "persona_filter": persona_filter,
+                "adv_filters": current_adv_filters
+            }
+
+    # Determinamos qué filtros usar (si los de sesión o los actuales si hay búsqueda por ID)
+    filters_to_use = st.session_state.vp_applied_filters
+    
+    # Si se escribe ID, ignoramos los demás filtros para búsqueda puntual y forzamos ejecución
     if match_id_search:
         date_filter    = ""
         persona_filter = ""
+        adv_filters    = []
+        # No usamos el botón, usamos directamente los parámetros
+        filters_to_use = {
+            "limit": limit,
+            "date_filter": "",
+            "persona_filter": "",
+            "adv_filters": []
+        }
 
+    if not filters_to_use:
+        st.info("Configura los filtros y pulsa 'Aplicar Filtros y Buscar' para ver los resultados.")
+        return
+
+    from dashboard.db import get_matches_filtered
     df = get_matches_filtered(
         pool_id, queue_id, min_friends,
-        limit=limit,
+        limit=filters_to_use["limit"],
         match_id_search=match_id_search,
-        date_filter=date_filter,
-        persona_filter=persona_filter,
+        date_filter=filters_to_use["date_filter"],
+        persona_filter=filters_to_use["persona_filter"],
+        player_champ_filters=filters_to_use["adv_filters"],
     )
 
     if df.empty:

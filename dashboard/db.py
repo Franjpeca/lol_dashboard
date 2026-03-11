@@ -654,7 +654,6 @@ def get_recent_matches(pool_id: str, queue_id: int, min_friends: int, limit: int
     """Alias de compatibilidad sin filtros avanzados."""
     return get_matches_filtered(pool_id, queue_id, min_friends, limit=limit)
 
-
 @st.cache_data(ttl=300, show_spinner=False)
 def get_all_personas(pool_id: str, queue_id: int, min_friends: int) -> list[str]:
     """Devuelve la lista de alias únicos del grupo (para el filtro de persona)."""
@@ -668,6 +667,24 @@ def get_all_personas(pool_id: str, queue_id: int, min_friends: int) -> list[str]
 
 
 @st.cache_data(ttl=300, show_spinner=False)
+def get_champions_by_persona(pool_id: str, queue_id: int, min_friends: int, persona: str = "Todos") -> list[str]:
+    """Devuelve la lista de campeones jugados por una persona (o todos si es 'Todos')."""
+    where_clause = "pool_id = %s AND queue_id = %s AND friends_count >= %s"
+    params = [pool_id, queue_id, min_friends]
+
+    if persona and persona != "Todos":
+        where_clause += " AND persona = %s"
+        params.append(persona)
+
+    df = _q(f"""
+        SELECT DISTINCT champion_name FROM player_performances
+        WHERE is_friend = TRUE AND champion_name IS NOT NULL AND {where_clause}
+        ORDER BY champion_name
+    """, tuple(params))
+    return df["champion_name"].tolist() if not df.empty else []
+
+
+@st.cache_data(ttl=300, show_spinner=False)
 def get_matches_filtered(
     pool_id: str,
     queue_id: int,
@@ -676,12 +693,14 @@ def get_matches_filtered(
     match_id_search: str = "",
     date_filter: str = "",
     persona_filter: str = "",
+    player_champ_filters: list[dict] = None,
 ) -> pd.DataFrame:
     """
     Devuelve el listado de partidas con filtros opcionales.
     - match_id_search : filtra por ID (búsqueda parcial)
     - date_filter     : 'YYYY-MM-DD' para un día concreto
-    - persona_filter  : alias exacto que debe estar en personas_present
+    - persona_filter  : alias exacto que debe estar en personas_present (filtro simple legacy)
+    - player_champ_filters: lista de {"persona": str, "champions": list[str], "roles": list[str]} para filtros AND
     """
     conditions = ["m.pool_id = %s", "m.queue_id = %s"]
     params = [pool_id, queue_id]
@@ -697,6 +716,42 @@ def get_matches_filtered(
     if persona_filter:
         conditions.append("%s = ANY(m.personas_present)")
         params.append(persona_filter)
+
+    if player_champ_filters:
+        for i, f in enumerate(player_champ_filters):
+            p = f.get("persona")
+            champs = f.get("champions", [])
+            roles = f.get("roles", [])
+            
+            if not p or p == "-":
+                continue
+            
+            # Construir subconsulta con filtros opcionales de campeón y rol
+            sub_conds = ["pp.match_id = m.match_id", "pp.persona = %s"]
+            sub_params = [p]
+            
+            if champs:
+                sub_conds.append("pp.champion_name = ANY(%s)")
+                sub_params.append(champs)
+            
+            if roles:
+                # Mapeo de roles de UI a team_position de Riot
+                # UI: [TOP, JUNGLE, MID, ADC, SUPPORT]
+                # DB team_position: [TOP, JUNGLE, MIDDLE, BOTTOM, UTILITY]
+                role_map = {
+                    "TOP": "TOP", 
+                    "JUNGLE": "JUNGLE", 
+                    "MID": "MIDDLE", 
+                    "ADC": "BOTTOM", 
+                    "SUPPORT": "UTILITY"
+                }
+                mapped_roles = [role_map.get(r, r) for r in roles]
+                sub_conds.append("pp.role = ANY(%s)")
+                sub_params.append(mapped_roles)
+            
+            where_sub = " AND ".join(sub_conds)
+            conditions.append(f"EXISTS (SELECT 1 FROM player_performances pp WHERE {where_sub})")
+            params.extend(sub_params)
 
     conditions.append("cardinality(m.friends_present) >= %s")
     params.append(min_friends)
@@ -924,4 +979,201 @@ def get_match_detail(match_id: str) -> dict:
     except Exception as exc:
         return {"error": str(exc)}
 
+# ─── Heatmap / Análisis ────────────────────────────────────────────────────────
+def get_matches_heatmap(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
+    """
+    Devuelve la cantidad de partidas por día de la semana y hora (de 07:00 a 06:00).
+    El "día" lógico cambia a las 07:00 AM (e.g. las 02:00 AM del Martes cuentan como Lunes Noche).
+    """
+    return _q("""
+        WITH corrected_times AS (
+            SELECT 
+                -- Ajuste horario a Madrid. Restamos 7h para que el "día" empiece a las 07:00
+                EXTRACT(ISODOW FROM (game_start_at AT TIME ZONE 'Europe/Madrid' - INTERVAL '7 hours')) AS logical_dow,
+                EXTRACT(HOUR FROM game_start_at AT TIME ZONE 'Europe/Madrid') AS hour_of_day
+            FROM matches
+            WHERE pool_id = %s AND queue_id = %s AND cardinality(friends_present) >= %s
+        )
+        SELECT logical_dow, hour_of_day, COUNT(*) as matches_count
+        FROM corrected_times
+        GROUP BY logical_dow, hour_of_day
+    """, (pool_id, queue_id, min_friends))
 
+# ─── Red de Jugadores (Network) ────────────────────────────────────────────────
+def get_network_nodes(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
+    """
+    Lista de nodos (jugadores principales) válidos en la pool. Calcula sus partidas totales y su winrate individual.
+    Solo tiene en cuenta las partidas que cumplen con el filtro actual de la pool y solo incluye 'personas'.
+    """
+    return _q("""
+        SELECT 
+            persona as name,
+            COUNT(*) as matches,
+            SUM(CASE WHEN win THEN 1 ELSE 0 END) as wins,
+            ROUND(AVG(CASE WHEN win THEN 1 ELSE 0 END), 3) as winrate
+        FROM player_performances
+        WHERE pool_id = %s AND queue_id = %s AND friends_count >= %s
+          AND persona IS NOT NULL
+        GROUP BY persona
+    """, (pool_id, queue_id, min_friends))
+
+def get_network_edges(pool_id: str, queue_id: int, min_friends: int, min_matches: int = 5) -> pd.DataFrame:
+    """
+    Obtiene los dúos (aristas) entre las personas de la misma pool.
+    Dos personas están conectadas si jugaron en el mismo equipo en la misma partida.
+    Calcula cuántas partidas jugaron juntos y el winrate de esas partidas conjuntas.
+    """
+    return _q("""
+        WITH team_players AS (
+            SELECT match_id, team_id, persona, win
+            FROM player_performances
+            WHERE pool_id = %s AND queue_id = %s AND friends_count >= %s
+              AND persona IS NOT NULL
+        ),
+        pairs AS (
+            SELECT 
+                LEAST(p1.persona, p2.persona) AS player1,
+                GREATEST(p1.persona, p2.persona) AS player2,
+                p1.win
+            FROM team_players p1
+            JOIN team_players p2 
+              ON p1.match_id = p2.match_id 
+              AND p1.team_id = p2.team_id
+            WHERE p1.persona != p2.persona
+        )
+        SELECT 
+            player1,
+            player2,
+            COUNT(*) as shared_matches,
+            SUM(CASE WHEN win THEN 1 ELSE 0 END) as shared_wins,
+            ROUND(AVG(CASE WHEN win THEN 1 ELSE 0 END), 3) as duo_winrate
+        FROM pairs
+        GROUP BY player1, player2
+        HAVING COUNT(*) >= %s
+    """, (pool_id, queue_id, min_friends, min_matches))
+
+
+def get_player_identity_distribution(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
+    """
+    Identidad de estilo de juego: Persona -> Rol -> Campeón.
+    Devuelve los recuentos de partidas sin importar el rendimiento, para el gráfico Sunburst.
+    """
+    return _q("""
+        SELECT 
+            persona,
+            role,
+            champion_name AS champion,
+            COUNT(*) AS matches,
+            SUM(CASE WHEN win THEN 1 ELSE 0 END) AS wins
+        FROM player_performances
+        WHERE pool_id = %s AND queue_id = %s AND friends_count >= %s
+          AND persona IS NOT NULL
+          AND role IS NOT NULL AND role != '' AND role != 'Invalid'
+          AND champion_name IS NOT NULL
+        GROUP BY persona, role, champion_name
+        ORDER BY persona, role, matches DESC
+    """, (pool_id, queue_id, min_friends))
+
+def get_match_landscape_data(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
+    """
+    Datos para el Duracion de partidas y kills: duración y kills totales por match.
+    """
+    return _q("""
+        SELECT 
+            m.match_id, 
+            m.duration_s,
+            SUM(pp.kills) as total_kills
+        FROM matches m
+        JOIN player_performances pp ON m.match_id = pp.match_id AND m.pool_id = pp.pool_id
+        WHERE m.pool_id = %s AND m.queue_id = %s AND cardinality(m.friends_present) >= %s
+        GROUP BY m.match_id, m.duration_s
+    """, (pool_id, queue_id, min_friends))
+
+@st.cache_data(ttl=600, show_spinner="Analizando flujo de partidas (SQL + Mongo)...")
+def get_sankey_flow_data(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
+    """
+    Agrega datos para el gráfico Sankey: Primera ventaja -> Tipo Partida -> Resultado.
+    Stage 1: Primera ventaja (FB, Torre, Dragón, Heraldo, Ninguna) - Solo si la consiguió el equipo de amigos.
+    Stage 2: Tipo de partida (Stomp, Standard, Late).
+    Stage 3: Resultado (Victoria, Derrota).
+    """
+    # 1. Obtener datos base de PostgreSQL (incluyendo First Blood)
+    df_matches = _q("""
+        SELECT m.match_id, m.duration_s, m.winning_team,
+               (SELECT team_id FROM player_performances pp 
+                WHERE pp.match_id = m.match_id AND pp.is_friend = TRUE LIMIT 1) as friends_team,
+               EXISTS (
+                   SELECT 1 FROM player_performances pp 
+                   WHERE pp.match_id = m.match_id 
+                   AND pp.is_friend = TRUE 
+                   AND (pp.first_blood_kill = TRUE OR pp.first_blood_assist = TRUE)
+               ) as first_blood
+        FROM matches m
+        WHERE m.pool_id = %s AND m.queue_id = %s AND cardinality(m.friends_present) >= %s
+    """, (pool_id, queue_id, min_friends))
+    
+    if df_matches.empty:
+        return pd.DataFrame()
+
+    match_ids = df_matches['match_id'].tolist()
+    match_map = df_matches.set_index('match_id').to_dict('index')
+
+    # 2. Consultar MongoDB para obtener objetivos de mapa
+    from utils.db import get_mongo_client
+    from utils.config import MONGO_DB, COLLECTION_RAW_MATCHES
+    
+    results = []
+    try:
+        with get_mongo_client() as client:
+            db = client[MONGO_DB]
+            cursor = db[COLLECTION_RAW_MATCHES].find(
+                {"_id": {"$in": match_ids}},
+                {"data.info.teams.objectives": 1, "data.info.teams.teamId": 1}
+            )
+            
+            for doc in cursor:
+                m_id = doc["_id"]
+                if m_id not in match_map:
+                    continue
+                
+                m_info = match_map[m_id]
+                friends_team_id = m_info['friends_team']
+                win = m_info['winning_team'] == friends_team_id
+                
+                # Clasificación por duración
+                dur_m = m_info['duration_s'] / 60
+                if dur_m < 20: match_type = "Stomp"
+                elif dur_m <= 30: match_type = "Fast"
+                elif dur_m <= 40: match_type = "Standard"
+                else: match_type = "Late"
+                
+                # Extraer objetivos de mapa de MongoDB
+                teams = doc.get("data", {}).get("info", {}).get("teams", [])
+                friends_team_data = next((t for t in teams if t.get("teamId") == friends_team_id), None)
+                
+                tower = False
+                dragon = False
+                herald = False
+                grubs = False
+                
+                if friends_team_data:
+                    objs = friends_team_data.get("objectives", {})
+                    tower = objs.get("tower", {}).get("first", False)
+                    dragon = objs.get("dragon", {}).get("first", False)
+                    herald = objs.get("riftHerald", {}).get("first", False)
+                    grubs = objs.get("horde", {}).get("first", False)
+                
+                results.append({
+                    "match_type": match_type,
+                    "first_blood": m_info['first_blood'],
+                    "tower": tower,
+                    "dragon": dragon,
+                    "herald": herald,
+                    "grubs": grubs,
+                    "result": "Victoria" if win else "Derrota"
+                })
+    except Exception as e:
+        st.error(f"Error al conectar con MongoDB: {e}")
+        return pd.DataFrame()
+
+    return pd.DataFrame(results)

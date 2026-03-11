@@ -40,7 +40,7 @@ SECTIONS = [
     ("Winrate y partidas",       "", "dashboard.pages.winrate"),
     ("Estadísticas de jugador",  "", "dashboard.pages.stats_jugador"),
     ("Récords",                  "", "dashboard.pages.records"),
-    ("Índices",                  "", "dashboard.pages.indices"),
+    ("Análisis",                 "", "dashboard.pages.analisis"),
     ("Ver partida",              "", "dashboard.pages.ver_partida"),
     ("Datos y configuración",    "", "dashboard.pages.config"),
 ]
