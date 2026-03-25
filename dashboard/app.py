@@ -41,6 +41,7 @@ SECTIONS = [
     ("Estadísticas de jugador",  "", "dashboard.pages.stats_jugador"),
     ("Récords",                  "", "dashboard.pages.records"),
     ("Análisis",                 "", "dashboard.pages.analisis"),
+    ("Minería",                  "", "dashboard.pages.mineria"),
     ("Ver partida",              "", "dashboard.pages.ver_partida"),
     ("Datos y configuración",    "", "dashboard.pages.config"),
 ]

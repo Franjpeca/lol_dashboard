@@ -84,42 +84,6 @@ def render(pool_id: str, queue_id: int, min_friends: int):
         unsafe_allow_html=True
     )
 
-    st.markdown(
-        """
-        <div style="
-            background-color: #ff4b4b;
-            color: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            text-align: center;
-            border: 5px solid #ffde00;
-            margin-bottom: 2rem;
-            animation: blinker 1s linear infinite;
-        ">
-            <h1 style="
-                color: white;
-                margin: 0;
-                font-size: 3rem;
-                font-weight: 800;
-                text-transform: uppercase;
-                text-shadow: 
-                    -2px -2px 0 #000,  
-                     2px -2px 0 #000,
-                    -2px  2px 0 #000,
-                     2px  2px 0 #000,
-                     0px  4px 10px rgba(0,0,0,0.5);
-            ">
-                🚨 LOS DATOS CONFIRMAN QUE LA KAYLE DE DEXUS ES UNA MIERDA 🚨
-            </h1>
-        </div>
-        <style>
-            @keyframes blinker {
-                50% { opacity: 0.5; }
-            }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
 
     # ── Rendimiento general ───────────────────────────────────────────────────
     st.subheader("Rendimiento general")

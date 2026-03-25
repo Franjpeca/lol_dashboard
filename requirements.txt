@@ -17,3 +17,7 @@ python-dotenv>=0.19.0
 riotwatcher>=3.0.0
 # Network Analysis
 networkx>=3.0
+
+# Data Mining
+mlxtend>=0.23.0
+networkx>=3.0

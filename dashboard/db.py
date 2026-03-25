@@ -1177,3 +1177,411 @@ def get_sankey_flow_data(pool_id: str, queue_id: int, min_friends: int) -> pd.Da
         return pd.DataFrame()
 
     return pd.DataFrame(results)
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_fiesta_stats(pool_id: str, queue_id: int, min_friends: int, min_games: int = 5) -> pd.DataFrame:
+    """
+    Calcula el 'Fiesta Score' por campeón.
+    fiesta_score = z(kills_per_minute) + z(damage_per_minute) - z(objectives_per_minute)
+    """
+    # 1. Base match data from PG
+    df_matches = _q("""
+        SELECT m.match_id, m.duration_s,
+               SUM(pp.kills) AS total_kills,
+               SUM(pp.damage_dealt) AS total_damage
+        FROM matches m
+        JOIN player_performances pp ON m.match_id = pp.match_id AND m.pool_id = pp.pool_id
+        WHERE m.pool_id = %s AND m.queue_id = %s AND cardinality(m.friends_present) >= %s
+        GROUP BY m.match_id, m.duration_s
+    """, (pool_id, queue_id, min_friends))
+
+    if df_matches.empty:
+        return pd.DataFrame()
+
+    # 2. Champion mapping (friends only)
+    df_champs = _q("""
+        SELECT match_id, champion_name
+        FROM player_performances
+        WHERE pool_id = %s AND queue_id = %s AND friends_count >= %s
+          AND is_friend = TRUE
+    """, (pool_id, queue_id, min_friends))
+
+    # 3. Objectives from Mongo
+    from utils.db import get_mongo_client
+    from utils.config import MONGO_DB, COLLECTION_RAW_MATCHES
+    
+    match_ids = df_matches['match_id'].tolist()
+    objectives_map = {}
+    
+    try:
+        with get_mongo_client() as client:
+            db = client[MONGO_DB]
+            cursor = db[COLLECTION_RAW_MATCHES].find(
+                {"_id": {"$in": match_ids}},
+                {"data.info.teams.objectives": 1}
+            )
+            for doc in cursor:
+                m_id = doc["_id"]
+                teams = doc.get("data", {}).get("info", {}).get("teams", [])
+                total_objs = 0
+                for t in teams:
+                    objs = t.get("objectives", {})
+                    # Sum kills for each objective type specified by user
+                    total_objs += objs.get("dragon", {}).get("kills", 0)
+                    total_objs += objs.get("tower", {}).get("kills", 0)
+                    total_objs += objs.get("horde", {}).get("kills", 0)
+                    total_objs += objs.get("riftHerald", {}).get("kills", 0)
+                    total_objs += objs.get("baron", {}).get("kills", 0)
+                objectives_map[m_id] = total_objs
+    except Exception as e:
+        st.warning(f"Error fetching objectives from Mongo: {e}")
+
+    # 4. Processing match-level metrics
+    df_matches['total_objectives'] = df_matches['match_id'].map(lambda x: objectives_map.get(x, 0))
+    df_matches['duration_m'] = df_matches['duration_s'] / 60.0
+    
+    # Evitar división por cero si duration_m es 0
+    df_matches['duration_m'] = df_matches['duration_m'].replace(0, 1)
+    
+    df_matches['kpm'] = df_matches['total_kills'] / df_matches['duration_m']
+    df_matches['dpm'] = df_matches['total_damage'] / df_matches['duration_m']
+    df_matches['opm'] = df_matches['total_objectives'] / df_matches['duration_m']
+
+    # normalize (Z-Score)
+    for col in ['kpm', 'dpm', 'opm']:
+        mean = df_matches[col].mean()
+        std = df_matches[col].std()
+        if std > 0:
+            df_matches[f'z_{col}'] = (df_matches[col] - mean) / std
+        else:
+            df_matches[f'z_{col}'] = 0.0
+
+    df_matches['fiesta_score'] = df_matches['z_kpm'] + df_matches['z_dpm'] - df_matches['z_opm']
+    
+    # Fiesta Game Tag (75th percentile)
+    threshold = df_matches['fiesta_score'].quantile(0.75) if not df_matches.empty else 0
+    df_matches['fiesta_game'] = (df_matches['fiesta_score'] >= threshold).astype(int)
+
+    # 5. Champion aggregation
+    df_merged = pd.merge(df_champs, df_matches, on='match_id')
+    
+    champion_stats = df_merged.groupby('champion_name').agg(
+        games=('match_id', 'count'),
+        avg_fiesta_score=('fiesta_score', 'mean'),
+        fiesta_game_rate=('fiesta_game', 'mean'),
+        avg_kills_per_minute=('kpm', 'mean'),
+        avg_damage_per_minute=('dpm', 'mean')
+    ).reset_index()
+
+    # Minimum sample size
+    champion_stats = champion_stats[champion_stats['games'] >= min_games]
+    
+    return champion_stats.sort_values('avg_fiesta_score', ascending=False)
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_dangerous_enemy_comps(pool_id: str, queue_id: int, min_friends: int, min_games: int = 5, comp_size: int = 2) -> pd.DataFrame:
+    """
+    Identifica combinaciones de campeones enemigos (pares o tríos) peligrosas.
+    danger_score = 1 - winrate_against
+    """
+    import itertools
+    from collections import Counter
+
+    # 1. Obtener todos los participantes de las partidas de la pool
+    df = _q("""
+        SELECT match_id, team_id, champion_name, win, is_friend
+        FROM player_performances
+        WHERE pool_id = %s AND queue_id = %s AND friends_count >= %s
+    """, (pool_id, queue_id, min_friends))
+
+    if df.empty:
+        return pd.DataFrame()
+
+    # 2. Agrupar por partida
+    matches = df.groupby('match_id')
+    comp_counters = Counter()
+    win_counters = Counter()
+
+    for match_id, group in matches:
+        # Identificar equipo de amigos
+        friends_team = group[group['is_friend'] == True]['team_id'].unique()
+        if len(friends_team) == 0:
+            continue
+        
+        f_team_id = friends_team[0]
+        our_win = group[group['team_id'] == f_team_id]['win'].iloc[0]
+        
+        # Campeones enemigos
+        enemies = sorted(group[group['team_id'] != f_team_id]['champion_name'].tolist())
+        if not enemies:
+            continue
+            
+        # Generar combinaciones
+        for combo in itertools.combinations(enemies, comp_size):
+            combo_str = " + ".join(combo)
+            comp_counters[combo_str] += 1
+            if our_win:
+                win_counters[combo_str] += 1
+
+    # 3. Formatear resultados
+    results = []
+    for combo, games in comp_counters.items():
+        if games < min_games:
+            continue
+        
+        wins = win_counters[combo]
+        losses = games - wins
+        wr = wins / games
+        
+        results.append({
+            "combination": combo,
+            "games": games,
+            "wins": wins,
+            "losses": losses,
+            "winrate": wr,
+            "danger_score": 1 - wr
+        })
+
+    if not results:
+        return pd.DataFrame(columns=["combination", "games", "wins", "losses", "winrate", "danger_score"])
+
+    return pd.DataFrame(results).sort_values("danger_score", ascending=False)
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_enemy_heat_data(pool_id: str, queue_id: int, min_friends: int, top_n: int = 15) -> pd.DataFrame:
+    """
+    Calcula matriz de winrate para el heatmap de sinergia enemiga.
+    """
+    import itertools
+    from collections import Counter
+
+    df = _q("""
+        SELECT match_id, team_id, champion_name, win, is_friend
+        FROM player_performances
+        WHERE pool_id = %s AND queue_id = %s AND friends_count >= %s
+    """, (pool_id, queue_id, min_friends))
+
+    if df.empty:
+        return pd.DataFrame()
+
+    # Identificar top N campeones enemigos por frecuencia
+    enemy_counts = Counter()
+    matches = df.groupby('match_id')
+    match_data = []
+
+    for match_id, group in matches:
+        friends_team = group[group['is_friend'] == True]['team_id'].unique()
+        if len(friends_team) == 0: continue
+        f_team_id = friends_team[0]
+        our_win = group[group['team_id'] == f_team_id]['win'].iloc[0]
+        enemies = group[group['team_id'] != f_team_id]['champion_name'].tolist()
+        
+        for e in enemies:
+            enemy_counts[e] += 1
+        
+        match_data.append((enemies, our_win))
+
+    top_enemies = [c for c, _ in enemy_counts.most_common(top_n)]
+    
+    # Calcular winrate para cada par de top_enemies
+    heat_results = []
+    for c1, c2 in itertools.combinations(top_enemies, 2):
+        games = 0
+        wins = 0
+        for enemies, our_win in match_data:
+            if c1 in enemies and c2 in enemies:
+                games += 1
+                if our_win: wins += 1
+        
+        if games > 0:
+            wr = wins / games
+            heat_results.append({"c1": c1, "c2": c2, "winrate": wr, "games": games})
+            # Simetría
+            heat_results.append({"c1": c2, "c2": c1, "winrate": wr, "games": games})
+
+    return pd.DataFrame(heat_results)
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_match_anomaly_data(pool_id: str, queue_id: int, min_friends: int, contamination: float = 0.03) -> pd.DataFrame:
+    """
+    Detecta partidas anómalas (outliers) usando Isolation Forest.
+    """
+    from sklearn.ensemble import IsolationForest
+    import numpy as np
+
+    # 1. Obtener datos base (matches + all performance for each match)
+    df_raw = _q("""
+        SELECT m.match_id, m.duration_s, m.winning_team,
+               pp.team_id, pp.win, pp.is_friend,
+               pp.kills, pp.deaths, pp.assists, pp.gold_earned,
+               pp.damage_dealt, pp.vision_score, pp.cs_total
+        FROM matches m
+        JOIN player_performances pp ON m.match_id = pp.match_id AND m.pool_id = pp.pool_id
+        WHERE m.pool_id = %s AND m.queue_id = %s AND cardinality(m.friends_present) >= %s
+    """, (pool_id, queue_id, min_friends))
+
+    if df_raw.empty:
+        return pd.DataFrame()
+
+    # 2. Objetivos desde Mongo
+    from utils.db import get_mongo_client
+    from utils.config import MONGO_DB, COLLECTION_RAW_MATCHES
+    
+    match_ids = df_raw['match_id'].unique().tolist()
+    objectives_map = {}
+    
+    try:
+        with get_mongo_client() as client:
+            db = client[MONGO_DB]
+            cursor = db[COLLECTION_RAW_MATCHES].find(
+                {"_id": {"$in": match_ids}},
+                {"data.info.teams.objectives": 1, "data.info.teams.teamId": 1}
+            )
+            for doc in cursor:
+                m_id = doc["_id"]
+                teams = doc.get("data", {}).get("info", {}).get("teams", [])
+                m_objs = {}
+                for t in teams:
+                    t_id = t.get("teamId")
+                    objs = t.get("objectives", {})
+                    # Sum objectives relevant for macro
+                    total = (objs.get("dragon", {}).get("kills", 0) +
+                             objs.get("tower", {}).get("kills", 0) * 2 + # Towers weigh more for macro
+                             objs.get("baron", {}).get("kills", 0) * 3 +
+                             objs.get("horde", {}).get("kills", 0) +
+                             objs.get("riftHerald", {}).get("kills", 0))
+                    
+                    # Direct counts for diffs
+                    m_objs[t_id] = {
+                        "total_score": total,
+                        "towers": objs.get("tower", {}).get("kills", 0),
+                        "dragons": objs.get("dragon", {}).get("kills", 0),
+                        "barons": objs.get("baron", {}).get("kills", 0)
+                    }
+                objectives_map[m_id] = m_objs
+    except Exception as e:
+        st.warning(f"Error fetching objectives for anomalies: {e}")
+
+    # 3. Feature Engineering
+    match_features = []
+    for match_id, group in df_raw.groupby('match_id'):
+        duration_m = group['duration_s'].iloc[0] / 60.0
+        if duration_m == 0: duration_m = 1
+        
+        # Identificar equipo de amigos (team_id)
+        friends_team = group[group['is_friend'] == True]['team_id'].unique()
+        if len(friends_team) == 0: continue
+        f_team_id = friends_team[0]
+        
+        team_p = group[group['team_id'] == f_team_id]
+        enemy_p = group[group['team_id'] != f_team_id]
+        
+        # Metricas agregadas
+        f_kills = team_p['kills'].sum()
+        e_kills = enemy_p['kills'].sum()
+        f_dmg = team_p['damage_dealt'].sum()
+        e_dmg = enemy_p['damage_dealt'].sum()
+        f_gold = team_p['gold_earned'].sum()
+        e_gold = enemy_p['gold_earned'].sum()
+        
+        win = team_p['win'].iloc[0]
+        
+        # Objetivos
+        m_objs = objectives_map.get(match_id, {})
+        f_objs = m_objs.get(f_team_id, {"total_score": 0, "towers": 0, "dragons": 0, "barons": 0})
+        # Find enemy team id
+        e_team_id = next((tid for tid in m_objs.keys() if tid != f_team_id), None)
+        e_objs = m_objs.get(e_team_id, {"total_score": 0, "towers": 0, "dragons": 0, "barons": 0}) if e_team_id else {"total_score": 0, "towers": 0, "dragons": 0, "barons": 0}
+        
+        # Averages & Diffs
+        gold_diff = f_gold - e_gold
+        dmg_diff = f_dmg - e_dmg
+        kill_diff = f_kills - e_kills
+        tower_diff = f_objs['towers'] - e_objs['towers']
+        dragon_diff = f_objs['dragons'] - e_objs['dragons']
+        
+        match_features.append({
+            "match_id": match_id,
+            "duration_m": duration_m,
+            "team_kills": f_kills,
+            "enemy_kills": e_kills,
+            "total_kills": f_kills + e_kills,
+            "team_damage": f_dmg,
+            "enemy_damage": e_dmg,
+            "team_gold": f_gold,
+            "enemy_gold": e_gold,
+            "gold_diff": gold_diff,
+            "damage_diff": dmg_diff,
+            "kill_diff": kill_diff,
+            "tower_diff": tower_diff,
+            "dragon_diff": dragon_diff,
+            "baron_diff": f_objs['barons'] - e_objs['barons'],
+            "team_total_objs": f_objs['total_score'],
+            "enemy_total_objs": e_objs['total_score'],
+            "avg_kda_team": (f_kills + team_p['assists'].sum()) / max(1, team_p['deaths'].sum()),
+            "avg_cs_team": team_p['cs_total'].mean(),
+            "avg_vision_team": team_p['vision_score'].mean(),
+            "kp_media": (team_p['kills'] + team_p['assists']).sum() / max(1, f_kills * 5), # Simplified
+            "max_dmg_share": team_p['damage_dealt'].max() / max(1, f_dmg),
+            "win": win
+        })
+
+    df_feats = pd.DataFrame(match_features)
+    if df_feats.empty:
+        return pd.DataFrame()
+
+    # 4. Outlier Detection (Isolation Forest)
+    cols_to_use = [
+        'duration_m', 'total_kills', 'gold_diff', 'damage_diff', 'kill_diff',
+        'tower_diff', 'dragon_diff', 'avg_kda_team', 'team_total_objs', 'max_dmg_share'
+    ]
+    
+    # Fill NaN just in case
+    X = df_feats[cols_to_use].fillna(0)
+    
+    # Train IF
+    clf = IsolationForest(contamination=contamination, random_state=42)
+    df_feats['anomaly_score'] = clf.fit_predict(X) 
+    # -1 is outlier, 1 is normal
+    df_feats['is_outlier'] = df_feats['anomaly_score'].map({1: "Normal", -1: "Outlier"})
+    df_feats['decision_score'] = clf.decision_function(X) # lower means more abnormal
+
+    # 5. Automatic Classification
+    def classify_match(row):
+        types = []
+        if row['duration_m'] < 20 and row['gold_diff'] > 8000: types.append("STOMP")
+        if row['total_kills'] > 60: types.append("FIESTA")
+        if row['total_kills'] < 30 and (row['team_total_objs'] + row['enemy_total_objs'] > 15): types.append("MACRO GAME")
+        if row['gold_diff'] < -2000 and row['win']: types.append("COMEBACK")
+        if row['max_dmg_share'] > 0.40: types.append("HYPER CARRY")
+        if row['duration_m'] > 45: types.append("VERY LONG GAME")
+        
+        return ", ".join(types) if types else "Standard"
+
+    df_feats['outlier_type'] = df_feats.apply(classify_match, axis=1)
+    
+    return df_feats.sort_values("decision_score")
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def get_apriori_raw_data(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
+    """
+    Obtiene datos redactados para minería Apriori:
+    - Participantes (campeón, team_id, win, first_blood, takedowns_early)
+    Filtra objetivos para evitar correlaciones triviales.
+    """
+    # 1. PostgreSQL: Datos de jugadores y early game
+    return _q("""
+        SELECT m.match_id, m.duration_s,
+               pp.team_id, pp.champion_name, pp.role, pp.win,
+               pp.first_blood_kill, pp.first_blood_assist,
+               pp.takedowns_first_x_minutes as early_takedowns,
+               pp.is_friend
+        FROM matches m
+        JOIN player_performances pp ON m.match_id = pp.match_id AND m.pool_id = pp.pool_id
+        WHERE m.pool_id = %s AND m.queue_id = %s AND cardinality(m.friends_present) >= %s
+    """, (pool_id, queue_id, min_friends))
