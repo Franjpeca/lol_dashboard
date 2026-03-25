@@ -3,6 +3,8 @@
 Dashboard interactivo de datos de partidas del videojuego League of Legends.
 Permite extraer partidas dada la API de Riot Games y procesarlas para obtener estadisticas y visualizaciones.
 
+NOTA: La parte de analisis avanzado (mineria) esta aún en desarrollo.
+
 ## Características
 
 - **Ingesta de Datos**: Extracción automática de partidas desde la API de Riot Games.
