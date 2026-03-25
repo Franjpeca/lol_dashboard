@@ -28,10 +28,7 @@ COLLECTION_USERS_INDEX = "L0_users_index"
 # ================================
 # POSTGRESQL CONFIG (L1/L2/métricas — datos procesados)
 # ================================
-POSTGRES_URI = os.getenv(
-    "POSTGRES_URI",
-    "postgresql+psycopg2://lol_user:lol_pass@localhost:5432/lol_analytics"
-)
+POSTGRES_URI = os.getenv("POSTGRES_URI")
 
 # ================================
 # RIOT API CONFIG

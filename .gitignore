@@ -1,32 +1,24 @@
 # Ignorar archivos .rar
 *.rar
 
-# Mantener .env (por si lo tienes en el repositorio)
-.env
-
 # Ignorar entorno virtual
 .venv/
 
-# Ignorar MongoDB
+# Ignorar bases de datos locales (Docker maneja los volumenes)
 mongo/
-
-# Ignorar PostgreSQL
 postgres/
 
-# Ignorar archivos log
+# Ignorar archivos log y temporales
 *.log
-
-# Ignorar archivos de bases de datos
-*.db
-
-data/runtime
-
-LICENSE
-
-.venv/
+data/runtime/
 __pycache__/
 *.pyc
+
+# Ignorar datos locales
 data/
-mongo/
-postgres/
+
+# SEGURIDAD: Ignorar el archivo .env real
 .env
+
+# NO IGNORAR el archivo de ejemplo
+!.env.example
