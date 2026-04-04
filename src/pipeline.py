@@ -20,6 +20,7 @@ import argparse
 from pathlib import Path
 from queue import Queue
 from datetime import date
+from utils.status import save_last_update
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -95,11 +96,11 @@ def _abort(name: str, run_in_terminal: bool, queue: Queue):
 # MODOS
 # =============================
 
-def run_l0(run_in_terminal: bool, queue: Queue) -> bool:
+def run_l0(run_in_terminal: bool, queue: Queue, mode: str = "normal") -> bool:
     """Ingesta de usuarios + partidas."""
     steps = [
-        ("L0 — Índice de usuarios",   EXTRACT / "ingest_users.py",   []),
-        ("L0 — Partidas desde API",   EXTRACT / "ingest_matches.py", []),
+        ("L0 — Índice de usuarios",   EXTRACT / "ingest_users.py",   ["--mode", mode]),
+        ("L0 — Partidas desde API",   EXTRACT / "ingest_matches.py", ["--mode", mode]),
     ]
     for name, script, args in steps:
         if not run_step(name, script, *args, run_in_terminal=run_in_terminal, queue=queue):
@@ -128,25 +129,24 @@ def run_l1_to_l2(min_friends: int, pool_id: str | None,
 
 
 def run_full(min_friends: int, pool_id: str | None,
-             run_in_terminal: bool, queue: Queue) -> bool:
+             run_in_terminal: bool, queue: Queue, skip_l0: bool = False) -> bool:
     """Pipeline completo L0 (Mongo) → L2 (PostgreSQL)."""
-    if not run_l0(run_in_terminal, queue):
-        return False
+    if not skip_l0:
+        if not run_l0(run_in_terminal, queue, mode="normal"):
+            return False
     return run_l1_to_l2(min_friends, pool_id, run_in_terminal, queue)
 
 
-def run_season(min_friends: int, run_in_terminal: bool, queue: Queue) -> bool:
+def run_season(min_friends: int, run_in_terminal: bool, queue: Queue, skip_l0: bool = False) -> bool:
     """Pipeline de temporada con fechas fijas."""
     end_date = date.today().isoformat()
     common = ["--min", str(min_friends), "--pool", SEASON_POOL_ID,
               "--users-collection", SEASON_USERS_COLLECTION]
 
-    # Primero índice de usuarios Season
-    if not run_step("L0 — Índice usuarios Season",
-                    EXTRACT / "ingest_users.py", "--mode", "season",
-                    run_in_terminal=run_in_terminal, queue=queue):
-        _abort("Índice usuarios Season", run_in_terminal, queue)
-        return False
+    # Ingesta L0 Season (Usuarios + Partidas)
+    if not skip_l0:
+        if not run_l0(run_in_terminal, queue, mode="season"):
+            return False
 
     # Luego L1 → ETL PG con parámetros season
     steps = [
@@ -180,6 +180,8 @@ if __name__ == "__main__":
                         help="Pool ID (hash 8 chars, o 'season')")
     parser.add_argument("--run-in-terminal", action="store_true",
                         help="Mostrar output en tiempo real")
+    parser.add_argument("--skip-l0", action="store_true",
+                        help="Saltar ingesta L0 (usuarios y partidas)")
     args = parser.parse_args()
 
     q = PIPELINE_QUEUE
@@ -190,6 +192,9 @@ if __name__ == "__main__":
     elif args.mode == "l1-l2":
         run_l1_to_l2(args.min, args.pool, rt, q)
     elif args.mode == "season":
-        run_season(args.min, rt, q)
+        run_season(args.min, rt, q, skip_l0=args.skip_l0)
     else:
-        run_full(args.min, args.pool, rt, q)
+        run_full(args.min, args.pool, rt, q, skip_l0=args.skip_l0)
+
+    # Actualizar marca de tiempo
+    save_last_update()

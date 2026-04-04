@@ -54,22 +54,22 @@ def ts_ms_to_dt(ts_ms: int | None):
 # POOL helpers
 # =============================================================
 
-def resolve_pool(mongo_db, pool_arg: str | None, queue_id: int, min_friends: int) -> tuple[str, str]:
+def resolve_pool(mongo_db, pool_arg: str | None, queue_id: int, min_friends: int, users_collection: str = COLLECTION_USERS_INDEX) -> tuple[str, str]:
     """Devuelve (pool_id_str, l1_collection_name)."""
     if pool_arg:
         pool_id = pool_arg
         l1_name = f"L1_q{queue_id}_min{min_friends}_pool_{pool_id}"
         return pool_id, l1_name
 
-    # Auto-calcular desde L0_users_index
+    # Auto-calcular desde la colección de usuarios especificada
     personas = set()
-    for doc in mongo_db[COLLECTION_USERS_INDEX].find({}, {"persona": 1}):
+    for doc in mongo_db[users_collection].find({}, {"persona": 1}):
         p = doc.get("persona")
         if p:
             personas.add(p)
 
     if not personas:
-        raise RuntimeError("No se encontraron personas en L0_users_index")
+        raise RuntimeError(f"No se encontraron personas en {users_collection}")
 
     pool_version = build_pool_version(sorted(list(personas)))  # 'pool_ca879f16'
     pool_id = pool_version.replace("pool_", "")
@@ -337,15 +337,9 @@ def main():
         with get_mongo_client() as mongo_client:
             mongo_db = mongo_client[MONGO_DB]
 
-            # Pool normal
-            pool_id, l1_name = resolve_pool(mongo_db, args.pool, args.queue, args.min)
+            # Procesar pool solicitada
+            pool_id, l1_name = resolve_pool(mongo_db, args.pool, args.queue, args.min, args.users_collection)
             populate(pool_id, l1_name, args.queue, args.min, mongo_db, pg_conn, args.users_collection)
-
-            # Si no se especificó pool, también cargar season
-            if not args.pool:
-                season_l1 = f"L1_q{args.queue}_min{args.min}_pool_season"
-                if season_l1 in mongo_db.list_collection_names():
-                    populate("season", season_l1, args.queue, args.min, mongo_db, pg_conn, "L0_users_index_season")
     finally:
         pg_conn.close()
 

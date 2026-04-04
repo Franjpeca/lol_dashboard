@@ -3,14 +3,11 @@ dashboard/pages/ver_partida.py
 Sección: Ver Partida — últimas partidas del grupo con visualización de equipos.
 """
 import streamlit as st
-from dashboard.db import get_recent_matches, get_match_detail, get_champions_by_persona
+from dashboard.db import get_matches_filtered, get_all_personas, get_match_detail, get_champions_by_persona
 from dashboard.theme import BG, BORDER, GOLD, MUTED, GREEN, RED
 
-# ── Helpers de DDragon (reutilizados de example/viewGame/dragon.py) ───────────
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from example.viewGame.dragon import (
+# ── Helpers de DDragon (ahora locales) ────────────────────────────────────────
+from .dragon import (
     get_latest_patch,
     champion_square_url,
     spell_icon_url,
@@ -199,7 +196,7 @@ def _render_team(team_key, team_data, patch, max_damage: int = 1):
 def render(pool_id: str, queue_id: int, min_friends: int):
     st.header("Ver partidas")
 
-    from dashboard.db import get_matches_filtered, get_all_personas, get_match_detail
+    # (Usando importaciones globales ya definidas arriba)
 
     # ── Controles de filtrado ─────────────────────────────────────────────────
     col_id, col_fecha, col_persona, col_slider = st.columns([3, 2, 2, 2])

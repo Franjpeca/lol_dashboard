@@ -5,14 +5,15 @@ from dotenv import load_dotenv
 
 # Internal Paths
 FILE_SELF = Path(__file__).resolve()
-SRC_DIR = FILE_SELF.parents[1]
-BASE_DIR = SRC_DIR.parent
+SRC_DIR = FILE_SELF.parents[1]      # lol_dashboard/src/
+BASE_DIR = FILE_SELF.parents[2]     # lol_dashboard/ (Raíz real del proyecto)
+
 RESULTS_ROOT = BASE_DIR / "data" / "results"
 RUNTIME_ROOT = BASE_DIR / "data" / "runtime"
 
-# Load .env only once when this module is imported
+# Load .env explicitly from project root
 env_path = BASE_DIR / ".env"
-load_dotenv(dotenv_path=env_path)
+load_dotenv(dotenv_path=env_path, override=True)
 
 # ================================
 # MONGO DATABASE CONFIG (L0 — datos crudos)

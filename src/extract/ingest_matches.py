@@ -98,57 +98,44 @@ def upsert_account(db, riot_id, puuid, region):
         update_data = {
             "puuid": puuid,
             "region": region,
-            "last_updated": now_utc()
+            "updated_at": now_utc()
         }
+        
         if riot_id:
-            update_data["riot_id"] = riot_id
-            
-        if existing:
-            old_name = existing.get("riot_id")
-            if riot_id and old_name and old_name != riot_id:
-                history = existing.get("previous_identities", [])
-                if old_name not in history:
-                    history.append(old_name)
-                update_data["previous_identities"] = history
-                log(f"[INFO] Name change detected: {old_name} -> {riot_id}")
-            else:
-                update_data["previous_identities"] = existing.get("previous_identities", [])
-        else:
-            update_data["added_at"] = now_utc()
+            update_data["riotId"] = riot_id
+            if existing and existing.get("riotId") != riot_id:
+                # Guardar en histórico si cambió
+                old_name = existing.get("riotId")
+                coll_accounts.update_one(
+                    {"puuid": puuid},
+                    {"$addToSet": {"history": {"riotId": old_name, "date": now_utc()}}}
+                )
         
         coll_accounts.update_one(
             {"puuid": puuid},
-            {"$set": update_data},
+            {"$set": update_data, "$setOnInsert": {"created_at": now_utc()}},
             upsert=True
         )
     except Exception as e:
-        log(f"[WARN] Error guardando cuenta en Mongo: {e}")
+        log(f"[ERROR] upsert_account: {e}")
 
-def insert_match(db, match_json, region, source_info):
-    match_id = match_json.get("metadata", {}).get("matchId")
-    if not match_id:
-        return False
-        
-    coll_matches = db[COLLECTION_RAW_MATCHES]
-    doc = {
-        "_id": match_id,
-        "inserted_at": now_utc(),
-        "source": source_info,
-        "region": region,
-        "data": match_json
-    }
+def insert_match(db, match_json, region, source):
+    """Inserta partida en MongoDB evitando duplicados."""
     try:
-        coll_matches.insert_one(doc)
+        match_id = match_json["metadata"]["matchId"]
+        match_json["_id"] = match_id
+        match_json["ingested_at"] = now_utc()
+        match_json["source_ext"] = source
+        match_json["region_ext"] = region
+        
+        db[COLLECTION_RAW_MATCHES].insert_one(match_json)
         return True
     except errors.DuplicateKeyError:
         return False
     except Exception as e:
-        log(f"[ERROR] insert {match_id}: {e}")
+        log(f"[ERROR] insert_match: {e}")
         return False
 
-# ============================
-# SYNC COMUN (desde data/usuarios)
-# ============================
 def sync_accounts_from_local(db):
     """Sincroniza la colección riot_accounts desde data/usuarios local."""
     riotid_map = {}
@@ -186,29 +173,36 @@ def iter_match_ids(lol, puuid):
         if len(ids) < batch:
             break
 
-def ingest_from_api(db):
+def ingest_from_api(db, users_collections=["L0_users_index", "L0_users_index_season"]):
     riotid_map = sync_accounts_from_local(db)
     known_puuids = set(riotid_map.keys())
     unknown_puuids = set()
 
     lol = LolWatcher(get_api_key(REGIONAL_ROUTING), timeout=REQUEST_TIMEOUT)
 
-    # Identificar de quién vamos a descargar
-    L0_index = db[COLLECTION_USERS_INDEX]
-    all_user_docs = list(L0_index.find({}, {"puuids": 1, "persona": 1}))
-    all_puuids = []
-    for doc in all_user_docs:
-        for p in doc.get("puuids", []):
-            all_puuids.append((doc["persona"], p))
+    # Identificar de quién vamos a descargar (Unión de todas las colecciones)
+    all_puuids_map = {} # puuid -> persona
+    
+    for coll_name in users_collections:
+        L0_index = db[coll_name]
+        try:
+            docs = list(L0_index.find({}, {"puuids": 1, "_id": 1}))
+            for doc in docs:
+                persona = doc["_id"]
+                for p in doc.get("puuids", []):
+                    all_puuids_map[p] = persona
+        except Exception as e:
+            log(f"[WARN] Error leyendo colección {coll_name}: {e}")
 
-    if not all_puuids:
-        log("❌ No se encontraron usuarios en L0_users_index")
+    if not all_puuids_map:
+        log(f"❌ No se encontraron usuarios en las colecciones: {users_collections}")
         return
 
-    log(f"[INFO] Descargando partidas de {len(all_puuids)} PUUID registrados en la API\n")
+    unique_puuids = list(all_puuids_map.items())
+    log(f"[INFO] Descargando partidas de {len(unique_puuids)} jugadores únicos detectados en {users_collections}\n")
 
-    for persona, puuid in all_puuids:
-        log(f"\n=== Persona {persona} -> PUUID {puuid} ===")
+    for puuid, persona in unique_puuids:
+        log(f"\n=== Jugador {persona} -> PUUID {puuid} ===")
         total_inserted = 0
         total_skipped = 0
 
@@ -237,7 +231,7 @@ def ingest_from_api(db):
 
             time.sleep(SLEEP_BETWEEN_CALLS)
 
-        log(f"📊 {persona} ({puuid}) -> nuevas: {total_inserted}, omitidas: {total_skipped}")
+        log(f"📊 {persona} -> nuevas: {total_inserted}, omitidas: {total_skipped}")
 
     if unknown_puuids:
         log(f"⚠️  Se ignoraron {len(unknown_puuids)} PUUID desconocidos (jugadores ajenos).")
@@ -305,20 +299,27 @@ def ingest_from_file(db):
 # MAIN
 # ============================
 def main():
-    parser = argparse.ArgumentParser(description="Ingesta de partidas a MongoDB")
-    parser.add_argument("--source", choices=["api", "file"], default="api",
-                        help="Origen de datos a ingestar (default: api)")
+    parser = argparse.ArgumentParser(description="Ingesta de partidas desde Riot API")
+    parser.add_argument("--source", choices=["api", "file"], default="api")
+    parser.add_argument("--mode", choices=["normal", "season", "all"], default="all")
     args = parser.parse_args()
-
-    log(f"[BOOT] ingest_matches.py | source={args.source}")
 
     with get_mongo_client() as client:
         db = client[MONGO_DB]
         
         if args.source == "api":
-            ingest_from_api(db)
-        elif args.source == "file":
+            if args.mode == "normal":
+                cols = ["L0_users_index"]
+            elif args.mode == "season":
+                cols = ["L0_users_index_season"]
+            else:
+                cols = ["L0_users_index", "L0_users_index_season"]
+            
+            ingest_from_api(db, users_collections=cols)
+        else:
+            # Modo file (legacy/debug)
             ingest_from_file(db)
+
 
 if __name__ == "__main__":
     main()

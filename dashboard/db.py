@@ -14,7 +14,9 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from utils.config import POSTGRES_URI
+from utils.config import POSTGRES_URI, MONGO_DB, COLLECTION_RAW_MATCHES, COLLECTION_USERS_INDEX
+from utils.db import get_mongo_client
+from datetime import datetime
 
 _PG_DSN = POSTGRES_URI.replace("postgresql+psycopg2://", "postgresql://")
 
@@ -805,37 +807,41 @@ def get_matches_per_day_persona(pool_id: str, queue_id: int, min_friends: int) -
 # ─── Detalle de partida (MongoDB raw) ────────────────────────────────────────
 
 @st.cache_data(ttl=600, show_spinner=False)
-def get_match_detail(match_id: str) -> dict:
-    """
-    Carga el detalle completo de una partida desde MongoDB (L0) y lo devuelve
-    formateado listo para renderizar. Misma lógica que example/viewGame/loader.py.
-    """
+def _get_puuid_mapping() -> dict[str, str]:
+    """Caché del mapa puuid -> persona para evitar lecturas repetitivas de Mongo."""
+    mapping: dict[str, str] = {}
     try:
-        from utils.db import get_mongo_client
-        from utils.config import MONGO_DB, COLLECTION_RAW_MATCHES, COLLECTION_USERS_INDEX
-        from datetime import datetime
-
         with get_mongo_client() as client:
             mongo_db = client[MONGO_DB]
-
-            # ── Mapa puuid → persona ──────────────────────────────────────
-            puuid_to_name: dict[str, str] = {}
             for doc in mongo_db[COLLECTION_USERS_INDEX].find({}, {"puuids": 1, "riotIds": 1, "accounts": 1}):
                 # Formato nuevo: accounts[]
                 for acc in doc.get("accounts", []):
                     p = acc.get("puuid")
                     riot_id = acc.get("riotId", "")
                     if p and riot_id:
-                        puuid_to_name[p] = riot_id
+                        mapping[p] = riot_id
                 # Formato antiguo: puuids[] + riotIds[]
                 puuids = doc.get("puuids", [])
                 riot_ids = doc.get("riotIds", [])
                 name = riot_ids[-1] if riot_ids else None
                 for p in puuids:
-                    if p not in puuid_to_name and name:
-                        puuid_to_name[p] = name
+                    if p not in mapping and name:
+                        mapping[p] = name
+    except Exception as e:
+        st.warning(f"Error cargando mapa de usuarios: {e}")
+    return mapping
 
-            # ── Documento de la partida ───────────────────────────────────
+@st.cache_data(ttl=600, show_spinner=False)
+def get_match_detail(match_id: str) -> dict:
+    """
+    Carga el detalle completo de una partida desde MongoDB (L0).
+    Optimizado para usar un mapeo de PUUIDs cacheado.
+    """
+    try:
+        puuid_to_name = _get_puuid_mapping()
+
+        with get_mongo_client() as client:
+            mongo_db = client[MONGO_DB]
             doc = mongo_db[COLLECTION_RAW_MATCHES].find_one({"_id": match_id})
             if not doc:
                 return {"error": f"Partida {match_id} no encontrada en MongoDB"}
@@ -845,7 +851,7 @@ def get_match_detail(match_id: str) -> dict:
             if not info:
                 return {"error": "Partida corrupta o incompleta"}
 
-            # Fallback desde PostgreSQL (cuando en Mongo falte/sea 0 el daño)
+            # Fallback desde PostgreSQL
             pg_damage_by_puuid: dict[str, int] = {}
             try:
                 pg_df = _q(

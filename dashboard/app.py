@@ -9,6 +9,7 @@ Para añadir una nueva sección:
 """
 import importlib
 import sys
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,6 +25,7 @@ importlib.reload(dashboard.db)
 
 from dashboard.theme import GLOBAL_CSS, GOLD, PAPER, BG, BORDER, MUTED
 from dashboard.db import get_pool_options
+from utils.status import get_last_update_str
 
 # ─── Page config (must be first Streamlit call) ──────────────────────────────
 
@@ -43,11 +45,8 @@ SECTIONS = [
     ("Análisis",                 "", "dashboard.pages.analisis"),
     ("Minería",                  "", "dashboard.pages.mineria"),
     ("Ver partida",              "", "dashboard.pages.ver_partida"),
-    ("Datos y configuración",    "", "dashboard.pages.config"),
+    ("Información de cuentas",   "", "dashboard.pages.cuentas"),
 ]
-
-# ─── Top Navbar ───────────────────────────────────────────────────────────────
-# We use st.columns to embed selectboxes in the navbar row alongside static HTML.
 
 pool_options = get_pool_options()
 # Si está vacío por lo que sea, ponemos defaults de salvaguarda
@@ -56,8 +55,8 @@ if not pool_options:
 
 pools = list(pool_options.keys())
 
-nav_left, nav_pool_label, nav_pool, nav_friends_label, nav_friends, nav_status, nav_spacer = st.columns(
-    [1.2, 0.4, 1.1, 0.3, 0.8, 0.9, 2.5]
+nav_left, nav_pool_label, nav_pool, nav_friends_label, nav_friends, nav_update_info, nav_update_btn = st.columns(
+    [1.2, 0.4, 1.1, 0.3, 0.8, 2.2, 1.2]
 )
 
 queue_id = 440  # Solo Flex
@@ -68,8 +67,7 @@ with nav_left:
         unsafe_allow_html=True,
     )
 
-with nav_spacer:
-    pass
+
 
 with nav_pool_label:
     st.markdown(
@@ -107,15 +105,20 @@ with nav_friends:
         label_visibility="collapsed",
     )
 
-with nav_status:
+with nav_update_info:
+    last_upd = get_last_update_str()
     st.markdown(
-        f"<div style='padding-top:11px; text-align:right;'>"
-        f"<span class='lol-badge'>Activo</span></div>",
+        f"<div style='padding-top:14px; text-align:right; color:{MUTED}; font-size:0.8rem; "
+        f"font-weight:400; line-height:1.2;'>Última actualización:<br/>"
+        f"<span style='color:{GOLD}; font-weight:600;'>{last_upd}</span></div>",
         unsafe_allow_html=True,
     )
 
-with nav_spacer:
-    pass
+with nav_update_btn:
+    st.markdown("<div style='padding-top:10px;'>", unsafe_allow_html=True)
+    if st.button("🔄 Actualizar", key="refresh_btn", use_container_width=True):
+        st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # Thin separator line under navbar
 st.markdown(

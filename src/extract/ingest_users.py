@@ -34,12 +34,12 @@ from utils.db import get_mongo_client
 # ================================
 MODES = {
     "normal": {
-        "map_file": BASE_DIR / "mapa_cuentas.json",
+        "map_file": BASE_DIR / "data" / "mapa_cuentas.json",
         "collection": COLLECTION_USERS_INDEX,   # L0_users_index
         "drop_on_start": True,                   # Reemplazar índice completo
     },
     "season": {
-        "map_file": BASE_DIR / "mapa_cuentas_season.json",
+        "map_file": BASE_DIR / "data" / "mapa_cuentas_season.json",
         "collection": "L0_users_index_season",
         "drop_on_start": False,                  # Upsert: mantener histórico
     },
@@ -73,18 +73,12 @@ def get_puuid_from_api(riot: RiotWatcher, riot_id: str, regional: str) -> str | 
         return None
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Construye índice de usuarios en MongoDB")
-    parser.add_argument("--mode", choices=["normal", "season"], default="normal",
-                        help="Modo de ejecución (default: normal)")
-    args = parser.parse_args()
-
-    cfg = MODES[args.mode]
+def process_mode(mode_name, cfg, riot, regional):
     collection_name = cfg["collection"]
     map_path = cfg["map_file"]
     drop_on_start = cfg["drop_on_start"]
 
-    print(f"[BOOT] ingest_users.py | modo={args.mode} | colección={collection_name}")
+    print(f"\n[BOOT] ingest_users.py | modo={mode_name} | colección={collection_name}")
 
     mapa = load_map(map_path)
     if not mapa:
@@ -93,11 +87,7 @@ def main():
 
     print(f"[INFO] {map_path.name}: {len(mapa)} personas")
 
-    regional = REGIONAL_ROUTING
-    api_key = get_api_key(regional)
-    riot = RiotWatcher(api_key)
-
-    now = now_utc()
+    now = datetime.datetime.now(datetime.timezone.utc)
     inserted = 0
     updated = 0
 
@@ -164,6 +154,23 @@ def main():
         total = coll.count_documents({})
 
     print(f"[DONE] {inserted} insertados, {updated} actualizados | total en {collection_name}: {total}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Construye índice de usuarios en MongoDB")
+    parser.add_argument("--mode", choices=["normal", "season", "all"], default="all",
+                        help="Modo de ejecución (default: all)")
+    args = parser.parse_args()
+
+    regional = REGIONAL_ROUTING
+    api_key = get_api_key(regional)
+    riot = RiotWatcher(api_key)
+
+    if args.mode == "all":
+        for m_name, m_cfg in MODES.items():
+            process_mode(m_name, m_cfg, riot, regional)
+    else:
+        process_mode(args.mode, MODES[args.mode], riot, regional)
 
 
 if __name__ == "__main__":
