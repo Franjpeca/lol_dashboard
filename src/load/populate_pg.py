@@ -71,7 +71,7 @@ def resolve_pool(mongo_db, pool_arg: str | None, queue_id: int, min_friends: int
     if not personas:
         raise RuntimeError(f"No se encontraron personas en {users_collection}")
 
-    pool_version = build_pool_version(sorted(list(personas)))  # 'pool_ca879f16'
+    pool_version = build_pool_version(sorted(list(personas)), users_collection=users_collection)  # 'pool_ca879f16'
     pool_id = pool_version.replace("pool_", "")
     l1_name = f"L1_q{queue_id}_min{min_friends}_{pool_version}"
     return pool_id, l1_name

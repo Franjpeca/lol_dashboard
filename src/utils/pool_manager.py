@@ -9,17 +9,25 @@ from pymongo import MongoClient
 load_dotenv()
 
 
-def build_pool_version(personas: list) -> str:
+def build_pool_version(personas: list, users_collection: str = "L0_users_index") -> str:
     """
-    Calcula el pool_id a partir de los nombres de persona (ej: 'Fran', 'Olaf').
-    Usar siempre PERSONAS, nunca PUUIDs, para que el hash sea estable cuando
-    un jugador cambia de nombre de cuenta en Riot.
+    Calcula el pool_id. Estrictamente nominal basado en la colección de origen.
+    Evita la creación de pools 'random' con hashes.
+    
+    Mapping:
+      - 'L0_users_index' -> 'villaquesitos' (mapa_cuentas.json)
+      - 'L0_users_index_season' -> 'season' (mapa_cuentas_season.json)
+      - 'L0_users_index_XXX' -> 'XXX' (mapa_cuentas_XXX.json)
+    """
+    if users_collection == "L0_users_index":
+        return "pool_villaquesitos"
+    
+    if users_collection.startswith("L0_users_index_"):
+        suffix = users_collection.replace("L0_users_index_", "")
+        return f"pool_{suffix}"
 
-    Fuente de verdad única: esta función. Importarla en todos los scripts.
-    """
-    base = ",".join(sorted(personas))
-    h = hashlib.sha1(base.encode("utf-8")).hexdigest()[:8]
-    return f"pool_{h}"
+    # Si llegamos aquí con una colección desconocida, lanzamos error para evitar pools fantasma
+    raise ValueError(f"Colección de usuarios desconocida: {users_collection}. No se puede asignar un pool_id estático.")
 
 def get_available_pools(base_dir: Path) -> List[str]:
     """

@@ -32,18 +32,34 @@ from utils.db import get_mongo_client
 # ================================
 # CONFIG POR MODO
 # ================================
-MODES = {
-    "normal": {
-        "map_file": BASE_DIR / "data" / "mapa_cuentas.json",
-        "collection": COLLECTION_USERS_INDEX,   # L0_users_index
-        "drop_on_start": True,                   # Reemplazar índice completo
-    },
-    "season": {
-        "map_file": BASE_DIR / "data" / "mapa_cuentas_season.json",
-        "collection": "L0_users_index_season",
-        "drop_on_start": False,                  # Upsert: mantener histórico
-    },
-}
+def get_modes():
+    modes = {
+        "villaquesitos": {
+            "map_file": BASE_DIR / "data" / "mapa_cuentas.json",
+            "collection": "L0_users_index",
+            "drop_on_start": True
+        },
+        "season": {
+            "map_file": BASE_DIR / "data" / "mapa_cuentas_season.json",
+            "collection": "L0_users_index_season",
+            "drop_on_start": False  # Upsert para season
+        }
+    }
+    
+    # Escanear otros archivos mapa_cuentas_XXX.json
+    data_dir = BASE_DIR / "data"
+    for f in data_dir.glob("mapa_cuentas_*.json"):
+        suffix = f.stem.replace("mapa_cuentas_", "")
+        if suffix == "season": continue
+        
+        modes[suffix] = {
+            "map_file": f,
+            "collection": f"L0_users_index_{suffix}",
+            "drop_on_start": True
+        }
+    return modes
+
+MODES = get_modes()
 
 
 def now_utc():
@@ -173,10 +189,19 @@ def main():
     riot = RiotWatcher(api_key)
 
     if args.mode == "all":
-        for m_name, m_cfg in MODES.items():
-            process_mode(m_name, m_cfg, riot, regional)
+        # Usamos una lista estática para asegurar orden o procesar todos los detectados
+        available_modes = get_modes()
+        for m, c in available_modes.items():
+            process_mode(m, c, riot, regional)
     else:
-        process_mode(args.mode, MODES[args.mode], riot, regional)
+        # Intentar encontrar el modo específico
+        available_modes = get_modes()
+        if args.mode in available_modes:
+            process_mode(args.mode, available_modes[args.mode], riot, regional)
+        elif args.mode == "normal": # Compatibilidad
+            process_mode("villaquesitos", available_modes["villaquesitos"], riot, regional)
+        else:
+            print(f"Error: Modo '{args.mode}' no reconocido.")
 
 
 if __name__ == "__main__":

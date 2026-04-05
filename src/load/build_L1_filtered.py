@@ -76,7 +76,7 @@ def main():
             pool_version = f"pool_{pool_id_arg}"
             print(f"[POOL] Using specified pool: {pool_version}")
         else:
-            pool_version = build_pool_version(sorted(list(personas)))
+            pool_version = build_pool_version(sorted(list(personas)), users_collection=users_collection)
             print(f"[POOL] Auto-calculated pool from {len(personas)} personas: {pool_version}")
         
         print(f"[POOL] total_puuids={len(friend_puuids)}")

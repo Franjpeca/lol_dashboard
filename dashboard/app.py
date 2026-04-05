@@ -52,7 +52,7 @@ SECTIONS = [
 pool_options = get_pool_options()
 # Si está vacío por lo que sea, ponemos defaults de salvaguarda
 if not pool_options:
-    pool_options = {"ca879f16": [5]}
+    pool_options = {"villaquesitos": [5]}
 
 pools = list(pool_options.keys())
 
@@ -78,7 +78,9 @@ with nav_filters:
         st.markdown("<div class='nav-align'><span class='nav-label'>Pool:</span></div>", unsafe_allow_html=True)
     with f2:
         def format_pool(pid):
-            return "Season" if pid == "season" else f"Normal ({pid})"
+            if pid == "season": return "Season"
+            if pid == "villaquesitos": return "Villaquesitos"
+            return pid.capitalize()
         pool_id = st.selectbox("pool", list(pool_options.keys()), format_func=format_pool, label_visibility="collapsed")
         
     with f3:

@@ -40,10 +40,9 @@ def main():
     print(f"[DIAG] Hora actual (UTC): {now_diag.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"[DIAG] Hora actual (Local): {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    # 1. Actualizar Usuarios
-    print("\n--- PASO 1: Actualizando índices de usuarios (Normal + Season) ---")
-    run_command(["src/extract/ingest_users.py"])
-    run_command(["src/extract/ingest_users.py", "--mode", "season"])
+    # 1. Actualizar Usuarios (Normal, Season y cualquier otro mapa_cuentas_*.json detectado)
+    print("\n--- PASO 1: Actualizando índices de usuarios (Villaquesitos + Season + Otros) ---")
+    run_command(["src/extract/ingest_users.py", "--mode", "all"])
 
     # 2. Descargar Partidas con los argumentos recibidos
     print("\n--- PASO 2: Descargando partidas nuevas (Riot API) ---")
