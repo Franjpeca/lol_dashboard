@@ -1135,22 +1135,25 @@ def render(pool_id: str, queue_id: int, min_friends: int):
         if df_evo.empty:
             st.warning("No hay datos suficientes para mostrar la evolución.")
         else:
-            # Selectores
-            c1, c2, c3 = st.columns([1, 1, 2])
+            # Selectores con anchos ajustados y alineación mejorada
+            c1, c2, c3 = st.columns([0.8, 0.8, 2.4])
             with c1:
+                st.markdown("<div style='margin-bottom:2px'><span class='nav-label'>Periodo</span></div>", unsafe_allow_html=True)
                 granularity = st.selectbox(
-                    "Granularidad (agrupar cada):",
+                    "Granularidad",
                     ["Diario", "3 días", "Semanal"],
-                    index=1 # 3 días por defecto
+                    index=1,
+                    label_visibility="collapsed"
                 )
             
             with c2:
+                st.markdown("<div style='margin-bottom:2px'><span class='nav-label'>Desde nº</span></div>", unsafe_allow_html=True)
                 min_games_threshold = st.number_input(
-                    "Empezar desde partida nº:",
+                    "Empezar desde",
                     min_value=1,
-                    max_value=50,
+                    max_value=100,
                     value=10,
-                    help="El winrate acumulado es muy volátil al principio. Este filtro oculta los primeros datos para ver tendencias estables."
+                    label_visibility="collapsed"
                 )
             
             freq_map = {"Diario": "1D", "3 días": "3D", "Semanal": "7D"}
@@ -1158,10 +1161,12 @@ def render(pool_id: str, queue_id: int, min_friends: int):
 
             all_personas = sorted(df_evo["persona"].unique().tolist())
             with c3:
+                st.markdown("<div style='margin-bottom:2px'><span class='nav-label'>Jugadores</span></div>", unsafe_allow_html=True)
                 selected_personas = st.multiselect(
                     "Seleccionar jugadores:",
                     ["Toda la Comunidad"] + all_personas,
-                    default=["Toda la Comunidad"]
+                    default=["Toda la Comunidad"],
+                    label_visibility="collapsed"
                 )
 
             # Procesamiento de datos

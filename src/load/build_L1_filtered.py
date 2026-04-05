@@ -94,20 +94,33 @@ def main():
         # FILTER MATCHES
         # ============================
             
-        query = {"data.info.queueId": queue_id}
+        # [FIX] Soporte bilingüe: Buscar tanto en estructura moderna como legacy (data.info)
+        query = {
+            "$or": [
+                {"info.queueId": queue_id},
+                {"data.info.queueId": queue_id}
+            ]
+        }
             
-        # [SEASON LOGIC] If pool is 'season', enforce start date
+        # [SEASON LOGIC] Si la pool es 'season', aplicamos filtro de fecha
         if pool_id_arg == "season":
-            # 2026-01-08 00:00:00 UTC = 1767830400000 approx
-            # Using exact timestamp for 2026-01-08
             TIMESTAMP_2026_01_08 = 1767830400000
-            query["data.info.gameStartTimestamp"] = {"$gte": TIMESTAMP_2026_01_08}
-            print(f"[FILTER] Pool 'season' detected. Enforcing gameStartTimestamp >= {TIMESTAMP_2026_01_08} (2026-01-08)")
+            # Aplicar el filtro de tiempo a ambas estructuras posibles
+            query = {
+                "$and": [
+                    { "$or": [{"info.queueId": queue_id}, {"data.info.queueId": queue_id}] },
+                    { "$or": [
+                        {"info.gameStartTimestamp": {"$gte": TIMESTAMP_2026_01_08}},
+                        {"data.info.gameStartTimestamp": {"$gte": TIMESTAMP_2026_01_08}}
+                    ]}
+                ]
+            }
+            print(f"[FILTER] Pool 'season' detectada. Buscando partidas >= 2026-01-08")
 
         coll_src = db[COLLECTION_RAW_MATCHES]
         cursor = coll_src.find(
             query,
-            {"_id": 1, "data": 1}
+            {"_id": 1, "info": 1, "metadata": 1, "data": 1}
         )
 
         ops = []
@@ -115,8 +128,12 @@ def main():
 
         for doc in cursor:
             mid = doc["_id"]
-            data = doc.get("data", {})
-            metadata = data.get("metadata", {})
+            
+            # Buscar metadata/participants en raíz o en .data (moderno vs legacy)
+            metadata = doc.get("metadata", {})
+            if not metadata and "data" in doc:
+                metadata = doc["data"].get("metadata", {})
+            
             participants = metadata.get("participants", [])
 
             friends_present = [p for p in participants if p in friend_puuids]
@@ -127,6 +144,12 @@ def main():
                     persona_por_puuid[p] for p in friends_present if p in persona_por_puuid
                 })
 
+                # Normalizar el documento para L1: nos aseguramos de que el contenido real 
+                # siempre esté en la raíz del campo 'data' del nuevo registro
+                real_payload = doc
+                if "info" not in doc and "data" in doc:
+                    real_payload = doc["data"]
+
                 record = {
                     "_id": mid,
                     "queue": queue_id,
@@ -136,7 +159,7 @@ def main():
                     "personas_present": personas_present,
                     "filtered_at": now_utc(),
                     "run_id": f"{now_utc().strftime('%Y%m%d_%H%M%S')}",
-                    "data": data
+                    "data": real_payload
                 }
 
                 ops.append(UpdateOne({"_id": mid}, {"$set": record}, upsert=True))

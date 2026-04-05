@@ -73,21 +73,37 @@ def load_map(path: Path) -> dict:
         return json.load(f)
 
 
-def get_puuid_from_api(riot: RiotWatcher, riot_id: str, regional: str) -> str | None:
-    """Obtiene PUUID siempre desde Riot API."""
-    try:
-        name, tag = riot_id.split("#", 1)
-        acc = riot.account.by_riot_id(regional, name, tag)
-        
-        # Rate limit
-        if SLEEP_BETWEEN_CALLS > 0:
-            print(".", end="", flush=True)  # Indicador discreto de progreso/pausa
-            time.sleep(SLEEP_BETWEEN_CALLS)
-            
-        return acc["puuid"]
-    except Exception as e:
-        print(f"  [WARN] No se pudo obtener PUUID para {riot_id}: {e}")
+def get_puuid_from_api(riot: RiotWatcher, riot_id: str, regional: str, max_retries: int = 3) -> str | None:
+    """Obtiene PUUID desde Riot API con reintentos."""
+    if "#" not in riot_id:
+        print(f"  [WARN] Formato de Riot ID inválido (falta #): {riot_id}")
         return None
+        
+    name, tag = riot_id.split("#", 1)
+    
+    for attempt in range(1, max_retries + 1):
+        try:
+            acc = riot.account.by_riot_id(regional, name.strip(), tag.strip())
+            
+            # Rate limit friendly sleep
+            if SLEEP_BETWEEN_CALLS > 0:
+                print(".", end="", flush=True) 
+                time.sleep(SLEEP_BETWEEN_CALLS)
+                
+            return acc["puuid"]
+        except Exception as e:
+            # Si es un 404 real, el nombre no existe, no reintentamos
+            if "404" in str(e):
+                print(f"  [ERROR] Cuenta no encontrada (404): {riot_id}")
+                return None
+                
+            if attempt < max_retries:
+                wait = 2 ** attempt
+                print(f"  [RETRY] Error obteniendo {riot_id} (intento {attempt}/{max_retries}). Reintentando en {wait}s... {e}")
+                time.sleep(wait)
+            else:
+                print(f"  [ERROR] No se pudo obtener PUUID para {riot_id} tras {max_retries} intentos: {e}")
+    return None
 
 
 def process_mode(mode_name, cfg, riot, regional):
@@ -176,6 +192,19 @@ def process_mode(mode_name, cfg, riot, regional):
         total = coll.count_documents({})
 
     print(f"[DONE] {inserted} insertados, {updated} actualizados | total en {collection_name}: {total}")
+    
+    # [FIX] Sincronización final de seguridad (asegurarnos de que puuids y accounts coinciden)
+    print(f"[SYNC] Ejecutando sincronización de seguridad para {collection_name}...")
+    users_after = list(coll.find())
+    for u in users_after:
+        acc_list = u.get('accounts', [])
+        p_list = set(u.get('puuids', []))
+        all_from_acc = {a['puuid'] for a in acc_list if 'puuid' in a}
+        
+        missing = all_from_acc - p_list
+        if missing:
+            coll.update_one({'_id': u['_id']}, {'$addToSet': {'puuids': {'$each': list(missing)}}})
+    print(f"[SYNC] {collection_name} sincronizada correctamente.")
 
 
 def main():

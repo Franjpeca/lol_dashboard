@@ -11,6 +11,7 @@ import importlib
 import sys
 import subprocess
 import json
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -101,16 +102,63 @@ with nav_status:
 
 with nav_btn:
     if st.button("🔄 Actualizar", key="refresh_btn", use_container_width=True):
-        with st.status("🚀 Actualizando datos...", expanded=False) as status:
+        with st.status("🚀 Iniciando actualización...", expanded=True) as status:
+            progress_bar = st.progress(0)
+            log_area = st.empty()
+            
             try:
-                st.write("🔄 Sincronizando con Riot API...")
-                subprocess.run([sys.executable, "src/run_all.py"], check=True)
-                status.update(label="✅ Actualizado", state="complete")
-                st.cache_data.clear()
-                st.rerun()
+                import re
+                # Lanzar el proceso con Popen para leer la salida en tiempo real
+                # bufsize=1 y universal_newlines=True para lectura por líneas
+                process = subprocess.Popen(
+                    [sys.executable, "src/run_all.py", "--limit", "20"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1,
+                    cwd=ROOT
+                )
+                
+                for line in iter(process.stdout.readline, ""):
+                    # Limpiar línea para mostrarla
+                    clean_line = line.strip()
+                    if not clean_line: continue
+                    
+                    # Detectar pasos para actualizar progreso
+                    if "[STEP 1/4]" in line:
+                        progress_bar.progress(10)
+                        status.update(label="👥 Paso 1/4: Sincronizando identidades...", state="running")
+                    elif "[STEP 2/4]" in line:
+                        progress_bar.progress(35)
+                        status.update(label="🌐 Paso 2/4: Descargando de Riot API...", state="running")
+                    elif "[STEP 3/4]" in line:
+                        progress_bar.progress(65)
+                        status.update(label="📊 Paso 3/4: Generando Pool Villaquesitos...", state="running")
+                    elif "[STEP 4/4]" in line:
+                        progress_bar.progress(90)
+                        status.update(label="⏳ Paso 4/4: Generando Pool Season...", state="running")
+                    
+                    # Mostrar la última línea de log relevante (breve)
+                    if any(x in line for x in ["Procesando", "insertados", "Sincronizando", "Descargando"]):
+                        log_area.text(f"📝 {clean_line[:80]}...")
+
+                process.stdout.close()
+                return_code = process.wait()
+                
+                if return_code == 0:
+                    progress_bar.progress(100)
+                    status.update(label="✅ ¡Todo al día!", state="complete")
+                    st.cache_data.clear()
+                    st.success("Actualización completada con éxito.")
+                    time.sleep(2)
+                    st.rerun()
+                else:
+                    status.update(label="❌ Error en el proceso", state="error")
+                    st.error(f"El proceso terminó con código {return_code}")
+                    
             except Exception as e:
-                status.update(label="❌ Error", state="error")
-                st.error(str(e))
+                status.update(label="❌ Fallo crítico", state="error")
+                st.error(f"Error: {str(e)}")
 
 st.markdown(f"<hr style='border:none; border-top:1px solid {BORDER}; margin:10px 0 0 0;'>", unsafe_allow_html=True)
 

@@ -37,15 +37,15 @@ def main():
     print("=" * 60)
 
     now_diag = datetime.datetime.now(datetime.timezone.utc)
-    print(f"[DIAG] Hora actual (UTC): {now_diag.strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"[DIAG] Hora actual (Local): {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"[DIAG] Hora actual (UTC): {now_diag.strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
+    print(f"[DIAG] Hora actual (Local): {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", flush=True)
 
-    # 1. Actualizar Usuarios (Normal, Season y cualquier otro mapa_cuentas_*.json detectado)
-    print("\n--- PASO 1: Actualizando índices de usuarios (Villaquesitos + Season + Otros) ---")
+    # 1. Actualizar Usuarios
+    print("\n[STEP 1/4] --- PASO 1: Actualizando índices de usuarios (Villaquesitos + Season + Otros) ---", flush=True)
     run_command(["src/extract/ingest_users.py", "--mode", "all"])
 
-    # 2. Descargar Partidas con los argumentos recibidos
-    print("\n--- PASO 2: Descargando partidas nuevas (Riot API) ---")
+    # 2. Descargar Partidas
+    print("\n[STEP 2/4] --- PASO 2: Descargando partidas nuevas (Riot API) ---", flush=True)
     ingest_cmd = ["src/extract/ingest_matches.py"]
     if args_cli.all:
         ingest_cmd.append("--all")
@@ -54,17 +54,17 @@ def main():
     
     run_command(ingest_cmd)
 
-    # 3. Procesar Pools Normales (Min 1 a 5)
-    # Usamos mode l1-l2 para generar las tablas filtradas sin volver a descargar
-    print("\n--- PASO 3: Generando tablas para Pool Normal (Filtros 1-5 amigos) ---")
+    # 3. Procesar Pools Normales
+    print("\n[STEP 3/4] --- PASO 3: Generando tablas para Pool Normal (Filtros 1-5 amigos) ---", flush=True)
     for m in range(1, 6):
-        print(f"\n>> Procesando Pool Normal (min_friends={m})...")
+        print(f"\n>> Procesando Pool Normal (min_friends={m})...", flush=True)
         run_command(["src/pipeline.py", "--mode", "l1-l2", "--min", str(m), "--run-in-terminal"])
 
     # 4. Procesar Pool Season
-    # Usamos --skip-l0 porque ya descargamos las partidas en el paso 2
-    print("\n--- PASO 4: Generando tablas para Pool Season ---")
-    run_command(["src/pipeline.py", "--mode", "season", "--min", "5", "--skip-l0", "--run-in-terminal"])
+    print("\n[STEP 4/4] --- PASO 4: Generando tablas para Pool Season (Filtros 1-5 amigos) ---", flush=True)
+    for m in range(1, 6):
+        print(f"\n>> Procesando Pool Season (min_friends={m})...", flush=True)
+        run_command(["src/pipeline.py", "--mode", "season", "--min", str(m), "--skip-l0", "--run-in-terminal"])
 
     print("\n" + "=" * 60)
     print("✅ PROCESO COMPLETADO EXITOSAMENTE")

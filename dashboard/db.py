@@ -768,21 +768,28 @@ def get_matches_filtered(
             conditions.append(f"EXISTS (SELECT 1 FROM player_performances pp WHERE {where_sub})")
             params.extend(sub_params)
 
-    conditions.append("cardinality(m.friends_present) >= %s")
-    params.append(min_friends)
-
-    where_clause = " AND ".join(conditions)
-    params.append(limit)
+    # Si se busca un ID específico, relajamos las condiciones de pool y amigos
+    # Pero usamos DISTINCT ON para no ver la misma partida repetida por cada Pool
+    if match_id_search:
+        distinct_clause = "DISTINCT ON (m.match_id)"
+        where_clause = "m.match_id ILIKE %s"
+        order_clause = "m.match_id, m.game_start_at DESC"
+        params = [f"%{match_id_search}%", limit]
+    else:
+        distinct_clause = ""
+        where_clause = " AND ".join(conditions)
+        order_clause = "m.game_start_at DESC"
+        params.append(limit)
 
     return _q(f"""
-        SELECT m.match_id, m.game_start_at, m.duration_s,
+        SELECT {distinct_clause} m.match_id, m.game_start_at, m.duration_s,
                m.friends_present, m.personas_present, m.winning_team,
                (SELECT win FROM player_performances pp
                 WHERE pp.match_id = m.match_id AND pp.is_friend = TRUE
                 LIMIT 1) AS group_win
         FROM matches m
         WHERE {where_clause}
-        ORDER BY m.game_start_at DESC
+        ORDER BY {order_clause}
         LIMIT %s
     """, tuple(params))
 
@@ -859,10 +866,14 @@ def get_match_detail(match_id: str) -> dict:
             if not doc:
                 return {"error": f"Partida {match_id} no encontrada en MongoDB"}
 
-            data = doc.get("data", {})
-            info = data.get("info")
+            # SOPORTE PARA ESTRUCTURA NUEVA Y VIEJA
+            # Si 'info' está en la raíz es nueva, si está en 'data' es vieja
+            info = doc.get("info")
+            if not info and "data" in doc:
+                info = doc["data"].get("info")
+            
             if not info:
-                return {"error": "Partida corrupta o incompleta"}
+                return {"error": "Partida corrupta o incompleta: No se encontró el bloque 'info'"}
 
             # Fallback desde PostgreSQL
             pg_damage_by_puuid: dict[str, int] = {}

@@ -273,5 +273,41 @@ GLOBAL_CSS = f"""
     [data-testid="stHorizontalBlock"] .stSelectbox label {{
         display: none;
     }}
+
+    /* Compactar botones de Radio horizontales (Evaluación de Winrate, etc) */
+    div[data-testid="stRadio"] > label {{
+        font-size: 0.85rem !important;
+        color: {MUTED} !important;
+        margin-bottom: 0.4rem !important;
+    }}
+
+    div[data-testid="stRadio"] div[role="radiogroup"] {{
+        gap: 8px !important;
+        align-items: center;
+    }}
+
+    /* Ajustar el botón físico del radio para que sea más apretado al texto */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label {{
+        background-color: {PAPER} !important;
+        border: 1px solid {BORDER} !important;
+        padding: 4px 12px !important;
+        border-radius: 6px !important;
+        margin: 0 !important;
+        transition: all 0.2s ease;
+    }}
+
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {{
+        border-color: {GOLD} !important;
+    }}
+
+    div[data-testid="stRadio"] div[role="radiogroup"] div[data-testid="stMarkdownContainer"] p {{
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+    }}
+
+    /* Quitar el punto/círculo original de Streamlit para que parezcan botones limpios */
+    div[data-testid="stRadio"] div[role="radiogroup"] div[data-bv-test="radio-mark"] {{
+        display: none !important;
+    }}
 </style>
 """

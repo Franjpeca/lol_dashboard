@@ -149,7 +149,7 @@ def _render_player_row(p, patch, is_header=False, max_damage: int = 1):
         # Oro
         f"<td>{gold:,}<br><span class='small-stat'>{p.get('gpm',0)} /min</span></td>"
         # CS
-        f"<td>{cs}<br><span class='small-stat'>{cspm} /min</span></td>"
+        f"<td>{cs} CS</td>"
         # Ítems
         f"<td>{items_html}</td>"
         f"</tr>"
