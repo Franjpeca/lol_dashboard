@@ -135,25 +135,26 @@ def process_mode(mode_name, cfg, riot, regional):
         docs_to_insert = []
 
         for persona, cuentas in mapa.items():
-            print(f"👤 Procesando: {persona}...", end=" ", flush=True)
+            print(f"👤 Persona: {persona}")
             if not isinstance(cuentas, list):
-                print(f"[WARN] Skipping {persona}: accounts is not a list")
+                print(f"  [WARN] Omitiendo {persona}: cuentas no es una lista")
                 continue
 
             riot_ids, puuids, accounts = [], [], []
 
             for rid in cuentas:
+                print(f"  🔍 Buscando {rid}...", end=" ", flush=True)
                 puuid = get_puuid_from_api(riot, rid, regional)
                 if puuid:
+                    print("✅ OK")
                     riot_ids.append(rid)
                     puuids.append(puuid)
                     accounts.append({"riotId": rid, "puuid": puuid})
+                else:
+                    print("❌ NO ENCONTRADO")
 
-            # Eliminado: No saltamos la persona si no tiene cuentas válidas. 
-            # Esto asegura que el set de personas en MongoDB coincida con el JSON y el pool_id sea estable.
-            # if not riot_ids:
-            #     print(f"[WARN] {persona}: ninguna cuenta válida, omitiendo")
-            #     continue
+            if not puuids:
+                print(f"  ⚠️  [ALERTA] {persona} se ha quedado con 0 PUUIDs válidos.")
 
             riot_ids = sorted(set(riot_ids))
             puuids = sorted(set(puuids))
@@ -168,12 +169,10 @@ def process_mode(mode_name, cfg, riot, regional):
             }
 
             if drop_on_start:
-                # Inserción directa (drop ya hecho)
                 doc["created_at"] = now
                 docs_to_insert.append(doc)
                 inserted += 1
             else:
-                # Upsert: actualiza si existe, inserta si no
                 result = coll.update_one(
                     {"_id": persona},
                     {"$set": doc, "$setOnInsert": {"created_at": now}},
@@ -183,33 +182,35 @@ def process_mode(mode_name, cfg, riot, regional):
                     inserted += 1
                 elif result.modified_count > 0:
                     updated += 1
-            
-            print("OK")
 
         if docs_to_insert:
             coll.insert_many(docs_to_insert)
 
-        total = coll.count_documents({})
+        total_final = coll.count_documents({})
+        personas_vacias = coll.count_documents({"puuids": {"$size": 0}})
 
-    print(f"[DONE] {inserted} insertados, {updated} actualizados | total en {collection_name}: {total}")
-    
-    # [FIX] Sincronización final de seguridad (asegurarnos de que puuids y accounts coinciden)
-    print(f"[SYNC] Ejecutando sincronización de seguridad para {collection_name}...")
-    users_after = list(coll.find())
-    for u in users_after:
-        acc_list = u.get('accounts', [])
-        p_list = set(u.get('puuids', []))
-        all_from_acc = {a['puuid'] for a in acc_list if 'puuid' in a}
+        print(f"[DONE] {inserted} insertados, {updated} actualizados | total en {collection_name}: {total_final}")
+        if personas_vacias > 0:
+            print(f"❌ [CRÍTICO] Hay {personas_vacias} personas sin ningún ID válido en esta colección.")
         
-        missing = all_from_acc - p_list
-        if missing:
-            coll.update_one({'_id': u['_id']}, {'$addToSet': {'puuids': {'$each': list(missing)}}})
-    print(f"[SYNC] {collection_name} sincronizada correctamente.")
+        # [FIX] Sincronización final de seguridad (asegurarnos de que puuids y accounts coinciden)
+        print(f"[SYNC] Ejecutando sincronización de seguridad para {collection_name}...")
+        users_after = list(coll.find())
+        for u in users_after:
+            acc_list = u.get('accounts', [])
+            p_list = set(u.get('puuids', []))
+            all_from_acc = {a['puuid'] for a in acc_list if 'puuid' in a}
+            
+            missing = all_from_acc - p_list
+            if missing:
+                coll.update_one({'_id': u['_id']}, {'$addToSet': {'puuids': {'$each': list(missing)}}})
+        print(f"[SYNC] {collection_name} sincronizada correctamente.")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Construye índice de usuarios en MongoDB")
-    parser.add_argument("--mode", choices=["normal", "season", "all"], default="all",
+    # Hacemos que los modos sean dinámicos basados en los archivos encontrados
+    parser.add_argument("--mode", choices=list(MODES.keys()) + ["all", "normal"], default="all",
                         help="Modo de ejecución (default: all)")
     args = parser.parse_args()
 

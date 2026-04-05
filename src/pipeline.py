@@ -110,11 +110,14 @@ def run_l0(run_in_terminal: bool, queue: Queue, mode: str = "normal") -> bool:
 
 
 def run_l1_to_l2(min_friends: int, pool_id: str | None,
-                  run_in_terminal: bool, queue: Queue) -> bool:
+                  run_in_terminal: bool, queue: Queue, 
+                  users_collection: str | None = None) -> bool:
     """Filtrado L1 (Mongo) → ETL L2 a PostgreSQL."""
     base_args = ["--min", str(min_friends)]
     if pool_id:
         base_args += ["--pool", pool_id]
+    if users_collection:
+        base_args += ["--users-collection", users_collection]
 
     steps = [
         ("L1 — Colecciones filtradas (Mongo)",  LOAD / "build_L1_filtered.py",  base_args),
@@ -129,12 +132,13 @@ def run_l1_to_l2(min_friends: int, pool_id: str | None,
 
 
 def run_full(min_friends: int, pool_id: str | None,
-             run_in_terminal: bool, queue: Queue, skip_l0: bool = False) -> bool:
+             run_in_terminal: bool, queue: Queue, 
+             skip_l0: bool = False, users_collection: str | None = None) -> bool:
     """Pipeline completo L0 (Mongo) → L2 (PostgreSQL)."""
     if not skip_l0:
         if not run_l0(run_in_terminal, queue, mode="normal"):
             return False
-    return run_l1_to_l2(min_friends, pool_id, run_in_terminal, queue)
+    return run_l1_to_l2(min_friends, pool_id, run_in_terminal, queue, users_collection=users_collection)
 
 
 def run_season(min_friends: int, run_in_terminal: bool, queue: Queue, skip_l0: bool = False) -> bool:
@@ -151,7 +155,7 @@ def run_season(min_friends: int, run_in_terminal: bool, queue: Queue, skip_l0: b
     # Luego L1 → ETL PG con parámetros season
     steps = [
         ("L1 Season — Filtrado (Mongo)",        LOAD / "build_L1_filtered.py",  common),
-        ("L2 Season — ETL: Mongo L1 → PG",      LOAD / "populate_pg.py",         common + ["--users-collection", SEASON_USERS_COLLECTION]),
+        ("L2 Season — ETL: Mongo L1 → PG",      LOAD / "populate_pg.py",         common),
     ]
     for name, script, args in steps:
         if not run_step(name, script, *args, run_in_terminal=run_in_terminal, queue=queue):
@@ -178,6 +182,8 @@ if __name__ == "__main__":
                         help="Mínimo de amigos en partida")
     parser.add_argument("--pool", type=str, default=None,
                         help="Pool ID (hash 8 chars, o 'season')")
+    parser.add_argument("--users-collection", type=str, default=None,
+                        help="Colección de usuarios en MongoDB a utilizar")
     parser.add_argument("--run-in-terminal", action="store_true",
                         help="Mostrar output en tiempo real")
     parser.add_argument("--skip-l0", action="store_true",
@@ -190,11 +196,11 @@ if __name__ == "__main__":
     if args.mode == "l0":
         run_l0(rt, q)
     elif args.mode == "l1-l2":
-        run_l1_to_l2(args.min, args.pool, rt, q)
+        run_l1_to_l2(args.min, args.pool, rt, q, users_collection=args.users_collection)
     elif args.mode == "season":
         run_season(args.min, rt, q, skip_l0=args.skip_l0)
     else:
-        run_full(args.min, args.pool, rt, q, skip_l0=args.skip_l0)
+        run_full(args.min, args.pool, rt, q, skip_l0=args.skip_l0, users_collection=args.users_collection)
 
     # Actualizar marca de tiempo
     save_last_update()

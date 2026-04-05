@@ -333,12 +333,8 @@ def main():
         db = client[MONGO_DB]
         
         if args.source == "api":
-            if args.mode == "normal":
-                cols = ["L0_users_index"]
-            elif args.mode == "season":
-                cols = ["L0_users_index_season"]
-            else:
-                cols = ["L0_users_index", "L0_users_index_season"]
+            all_colls = db.list_collection_names()
+            cols = [c for c in all_colls if c.startswith("L0_users_index")]
             
             ingest_from_api(db, users_collections=cols, limit=final_limit)
         else:

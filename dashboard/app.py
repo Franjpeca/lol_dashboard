@@ -81,6 +81,8 @@ with nav_filters:
         def format_pool(pid):
             if pid == "season": return "Season"
             if pid == "villaquesitos": return "Villaquesitos"
+            if pid.lower() in ["imperio_itzantino", "imperio itzantino"]: 
+                return "Imperio Itzantino"
             return pid.capitalize()
         pool_id = st.selectbox("pool", list(pool_options.keys()), format_func=format_pool, label_visibility="collapsed")
         

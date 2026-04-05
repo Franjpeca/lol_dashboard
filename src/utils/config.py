@@ -34,6 +34,7 @@ POSTGRES_URI = os.getenv("POSTGRES_URI")
 # ================================
 # RIOT API CONFIG
 # ================================
+RIOT_API_KEY = os.getenv("RIOT_API_KEY")
 REGIONAL_ROUTING = os.getenv("REGIONAL_ROUTING", "europe")
 QUEUE_FLEX = int(os.getenv("QUEUE_FLEX", "440"))
 MIN_FRIENDS_IN_MATCH = int(os.getenv("MIN_FRIENDS_IN_MATCH", "5"))
