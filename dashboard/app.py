@@ -9,6 +9,7 @@ Para añadir una nueva sección:
 """
 import importlib
 import sys
+import subprocess
 import json
 from pathlib import Path
 
@@ -55,76 +56,61 @@ if not pool_options:
 
 pools = list(pool_options.keys())
 
-nav_left, nav_pool_label, nav_pool, nav_friends_label, nav_friends, nav_update_info, nav_update_btn = st.columns(
-    [1.2, 0.4, 1.1, 0.3, 0.8, 2.2, 1.2]
-)
+# ─── Navigation Header (Redesigned) ──────────────────────────────────────────
 
 queue_id = 440  # Solo Flex
 
-with nav_left:
+# Usamos 4 columnas principales para equilibrar el espacio
+nav_logo, nav_filters, nav_status, nav_btn = st.columns([2.0, 3.2, 2.0, 1.2])
+
+with nav_logo:
     st.markdown(
-        f"<div style='padding-top:2px; padding-bottom:10px;'><div class='lol-brand-gradient'>Villaquesitos.gg</div></div>",
-        unsafe_allow_html=True,
+        "<div class='lol-brand-gradient'>Villaquesitos.gg</div>",
+        unsafe_allow_html=True
     )
 
+with nav_filters:
+    # Sub-columnas para alinear etiquetas y selectores internamente
+    # Agrupamos Pool y Min para que no bailen
+    f1, f2, f3, f4 = st.columns([0.4, 1.2, 0.35, 0.7])
+    
+    with f1:
+        st.markdown("<div class='nav-align'><span class='nav-label'>Pool:</span></div>", unsafe_allow_html=True)
+    with f2:
+        def format_pool(pid):
+            return "Season" if pid == "season" else f"Normal ({pid})"
+        pool_id = st.selectbox("pool", list(pool_options.keys()), format_func=format_pool, label_visibility="collapsed")
+        
+    with f3:
+        st.markdown("<div class='nav-align'><span class='nav-label'>Min:</span></div>", unsafe_allow_html=True)
+    with f4:
+        valid_mins = sorted(pool_options.get(pool_id, [5]))
+        min_friends = st.selectbox("min_friends", valid_mins, index=len(valid_mins)-1, label_visibility="collapsed")
 
-
-with nav_pool_label:
-    st.markdown(
-        f"<div style='padding-top:14px; color:{MUTED}; font-size:0.9rem; "
-        f"font-weight:600; text-transform:uppercase; letter-spacing:.5px;'>Pool:</div>",
-        unsafe_allow_html=True,
-    )
-
-with nav_pool:
-    def format_pool(pid):
-        if pid == "season":
-            return "Season"
-        return f"Normal ({pid})"
-
-    pool_id = st.selectbox(
-        "pool",
-        pools,
-        format_func=format_pool,
-        label_visibility="collapsed",
-    )
-
-with nav_friends_label:
-    st.markdown(
-        f"<div style='padding-top:14px; color:{MUTED}; font-size:0.9rem; "
-        f"font-weight:600; text-transform:uppercase; letter-spacing:.5px;'>Min:</div>",
-        unsafe_allow_html=True,
-    )
-
-with nav_friends:
-    valid_mins = sorted(pool_options.get(pool_id, [5]))
-    min_friends = st.selectbox(
-        "min_friends",
-        valid_mins,
-        index=len(valid_mins)-1, # Por defecto el mayor (ej. 5)
-        label_visibility="collapsed",
-    )
-
-with nav_update_info:
+with nav_status:
     last_upd = get_last_update_str()
     st.markdown(
-        f"<div style='padding-top:14px; text-align:right; color:{MUTED}; font-size:0.8rem; "
-        f"font-weight:400; line-height:1.2;'>Última actualización:<br/>"
-        f"<span style='color:{GOLD}; font-weight:600;'>{last_upd}</span></div>",
-        unsafe_allow_html=True,
+        f"<div class='nav-align' style='justify-content: flex-end;'>"
+        f"<div style='text-align:right; color:{MUTED}; font-size:0.8rem; line-height:1.2;'>"
+        f"Última actualización: <span style='color:{GOLD}; font-weight:600;'>{last_upd}</span>"
+        f"</div></div>",
+        unsafe_allow_html=True
     )
 
-with nav_update_btn:
-    st.markdown("<div style='padding-top:10px;'>", unsafe_allow_html=True)
+with nav_btn:
     if st.button("🔄 Actualizar", key="refresh_btn", use_container_width=True):
-        st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+        with st.status("🚀 Actualizando datos...", expanded=False) as status:
+            try:
+                st.write("🔄 Sincronizando con Riot API...")
+                subprocess.run([sys.executable, "src/run_all.py"], check=True)
+                status.update(label="✅ Actualizado", state="complete")
+                st.cache_data.clear()
+                st.rerun()
+            except Exception as e:
+                status.update(label="❌ Error", state="error")
+                st.error(str(e))
 
-# Thin separator line under navbar
-st.markdown(
-    f"<hr style='border:none; border-top:1px solid {BORDER}; margin:0 0 0 0;'>",
-    unsafe_allow_html=True,
-)
+st.markdown(f"<hr style='border:none; border-top:1px solid {BORDER}; margin:10px 0 0 0;'>", unsafe_allow_html=True)
 
 # ─── Tab navigation ──────────────────────────────────────────────────────────
 

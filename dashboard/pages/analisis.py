@@ -6,18 +6,19 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from dashboard.db import get_matches_heatmap
+from dashboard.db import get_matches_heatmap, get_winrate_evolution_data
 from dashboard.theme import BG, PAPER, TEXT, GOLD, BORDER, MUTED
 
 def render(pool_id: str, queue_id: int, min_friends: int):
     st.markdown("<h2 class='lol-header2'>Análisis</h2>", unsafe_allow_html=True)
     
-    tab_heatmap, tab_network, tab_identity, tab_landscape, tab_sankey = st.tabs([
+    tab_heatmap, tab_network, tab_identity, tab_landscape, tab_sankey, tab_evolution = st.tabs([
         "Mapa de Calor (Horarios)", 
         "Red de Jugadores", 
         "Posiciones y Campeones", 
         "Duración de partidas y kills", 
-        "Objetivos"
+        "Objetivos",
+        "Evolución de Winrate"
     ])
     
     with tab_heatmap:
@@ -842,11 +843,10 @@ def render(pool_id: str, queue_id: int, min_friends: int):
                 """, unsafe_allow_html=True)
 
                 st.markdown('<div class="hover-focus-chart">', unsafe_allow_html=True)
-                st.plotly_chart(fig_pairs, use_container_width=True)
+                st.plotly_chart(fig_pairs, use_container_width=True, theme=None)
                 st.markdown('</div>', unsafe_allow_html=True)
-                st.write("---")
 
-        st.markdown("### Winrate de objetivos")
+        st.markdown("### Análisis de Sinergias (Parejas)")
         st.markdown(
             f"<p style='color:{MUTED}; margin-bottom:20px;'>"
             "Analiza cómo la primera ventaja obtenida influye en el tipo de partida y el resultado final. "
@@ -1120,3 +1120,158 @@ def render(pool_id: str, queue_id: int, min_friends: int):
             fig.update_yaxes(gridcolor="rgba(255,255,255,0.05)", row=2, col=1)
             
             st.plotly_chart(fig, use_container_width=True)
+
+    with tab_evolution:
+        st.markdown("### Evolución de Winrate")
+        st.markdown(
+            f"<p style='color:{MUTED}; margin-bottom:20px;'>"
+            "Visualiza la trayectoria del winrate en el tiempo. Selecciona la granularidad para agrupar partidas y filtra por jugador para comparar rendimientos."
+            "</p>", 
+            unsafe_allow_html=True
+        )
+
+        df_evo = get_winrate_evolution_data(pool_id, queue_id, min_friends)
+        
+        if df_evo.empty:
+            st.warning("No hay datos suficientes para mostrar la evolución.")
+        else:
+            # Selectores
+            c1, c2, c3 = st.columns([1, 1, 2])
+            with c1:
+                granularity = st.selectbox(
+                    "Granularidad (agrupar cada):",
+                    ["Diario", "3 días", "Semanal"],
+                    index=1 # 3 días por defecto
+                )
+            
+            with c2:
+                min_games_threshold = st.number_input(
+                    "Empezar desde partida nº:",
+                    min_value=1,
+                    max_value=50,
+                    value=10,
+                    help="El winrate acumulado es muy volátil al principio. Este filtro oculta los primeros datos para ver tendencias estables."
+                )
+            
+            freq_map = {"Diario": "1D", "3 días": "3D", "Semanal": "7D"}
+            freq = freq_map[granularity]
+
+            all_personas = sorted(df_evo["persona"].unique().tolist())
+            with c3:
+                selected_personas = st.multiselect(
+                    "Seleccionar jugadores:",
+                    ["Toda la Comunidad"] + all_personas,
+                    default=["Toda la Comunidad"]
+                )
+
+            # Procesamiento de datos
+            df_evo["game_start_at"] = pd.to_datetime(df_evo["game_start_at"])
+            
+            lines_to_plot = []
+
+            # 1. Calcular Comunidad si se solicita
+            if "Toda la Comunidad" in selected_personas:
+                df_comm = df_evo.copy().sort_values("game_start_at")
+                df_comm["win_val"] = df_comm["win"].astype(int)
+                df_comm["cum_wins"] = df_comm["win_val"].cumsum()
+                df_comm["cum_total"] = range(1, len(df_comm) + 1)
+                df_comm["cum_winrate"] = (df_comm["cum_wins"] / df_comm["cum_total"]) * 100
+                
+                # Filtrar por umbral
+                df_comm = df_comm[df_comm["cum_total"] >= min_games_threshold]
+                
+                if not df_comm.empty:
+                    df_comm = df_comm.set_index("game_start_at")
+                    # Resampleamos tomando el último valor del periodo (el winrate en ese momento)
+                    grouped = df_comm["cum_winrate"].resample(freq).last().ffill()
+                    games_count = df_comm["cum_total"].resample(freq).last().ffill()
+                    
+                    lines_to_plot.append({
+                        "name": "Comunidad",
+                        "x": grouped.index,
+                        "y": grouped,
+                        "color": GOLD,
+                        "width": 4,
+                        "games": games_count
+                    })
+
+            # 2. Calcular por Persona
+            for p in selected_personas:
+                if p == "Toda la Comunidad": continue
+                df_p = df_evo[df_evo["persona"] == p].copy().sort_values("game_start_at")
+                df_p["win_val"] = df_p["win"].astype(int)
+                df_p["cum_wins"] = df_p["win_val"].cumsum()
+                df_p["cum_total"] = range(1, len(df_p) + 1)
+                df_p["cum_winrate"] = (df_p["cum_wins"] / df_p["cum_total"]) * 100
+                
+                # Filtrar por umbral
+                df_p = df_p[df_p["cum_total"] >= min_games_threshold]
+                
+                if not df_p.empty:
+                    df_p = df_p.set_index("game_start_at")
+                    grouped = df_p["cum_winrate"].resample(freq).last().ffill()
+                    games_count = df_p["cum_total"].resample(freq).last().ffill()
+                    
+                    lines_to_plot.append({
+                        "name": p,
+                        "x": grouped.index,
+                        "y": grouped,
+                        "width": 2,
+                        "games": games_count
+                    })
+
+            # Renderizado con Plotly
+            fig_evo = go.Figure()
+            
+            for line in lines_to_plot:
+                fig_evo.add_trace(go.Scatter(
+                    x=line["x"],
+                    y=line["y"],
+                    name=line["name"],
+                    mode="lines+markers",
+                    line=dict(width=line.get("width", 2), shape="spline"),
+                    marker=dict(size=6),
+                    customdata=line["games"],
+                    hovertemplate=(
+                        f"<b>{line['name']}</b><br>"
+                        "Fecha: %{x|%Y-%m-%d}<br>"
+                        "Winrate: %{y:.1f}%<br>"
+                        "Partidas: %{customdata}<extra></extra>"
+                    )
+                ))
+
+            fig_evo.update_layout(
+                paper_bgcolor=BG,
+                plot_bgcolor=BG,
+                hovermode="closest",
+                height=500,
+                margin=dict(l=40, r=40, t=40, b=40),
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1,
+                    font=dict(color=TEXT)
+                ),
+                xaxis=dict(
+                    showgrid=False,
+                    color=TEXT,
+                    tickfont=dict(size=10),
+                    gridcolor=BORDER
+                ),
+                yaxis=dict(
+                    showgrid=True,
+                    gridcolor=BORDER,
+                    color=TEXT,
+                    range=[40, 80],
+                    tickformat=".0f",
+                    title=dict(text="Winrate %", font=dict(size=12, color=MUTED))
+                )
+            )
+            
+            # Línea del 50%
+            fig_evo.add_hline(y=50, line_dash="dash", line_color=BORDER, opacity=0.8)
+
+            st.plotly_chart(fig_evo, use_container_width=True, theme=None)
+            st.write("---")

@@ -154,13 +154,14 @@ GLOBAL_CSS = f"""
     }}
 
     .lol-brand-gradient {{
-        background: linear-gradient(90deg, #FCD34D, #60A5FA);
+        background: linear-gradient(90deg, #FCD34D, #FDE68A);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-family: 'Outfit', sans-serif;
         font-weight: 800;
-        font-size: 1.8rem;
-        padding-top: 5px;
+        font-size: 2.2rem;
+        line-height: 50px;
+        height: 50px;
     }}
 
     .lol-badge {{
@@ -241,6 +242,36 @@ GLOBAL_CSS = f"""
     }}
     div[data-baseweb="popover"] {{
         font-size: 1.15rem;
+    }}
+
+    /* Normalización de altura fija para todos los elementos de la cabecera */
+    .nav-align {{
+        display: flex;
+        align-items: center;
+        height: 50px;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+
+    .nav-label {{
+        color: {MUTED};
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        margin-right: 8px;
+    }}
+
+    /* Eliminar márgenes de párrafos internos en el navbar */
+    .nav-align p {{
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+    }}
+
+    /* Ajuste para que los selectores no tengan espacio de etiqueta fantasma */
+    [data-testid="stHorizontalBlock"] .stSelectbox label {{
+        display: none;
     }}
 </style>
 """

@@ -65,6 +65,7 @@ def get_puuid_from_api(riot: RiotWatcher, riot_id: str, regional: str) -> str | 
         
         # Rate limit
         if SLEEP_BETWEEN_CALLS > 0:
+            print(".", end="", flush=True)  # Indicador discreto de progreso/pausa
             time.sleep(SLEEP_BETWEEN_CALLS)
             
         return acc["puuid"]
@@ -102,6 +103,7 @@ def process_mode(mode_name, cfg, riot, regional):
         docs_to_insert = []
 
         for persona, cuentas in mapa.items():
+            print(f"👤 Procesando: {persona}...", end=" ", flush=True)
             if not isinstance(cuentas, list):
                 print(f"[WARN] Skipping {persona}: accounts is not a list")
                 continue
@@ -115,9 +117,11 @@ def process_mode(mode_name, cfg, riot, regional):
                     puuids.append(puuid)
                     accounts.append({"riotId": rid, "puuid": puuid})
 
-            if not riot_ids:
-                print(f"[WARN] {persona}: ninguna cuenta válida, omitiendo")
-                continue
+            # Eliminado: No saltamos la persona si no tiene cuentas válidas. 
+            # Esto asegura que el set de personas en MongoDB coincida con el JSON y el pool_id sea estable.
+            # if not riot_ids:
+            #     print(f"[WARN] {persona}: ninguna cuenta válida, omitiendo")
+            #     continue
 
             riot_ids = sorted(set(riot_ids))
             puuids = sorted(set(puuids))
@@ -147,6 +151,8 @@ def process_mode(mode_name, cfg, riot, regional):
                     inserted += 1
                 elif result.modified_count > 0:
                     updated += 1
+            
+            print("OK")
 
         if docs_to_insert:
             coll.insert_many(docs_to_insert)

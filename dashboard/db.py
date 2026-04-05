@@ -276,6 +276,19 @@ def get_champion_stats_by_role(
     """
     return _q(sql, params)
 
+@st.cache_data(ttl=300, show_spinner=False)
+def get_winrate_evolution_data(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
+    """
+    Obtiene datos de victorias por fecha y persona para análisis temporal.
+    """
+    return _q("""
+        SELECT persona, win, game_start_at
+        FROM player_performances
+        WHERE is_friend = TRUE AND persona IS NOT NULL
+          AND pool_id = %s AND queue_id = %s AND friends_count >= %s
+        ORDER BY game_start_at
+    """, (pool_id, queue_id, min_friends))
+
 
 def get_champion_stats(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
     return _q("""

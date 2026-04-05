@@ -159,21 +159,36 @@ def sync_accounts_from_local(db):
 # ============================
 # MODO: API
 # ============================
-def iter_match_ids(lol, puuid):
+def iter_match_ids(lol, puuid, max_total=None):
     start = 0
     batch = 100
+    yielded = 0
     while True:
+        # Si hay límite, ajustar el batch para no pedir de más
+        current_batch = batch
+        if max_total is not None:
+            remaining = max_total - yielded
+            if remaining <= 0:
+                break
+            current_batch = min(batch, remaining)
+
         ids = safe_call(lol.match.matchlist_by_puuid, REGIONAL_ROUTING, puuid,
-                        start=start, count=batch, queue=QUEUE_FLEX)
+                        start=start, count=current_batch, queue=QUEUE_FLEX)
         if not ids:
             break
+        
+        print(f" (analizando {start}-{start+len(ids)}...)", end="", flush=True)
         for mid in ids:
             yield mid
+            yielded += 1
+            if max_total is not None and yielded >= max_total:
+                return
+
         start += len(ids)
-        if len(ids) < batch:
+        if len(ids) < current_batch:
             break
 
-def ingest_from_api(db, users_collections=["L0_users_index", "L0_users_index_season"]):
+def ingest_from_api(db, users_collections=["L0_users_index", "L0_users_index_season"], limit=15):
     riotid_map = sync_accounts_from_local(db)
     known_puuids = set(riotid_map.keys())
     unknown_puuids = set()
@@ -206,9 +221,11 @@ def ingest_from_api(db, users_collections=["L0_users_index", "L0_users_index_sea
         total_inserted = 0
         total_skipped = 0
 
-        for match_id in iter_match_ids(lol, puuid):
+        for match_id in iter_match_ids(lol, puuid, max_total=limit):
             if db[COLLECTION_RAW_MATCHES].find_one({"_id": match_id}):
                 total_skipped += 1
+                if total_skipped % 50 == 0:
+                    print(".", end="", flush=True) 
                 continue
 
             match_json = safe_call(lol.match.by_id, REGIONAL_ROUTING, match_id)
@@ -229,6 +246,9 @@ def ingest_from_api(db, users_collections=["L0_users_index", "L0_users_index_sea
                 else:
                     unknown_puuids.add(pid)
 
+            # Imprimir un punto discreto para indicar que sigue trabajando durante la pausa
+            if total_inserted % 2 == 0:
+                print(".", end="", flush=True)
             time.sleep(SLEEP_BETWEEN_CALLS)
 
         log(f"📊 {persona} -> nuevas: {total_inserted}, omitidas: {total_skipped}")
@@ -302,7 +322,12 @@ def main():
     parser = argparse.ArgumentParser(description="Ingesta de partidas desde Riot API")
     parser.add_argument("--source", choices=["api", "file"], default="api")
     parser.add_argument("--mode", choices=["normal", "season", "all"], default="all")
+    parser.add_argument("--limit", type=int, default=15, help="Límite de partidas por jugador (por defecto 15)")
+    parser.add_argument("--all", action="store_true", help="Descargar TODO el historial (ignora --limit)")
     args = parser.parse_args()
+
+    # Si --all, el límite es infinito (None)
+    final_limit = None if args.all else args.limit
 
     with get_mongo_client() as client:
         db = client[MONGO_DB]
@@ -315,7 +340,7 @@ def main():
             else:
                 cols = ["L0_users_index", "L0_users_index_season"]
             
-            ingest_from_api(db, users_collections=cols)
+            ingest_from_api(db, users_collections=cols, limit=final_limit)
         else:
             # Modo file (legacy/debug)
             ingest_from_file(db)

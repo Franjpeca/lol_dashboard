@@ -23,18 +23,37 @@ def run_command(cmd_list):
 
 from utils.status import save_last_update
 
+import argparse
+
 def main():
+    parser = argparse.ArgumentParser(description="Actualización total del Dashboard (Ingesta + ETL)")
+    parser.add_argument("--limit", type=int, default=15, help="Límite de partidas por jugador (defecto 15)")
+    parser.add_argument("--all", action="store_true", help="Descargar TODO el historial")
+    args_cli = parser.parse_args()
+
     print("=" * 60)
     print("🔥 INICIANDO ACTUALIZACIÓN TOTAL DEL DASHBOARD 🔥")
+    print(f"   Modo: {'COMPLETO (--all)' if args_cli.all else f'RÁPIDO (Límite {args_cli.limit} partidas)'}")
     print("=" * 60)
 
-    # 1. Actualizar Usuarios y Descargar Partidas (Unificado)
-    # Ahora ingest_users.py e ingest_matches.py procesan Normal y Season por defecto
-    print("\n--- PASO 1: Actualizando índices de usuarios (Unificado) ---")
-    run_command(["src/extract/ingest_users.py"])
+    now_diag = datetime.datetime.now(datetime.timezone.utc)
+    print(f"[DIAG] Hora actual (UTC): {now_diag.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"[DIAG] Hora actual (Local): {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    print("\n--- PASO 2: Descargando todas las partidas nuevas (Riot API) ---")
-    run_command(["src/extract/ingest_matches.py"])
+    # 1. Actualizar Usuarios
+    print("\n--- PASO 1: Actualizando índices de usuarios (Normal + Season) ---")
+    run_command(["src/extract/ingest_users.py"])
+    run_command(["src/extract/ingest_users.py", "--mode", "season"])
+
+    # 2. Descargar Partidas con los argumentos recibidos
+    print("\n--- PASO 2: Descargando partidas nuevas (Riot API) ---")
+    ingest_cmd = ["src/extract/ingest_matches.py"]
+    if args_cli.all:
+        ingest_cmd.append("--all")
+    else:
+        ingest_cmd.extend(["--limit", str(args_cli.limit)])
+    
+    run_command(ingest_cmd)
 
     # 3. Procesar Pools Normales (Min 1 a 5)
     # Usamos mode l1-l2 para generar las tablas filtradas sin volver a descargar
