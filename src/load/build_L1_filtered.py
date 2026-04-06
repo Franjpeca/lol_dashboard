@@ -33,17 +33,34 @@ def now_utc():
 # ============================
 def main():
 
+    # Mapa pool_id → colección de usuarios correspondiente
+    # Añadir aquí nuevas pools si se crean en el futuro
+    POOL_TO_USERS_COLLECTION = {
+        "season":             "L0_users_index_season",
+        "imperio_itzantino":  "L0_users_index_imperio_itzantino",
+    }
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--queue", type=int, default=QUEUE_FLEX)
     parser.add_argument("--min", type=int, default=MIN_FRIENDS_IN_MATCH)
     parser.add_argument("--pool", type=str, default=None, help="Pool ID to use (if not provided, auto-calculate from users index)")
-    parser.add_argument("--users-collection", type=str, default="L0_users_index", help="Users index collection to read from")
+    parser.add_argument("--users-collection", type=str, default=None,
+                        help="Users index collection to read from (auto-detected from --pool if not set)")
     args = parser.parse_args()
 
     queue_id = args.queue
     min_friends = args.min
     pool_id_arg = args.pool
-    users_collection = args.users_collection
+
+    # Auto-detectar la colección de usuarios correcta según la pool
+    # El argumento explícito --users-collection tiene siempre preferencia
+    if args.users_collection:
+        users_collection = args.users_collection
+    elif pool_id_arg and pool_id_arg in POOL_TO_USERS_COLLECTION:
+        users_collection = POOL_TO_USERS_COLLECTION[pool_id_arg]
+        print(f"[INIT] Auto-detected users_collection='{users_collection}' para pool='{pool_id_arg}'")
+    else:
+        users_collection = "L0_users_index"
 
     print(f"[INIT] queue={queue_id} | min_friends={min_friends}")
     print(f"[INIT] users_collection={users_collection}")

@@ -6,7 +6,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from dashboard.db import (
-    get_winrate_by_persona,
+    get_winrate_by_persona, get_winrate_by_account,
     get_community_champions, get_enemy_champions,
     get_matches_per_day, get_matches_per_day_persona,
     get_community_overall_stats, get_top_outsider_allies
@@ -119,6 +119,41 @@ def render(pool_id: str, queue_id: int, min_friends: int):
         st.warning("Sin datos de jugadores disponibles.")
 
     st.markdown("---")
+
+    # ── Rendimiento por cuenta ──────────────────────────────────────────────
+    st.subheader("Rendimiento por cuenta")
+    c_acc1, c_acc2 = st.columns(2)
+
+    account_df = get_winrate_by_account(pool_id, queue_id, min_friends)
+    if account_df is not None and not account_df.empty:
+        # Preparamos etiqueta Account (Persona)
+        account_df["label"] = account_df["account"] + " (" + account_df["persona"] + ")"
+        
+        with c_acc1:
+            df = account_df.sort_values("winrate", ascending=True)
+            fig = make_hbar(df, x="winrate", y="label",
+                            title="Winrate por cuenta (%)", color_scale="Turbo",
+                            text_fmt=":.1f", xrange=[0, 100],
+                            color_col="total_matches", hover_col="total_matches",
+                            color_transform="sqrt", show_colorbar=True,
+                            colorbar_title="Partidas")
+            fig.add_vline(x=50, line_dash="dash", line_color="#555")
+            st.plotly_chart(fig, theme=None, use_container_width=True)
+
+        with c_acc2:
+            df = account_df.sort_values("total_matches", ascending=True)
+            fig = make_hbar(df, x="total_matches", y="label",
+                            title="Partidas por cuenta", color_scale="Turbo",
+                            text_fmt=":.0f",
+                            color_col="winrate", hover_col="winrate",
+                            color_range=[40, 57],
+                            show_colorbar=True, colorbar_title="Winrate (%)")
+            st.plotly_chart(fig, theme=None, use_container_width=True)
+    else:
+        st.warning("Sin datos de cuentas disponibles.")
+
+    st.markdown("---")
+
 
     # ── Pickrate y rendimiento de campeones ───────────────────────────────────
     st.subheader("Pickrate y rendimiento de campeones")

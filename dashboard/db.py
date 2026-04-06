@@ -153,13 +153,14 @@ def get_winrate_by_persona(pool_id: str, queue_id: int, min_friends: int) -> pd.
 def get_winrate_by_account(pool_id: str, queue_id: int, min_friends: int) -> pd.DataFrame:
     return _q("""
         SELECT
-            puuid, persona,
+            riot_id_name AS account, persona,
             COUNT(*) AS total_matches,
             SUM(CASE WHEN win THEN 1 ELSE 0 END) AS wins,
             ROUND(SUM(CASE WHEN win THEN 1 ELSE 0 END)::numeric / GREATEST(COUNT(*), 1) * 100, 2) AS winrate
         FROM player_performances
         WHERE is_friend = TRUE AND pool_id = %s AND queue_id = %s AND friends_count >= %s
-        GROUP BY puuid, persona
+          AND riot_id_name IS NOT NULL
+        GROUP BY riot_id_name, persona
         ORDER BY winrate DESC
     """, (pool_id, queue_id, min_friends))
 

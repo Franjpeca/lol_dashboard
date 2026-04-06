@@ -309,14 +309,30 @@ def populate(pool_id: str, l1_name: str, queue_id: int, min_friends: int,
 
 
 def main():
+    # Mapa pool_id → colección de usuarios correspondiente
+    POOL_TO_USERS_COLLECTION = {
+        "season":            "L0_users_index_season",
+        "imperio_itzantino": "L0_users_index_imperio_itzantino",
+    }
+
     parser = argparse.ArgumentParser(description="ETL MongoDB L1 → PostgreSQL")
     parser.add_argument("--pool", type=str, default=None)
     parser.add_argument("--queue", type=int, default=QUEUE_FLEX)
     parser.add_argument("--min", type=int, default=MIN_FRIENDS_IN_MATCH)
-    parser.add_argument("--users-collection", type=str, default="L0_users_index")
+    parser.add_argument("--users-collection", type=str, default=None,
+                        help="Users index collection (auto-detected from --pool if not set)")
     args = parser.parse_args()
 
-    print(f"[ETL] Arrancando populate_pg.py | queue={args.queue} min={args.min} pool={args.pool}")
+    # Auto-detectar la colección de usuarios correcta
+    if args.users_collection:
+        users_collection = args.users_collection
+    elif args.pool and args.pool in POOL_TO_USERS_COLLECTION:
+        users_collection = POOL_TO_USERS_COLLECTION[args.pool]
+        print(f"[ETL] Auto-detected users_collection='{users_collection}' para pool='{args.pool}'")
+    else:
+        users_collection = "L0_users_index"
+
+    print(f"[ETL] Arrancando populate_pg.py | queue={args.queue} min={args.min} pool={args.pool} users_collection={users_collection}")
 
     pg_conn = psycopg2.connect(_PG_DSN)
     pg_conn.autocommit = True
@@ -338,8 +354,8 @@ def main():
             mongo_db = mongo_client[MONGO_DB]
 
             # Procesar pool solicitada
-            pool_id, l1_name = resolve_pool(mongo_db, args.pool, args.queue, args.min, args.users_collection)
-            populate(pool_id, l1_name, args.queue, args.min, mongo_db, pg_conn, args.users_collection)
+            pool_id, l1_name = resolve_pool(mongo_db, args.pool, args.queue, args.min, users_collection)
+            populate(pool_id, l1_name, args.queue, args.min, mongo_db, pg_conn, users_collection)
     finally:
         pg_conn.close()
 
